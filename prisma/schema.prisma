@@ -6,10 +6,18 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+}
+
+model User {
+  id        Int      @id @default(autoincrement()) // ID numérico automátic (1, 2, 3...)
+  email     String   @unique                       // No puede haber dos iguales
+  password  String                                 // Guardaremos la pass encriptada
+  name      String
+  role      String   @default("candidate")         // "candidate" o "company"
+  createdAt DateTime @default(now())               // Fecha de registro automática
 }
