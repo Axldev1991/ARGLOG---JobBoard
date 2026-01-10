@@ -13,9 +13,9 @@ export default function RegisterPage() {
                     Quien eres?
                 </h1>
                 <form action={registerUser} className="flex flex-col gap-4">
-                    <Input type="text" placeholder="Nombre" />
-                    <Input type="email" placeholder="Email" />
-                    <Input type="password" placeholder="Contraseña" />
+                    <Input type="text" name="name" placeholder="Nombre" />
+                    <Input type="email" name="email" placeholder="Email" />
+                    <Input type="password" name="password" placeholder="Contraseña" />
                     <div className="flex gap-4">
                         <input type="hidden" name="role" value={role} />
                         {/* Botón Candidato */}
