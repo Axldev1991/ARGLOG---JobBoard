@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { deleteJob } from "@/actions/delete-jobs";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 
 export default async function DashboardPage() {
@@ -37,13 +38,21 @@ export default async function DashboardPage() {
                                 <p className="text-sm text-gray-500">${job.salary}</p>
                             </div>
 
-                            {/* Botón Eliminar (Formulario) */}
-                            <form action={deleteJob}>
-                                <input type="hidden" name="jobId" value={job.id} />
-                                <Button variant="destructive" size="sm">
-                                    Eliminar 🗑️
-                                </Button>
-                            </form>
+                            <div className="flex items-center gap-2">
+                                <Link href={`/jobs/${job.id}/edit`}>
+                                    <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-100 font-medium h-9">
+                                        Editar ✏️
+                                    </Button>
+                                </Link>
+
+                                {/* Botón Eliminar (Formulario) */}
+                                <form action={deleteJob}>
+                                    <input type="hidden" name="jobId" value={job.id} />
+                                    <Button className="bg-red-600 hover:bg-red-700 text-white h-9" size="sm">
+                                        Eliminar 🗑️
+                                    </Button>
+                                </form>
+                            </div>
                         </div>
                     ))}
                 </div>
