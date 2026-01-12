@@ -7,6 +7,9 @@ export async function createJob(formData: FormData) {
     const title = formData.get("title") as string;
     const salary = formData.get("salary") as string;
     const description = formData.get("description") as string;
+    const category = formData.get("category") as string;
+    const modality = formData.get("modality") as string;
+    const location = formData.get("location") as string;
 
     const user = await getSession();
     if (!user) {
@@ -15,12 +18,15 @@ export async function createJob(formData: FormData) {
 
     await prisma.job.create({
         data: {
-            title: title,
-            salary: salary,
-            description: description,
+            title,
+            description,
+            salary,
+            category,
+            modality,
+            location,
             authorId: user.id
         }
     })
 
-    redirect("/")
+    redirect("/dashboard")
 }

@@ -42,6 +42,34 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
                     <Input name="salary" defaultValue={job.salary || ""} className="bg-white text-black border-gray-300" />
                 </div>
 
+                {/* NUEVOS CAMPOS */}
+                <div className="flex gap-4">
+                    <div className="w-1/2">
+                        <label className="text-sm font-medium mb-1 block">Categoría</label>
+                        <select name="category" defaultValue={job.category} className="w-full border p-2 rounded-md bg-white text-black border-gray-300">
+                            <option value="Desarrollo">Desarrollo</option>
+                            <option value="Diseño">Diseño</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Ventas">Ventas</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+
+                    <div className="w-1/2">
+                        <label className="text-sm font-medium mb-1 block">Modalidad</label>
+                        <select name="modality" defaultValue={job.modality} className="w-full border p-2 rounded-md bg-white text-black border-gray-300">
+                            <option value="Remoto">Remoto 🏠</option>
+                            <option value="Híbrido">Híbrido 🏢🏠</option>
+                            <option value="Presencial">Presencial 🏢</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="text-sm font-medium mb-1 block">Ubicación</label>
+                    <Input name="location" defaultValue={job.location || ""} placeholder="Ej: Buenos Aires, Argentina" className="bg-white text-black border-gray-300" />
+                </div>
+
                 <div>
                     <label className="text-sm font-medium mb-1 block">Descripción</label>
                     <textarea

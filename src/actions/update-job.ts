@@ -13,7 +13,10 @@ export async function updateJob(formData: FormData) {
     const title = formData.get("title") as string;
     const salary = formData.get("salary") as string;
     const description = formData.get("description") as string;
-    
+    const category = formData.get("category") as string;
+    const modality = formData.get("modality") as string;
+    const location = formData.get("location") as string;
+
     // Verificamos propiedad de nuevo por seguridad
     const existingJob = await prisma.job.findUnique({ where: { id: parseInt(jobId) } });
     if (!existingJob || existingJob.authorId !== user.id) {
@@ -25,7 +28,10 @@ export async function updateJob(formData: FormData) {
         data: {
             title,
             salary,
-            description
+            description,
+            category,
+            modality,
+            location
         }
     });
 
