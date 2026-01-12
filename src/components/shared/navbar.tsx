@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
+import { logout } from "@/actions/logout";
 
 export async function Navbar() {
 
-  const cookieStore = await cookies();
-  const session = cookieStore.get("user_session")?.value;
+  const user = await getSession();
 
-  // Si hay sesión, parseamos el JSON para tener el objeto { name: "Axel" }
-  const user = session ? JSON.parse(session) : null;
   return (
     <nav className="flex justify-between items-center p-4 border-b">
       {/* Lado Izquierdo: Logo */}
@@ -32,12 +31,20 @@ export async function Navbar() {
           {/* === AQUÍ EMPIEZA LO NUEVO === */}
           {user ? (
             // Opción A: Usuario Logueado
-            <div className="flex items-center gap-2 font-medium bg-gray-100 p-2 rounded-full px-4">
-              <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">
-                {user.name[0]}
-              </span>
-              <span className="text-sm">{user.name}</span>
-            </div>
+            <>
+              <Link href="/dashboard" className="flex items-center gap-2 font-medium bg-gray-100 p-2 rounded-full px-4 hover:bg-gray-200 transition-colors">
+                <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">
+                  {user.name[0]}
+                </span>
+                <span className="text-sm font-semibold text-gray-900">{user.name}</span>
+              </Link>
+
+              <form action={logout}>
+                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                  Salir
+                </Button>
+              </form>
+            </>
           ) : (
             // Opción B: Usuario Anónimo
             <Link href="/login">
@@ -49,6 +56,7 @@ export async function Navbar() {
           <Link href="/jobs/new">
             <Button className="bg-blue-600 hover:bg-blue-700 text-white">Publicar Oferta</Button>
           </Link>
+
         </div>
 
 

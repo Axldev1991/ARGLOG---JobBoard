@@ -1,15 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createJob } from "@/actions/create-job";
-import { cookies } from "next/headers";     
-import { redirect } from "next/navigation"; 
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
 
 export default async function NewJobPage() {
-    const cookieStore = await cookies();
-    const session = cookieStore.get("user_session");
-    // Si no hay ticket de sesión... ¡FUERA!
-    if (!session) {
+    const user = await getSession();
+    if (!user) {
         redirect("/login");
     }
     return (
@@ -26,6 +24,7 @@ export default async function NewJobPage() {
                     />
 
                     <Button type="submit">Publicar Oferta</Button>
+                    
                 </form>
             </div>
         </main>
