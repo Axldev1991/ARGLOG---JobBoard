@@ -4,7 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { uploadCV } from "@/actions/upload-cv";
 import { updateProfile } from "@/actions/update-profile";
-import { Loader2, UploadCloud, FileText, CheckCircle, AlertCircle, User, Briefcase, MapPin, Phone, Linkedin } from "lucide-react";
+import { deleteCV } from "@/actions/delete-cv";
+import {
+    Loader2,
+    UploadCloud,
+    FileText,
+    CheckCircle,
+    AlertCircle,
+    User,
+    Briefcase,
+    MapPin,
+    Phone,
+    Linkedin,
+    Trash2,
+    Mail
+} from "lucide-react";
 import { isProfileComplete } from "@/lib/utils";
 
 export function CandidateView({ user }: { user: any }) {
@@ -17,6 +31,13 @@ export function CandidateView({ user }: { user: any }) {
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // 🛡️ VALIDACIÓN DE TAMAÑO (Frontend)
+        // 5MB = 5 * 1024 * 1024 bytes
+        if (file.size > 5 * 1024 * 1024) {
+            setUploadError("El archivo es muy pesado. Máximo 5MB.");
+            return;
+        }
 
         setIsUploading(true);
         setUploadError("");
@@ -80,6 +101,19 @@ export function CandidateView({ user }: { user: any }) {
                         </div>
 
                         <form onSubmit={handleProfileSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-2.5 text-slate-400" size={16} />
+                                    <Input
+                                        name="email"
+                                        value={user.email}
+                                        disabled // <--- LA CLAVE
+                                        className="pl-10 bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed" // Estilos "grisáceos"
+                                    />
+                                </div>
+                                <p className="text-xs text-slate-400 mt-1">El email no se puede cambiar.</p>
+                            </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Titular Profesional</label>
                                 <div className="relative">
@@ -186,16 +220,28 @@ export function CandidateView({ user }: { user: any }) {
 
                         {/* Si ya hay CV, mostramos acciones */}
                         {user.resumeUrl && !isUploading && (
-                            <div className="mb-4">
+                            <div className="mb-4 flex gap-2">
                                 <a
                                     href={user.resumeUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-2 p-3 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-100 hover:text-slate-900 transition-all text-sm group"
+                                    className="flex-1 flex items-center justify-center gap-2 p-3 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-100 hover:text-slate-900 transition-all text-sm group"
                                 >
                                     <FileText size={16} className="text-slate-400 group-hover:text-slate-600" />
                                     Descargar Actual
                                 </a>
+
+                                {/* Botón Borrar */}
+                                <form action={deleteCV}>
+                                    <Button
+                                        type="submit"
+                                        variant="outline"
+                                        className="h-full border-slate-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 px-3"
+                                        title="Borrar CV"
+                                    >
+                                        <Trash2 size={16} />
+                                    </Button>
+                                </form>
                             </div>
                         )}
 

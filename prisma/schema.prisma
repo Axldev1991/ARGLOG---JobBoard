@@ -22,6 +22,7 @@ model User {
   name      String
   role      String   @default("candidate")         // "candidate" o "company"
   resumeUrl String?                                // URL del CV en Cloudinary
+  resumePublicId String?                           // ID para borrar en Cloudinary
   
   // --- PERFIL PROFESIONAL (Candidato) ---
   headline  String?  // Ej: "Senior React Developer"
@@ -32,6 +33,7 @@ model User {
   
   createdAt DateTime @default(now())               // Fecha de registro automática
   jobs      Job[]                                  // <--- Agrega esto (Un usuario tiene MUCHOS jobs)
+  applications Application[] // <--- AGREGAR ESTO
 }
 
 model Job {
@@ -48,6 +50,7 @@ model Job {
   authorId    Int
   author      User     @relation(fields: [authorId], references: [id])
   tags        Tag[]
+  applications Application[] // <--- AGREGAR ESTO
 }
 model Tag {
   id          Int      @id @default(autoincrement())
@@ -55,4 +58,21 @@ model Tag {
   type        String
   jobs        Job[]
 
+}
+
+model Application {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  status    String   @default("PENDING") // PENDING, REJECTED, HIRED
+
+  // Relación: Quién se postula
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  // Relación: A qué oferta
+  jobId     Int
+  job       Job      @relation(fields: [jobId], references: [id])
+
+  // Candado: ¡Solo una postulación por usuario por oferta!
+  @@unique([userId, jobId])
 }

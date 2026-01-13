@@ -17,6 +17,12 @@ export async function uploadCV(formData: FormData) {
         return { error: "No se seleccionó ningún archivo" };
     }
 
+    // 🛡️ VALIDACIÓN DE TAMAÑO (Backend)
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB en bytes
+    if (file.size > MAX_SIZE) {
+        return { error: "El archivo es demasiado grande. El límite es 5MB." };
+    }
+
     if (file.type !== "application/pdf") {
         return { error: "Solo se permiten archivos PDF" };
     }
@@ -38,31 +44,38 @@ export async function uploadCV(formData: FormData) {
     // --------------------------------------------------------------------------
     try {
         console.log("📤 Iniciando subida a Cloudinary...");
-        const uploadResult = await new Promise<any>((resolve, reject) => {
-            cloudinary.uploader.upload_stream(
+        // 4. Subir a Cloudinary (Promesa)
+        const uploadResult = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
                 {
-                    resource_type: "raw",
-                    type: "upload",
-                    folder: "curriculums",
-                    public_id: `cv_${user.id}`,
-                    access_mode: 'public',
+                    resource_type: "raw", // Forzamos RAW para evitar problemas con PDFs
+                    folder: "cvs",
+                    public_id: `cv_${user.id}`, // Nombre fijo para que se sobrescriba
+                    overwrite: true,
+                    access_mode: 'public' // IMPORTANTE: Hacerlo público
                 },
                 (error, result) => {
                     if (error) {
-                        console.error("❌ Error de Cloudinary:", error);
+                        console.error("Cloudinary Error:", error);
                         reject(error);
                     } else {
-                        console.log("✅ Éxito Cloudinary. URL:", result?.secure_url);
-                        resolve(result);
+                        if (!result) return reject(new Error("No result from Cloudinary"));
+                        resolve(result as any);
                     }
                 }
-            ).end(buffer);
+            );
+            uploadStream.end(buffer);
         });
 
-        // 3. Guardar URL en Base de Datos Postgres
+        console.log("✅ Archivo subido:", uploadResult.secure_url);
+
+        // 5. Guardar URL + Public ID en DB
         const finalUser = await prisma.user.update({
             where: { id: user.id },
-            data: { resumeUrl: uploadResult.secure_url }
+            data: {
+                resumeUrl: uploadResult.secure_url,
+                resumePublicId: uploadResult.public_id // <--- NUEVO CAMPO
+            }
         });
         console.log("💾 Guardado en DB. Usuario:", finalUser.email, "URL:", finalUser.resumeUrl);
 
