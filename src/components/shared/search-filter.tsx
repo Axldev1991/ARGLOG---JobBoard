@@ -3,6 +3,7 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { useRouter, useSearchParams } from "next/navigation"
 import { TagPill } from "./tag-pill";
+import { JOB_CATEGORIES, JOB_MODALITIES, QUICK_FILTER_TAGS } from "@/lib/constants";
 
 export function SearchFilters() {
     // --------------------------------------------------------------------------
@@ -41,41 +42,43 @@ export function SearchFilters() {
 
     return (
         <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-8">
-            <form onSubmit={handleSubmit} className="flex gap-4">
+            <form onSubmit={handleSubmit} className="flex gap-4 flex-col md:flex-row">
                 <Input
                     name="q"
                     placeholder="Buscar por puesto o palabra clave..."
                     className="flex-1"
                     defaultValue={searchParams.get("q")?.toString()} // ✨ Mantiene lo que escribiste si refrescas
                 />
+
                 <select
                     name="category"
-                    defaultValue={searchParams.get("category")?.toString()} // ✨ Mantiene la selección
+                    defaultValue={searchParams.get("category")?.toString()}
                     className="bg-white border border-slate-200 p-2 rounded-md text-sm text-slate-700 h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                     <option value="">Todas las Categorías</option>
-                    <option value="Logística">Logística</option>
-                    <option value="Administración">Administración</option>
-                    <option value="Transporte">Transporte</option>
+                    {JOB_CATEGORIES.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                    ))}
                 </select>
 
                 <select
                     name="modality"
-                    defaultValue={searchParams.get("modality")?.toString()} // ✨ Mantiene la selección
+                    defaultValue={searchParams.get("modality")?.toString()}
                     className="bg-white border border-slate-200 p-2 rounded-md text-sm text-slate-700 h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                     <option value="">Cualquier Modalidad</option>
-                    <option value="Remoto">Remoto</option>
-                    <option value="Presencial">Presencial</option>
-                    <option value="Híbrido">Híbrido</option>
+                    {JOB_MODALITIES.map(mod => (
+                        <option key={mod} value={mod}>{mod}</option>
+                    ))}
                 </select>
+
                 <Button type="submit">Buscar</Button>
             </form>
 
             {/* Sugerencias de Tags Pro (Multi-Select) */}
             <div className="mt-4 flex flex-wrap gap-2 items-center">
                 <span className="text-xs text-slate-400 font-medium mr-2">Filtros rápidos:</span>
-                {["Clark", "Excel", "Liderazgo", "SAP", "Inglés", "Zona Norte"].map((tag) => {
+                {QUICK_FILTER_TAGS.map((tag) => {
                     // 1. Leemos los tags actuales de la URL (separados por coma)
                     const currentTagsParam = searchParams.get("tags");
                     const currentTags = currentTagsParam ? currentTagsParam.split(",") : [];

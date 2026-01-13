@@ -11,6 +11,9 @@
 
 import { PrismaClient } from "@prisma/client";
 
+
+import { JOB_CATEGORIES, JOB_MODALITIES } from "@/lib/constants";
+
 const prisma = new PrismaClient();
 
 const JOB_TITLES = [
@@ -32,8 +35,10 @@ const JOB_TITLES = [
 ];
 
 const LOCATIONS = ["Zona Norte, GBA", "CABA, Buenos Aires", "Rosario, Santa Fe", "Pilar, GBA", "Córdoba Capital", "Remoto", "Ezeiza, GBA", "Mendoza", "Mar del Plata"];
-const MODALITIES = ["Presencial", "Híbrido", "Remoto"];
-const CATEGORIES = ["Operaciones", "Administración", "Transporte", "Compras", "Comercio Exterior"];
+// Usamos spread operator (...) para convertir readonly arrays (constants) a arrays mutables si fuera necesario, 
+// o simplemente los usamos directos.
+const MODALITIES = [...JOB_MODALITIES];
+const CATEGORIES = [...JOB_CATEGORIES];
 
 async function main() {
     console.log("🚜 Iniciando siembra masiva de trabajos...");

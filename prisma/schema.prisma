@@ -14,6 +14,7 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+
 model User {
   id        Int      @id @default(autoincrement()) // ID numérico automátic (1, 2, 3...)
   email     String   @unique                       // No puede haber dos iguales
@@ -21,6 +22,14 @@ model User {
   name      String
   role      String   @default("candidate")         // "candidate" o "company"
   resumeUrl String?                                // URL del CV en Cloudinary
+  
+  // --- PERFIL PROFESIONAL (Candidato) ---
+  headline  String?  // Ej: "Senior React Developer"
+  bio       String?  // Sobre mí
+  phone     String?
+  linkedin  String?
+  city      String?
+  
   createdAt DateTime @default(now())               // Fecha de registro automática
   jobs      Job[]                                  // <--- Agrega esto (Un usuario tiene MUCHOS jobs)
 }
