@@ -1,49 +1,63 @@
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/db";
 import { Hero } from "@/components/shared/hero";
-import Link from "next/link"; // ✅ Correcto: Importamos Link de Next.js para navegar sin recargar
+import { getSession } from "@/lib/session";
+import { JobCard } from "@/components/shared/job-card";
+import { SearchFilters } from "@/components/shared/search-filter";
 
-export default async function Home() {
-  const jobs = await prisma.job.findMany();
-  // console.log(jobs); // Debug
+type Props = {
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+
+export default async function Home({ searchParams }: Props) {
+  const params = await searchParams;
+  const query = params.q as string || "";
+  const category = params.category as string || "";
+  const modality = params.modality as string || "";
+  const tagsParam = params.tags as string || ""; // Nuevo parámetro
+  const selectedTags = tagsParam ? tagsParam.split(',') : [];
+
+  const jobs = await prisma.job.findMany({
+    where: {
+      // 1. Buscador de Texto (OR) -> Solo si hay texto escrito
+      ...(query ? {
+        OR: [
+          { title: { contains: query, mode: 'insensitive' } },
+          { description: { contains: query, mode: 'insensitive' } },
+          { tags: { some: { name: { contains: query, mode: 'insensitive' } } } }
+        ]
+      } : {}),
+
+      // 2. Filtros Estrictos (AND implícito) -> Solo si se seleccionó algo
+      ...(category ? { category: { equals: category } } : {}),
+      ...(modality ? { modality: { equals: modality } } : {}),
+      // 3. Filtro por Tag Pill (AND explícito)
+      ...(selectedTags.length > 0 ? {
+        AND: selectedTags.map(t => ({
+          tags: { some: { name: { contains: t, mode: 'insensitive' } } }
+        }))
+      } : {})
+    },
+    include: { tags: true },
+    orderBy: { createdAt: 'desc' }
+  });
+  const user = await getSession();
 
   return (
     <main className="">
       {/* 1. SECCIÓN HERO: Bienvenida e imagen grande */}
-      <Hero />
+      <Hero user={user} />
 
       <div className="p-10 max-w-7xl mx-auto">
+        <SearchFilters />
         <h1 className="text-3xl font-bold mb-8">Ofertas de Trabajo</h1>
 
         {/* 2. GRID DE OFERTAS: Lista de tarjetas responsive */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {jobs.map((job) => (
-            // A. ENLACE PADRE: Envuelve toda la tarjeta para que sea cliqueable
-            <Link key={job.id} href={`/jobs/${job.id}`} className="block h-full">
-
-              {/* B. DISEÑO TARJETA: Estilos visuales y efectos hover */}
-              <div className="bg-white border hover:shadow-lg transition-all p-6 rounded-xl group cursor-pointer h-full flex flex-col">
-
-                {/* Icono decorativo */}
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                  💼
-                </div>
-
-                {/* Título de la oferta */}
-                <h2 className="text-xl font-bold text-gray-900 mb-2">{job.title}</h2>
-
-                {/* Descripción (cortada a 2 líneas con line-clamp) */}
-                <p className="text-sm text-gray-500 mb-4 line-clamp-2">{job.description}</p>
-
-                {/* Footer de la tarjeta (Salario y Tiempo) */}
-                <div className="flex justify-between items-center mt-auto">
-                  <span className="font-semibold text-blue-600">${job.salary}</span>
-                  <span className="text-xs text-gray-400">Ver detalle →</span>
-                </div>
-              </div>
-
-            </Link>
+            <JobCard key={job.id} job={job} />
           ))}
 
         </div>
@@ -51,3 +65,4 @@ export default async function Home() {
     </main>
   );
 }
+

@@ -37,4 +37,12 @@ model Job {
   createdAt   DateTime @default(now())
   authorId    Int
   author      User     @relation(fields: [authorId], references: [id])
+  tags        Tag[]
+}
+model Tag {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  type        String
+  jobs        Job[]
+
 }

@@ -10,6 +10,8 @@ export async function createJob(formData: FormData) {
     const category = formData.get("category") as string;
     const modality = formData.get("modality") as string;
     const location = formData.get("location") as string;
+    const tagsJson = formData.get("tags") as string;
+    const tagIds = JSON.parse(tagsJson || "[]");
 
     const user = await getSession();
     if (!user) {
@@ -24,7 +26,10 @@ export async function createJob(formData: FormData) {
             category,
             modality,
             location,
-            authorId: user.id
+            authorId: user.id,
+            tags: {
+                connect: tagIds.map((id: number) => ({ id: id }))
+            }
         }
     })
 

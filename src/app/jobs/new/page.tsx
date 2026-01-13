@@ -3,10 +3,13 @@ import { Button } from "@/components/ui/button";
 import { createJob } from "@/actions/create-job";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
+import { TagSelector } from "@/components/ui/tag-selector";
 
 
 export default async function NewJobPage() {
     const user = await getSession();
+    const tags = await prisma.tag.findMany();
     if (!user) {
         redirect("/login");
     }
@@ -45,6 +48,7 @@ export default async function NewJobPage() {
                         <label className="text-sm font-medium mb-1 block">Ubicación</label>
                         <Input name="location" placeholder="Ej: Buenos Aires, Argentina" />
                     </div>
+                    <TagSelector availableTags={tags} />
                     <textarea
                         name="description"
                         placeholder="Descripción del puesto"

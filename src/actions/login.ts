@@ -7,7 +7,7 @@ import { cookies } from "next/headers"
 export async function loginUser(formData: FormData) {
     const email = formData.get("email") as string
     const password = formData.get("password") as string
-    
+
 
     if (!email || !password) {
         return { error: "Todos los campos son obligatorios" }
@@ -32,7 +32,8 @@ export async function loginUser(formData: FormData) {
     // cookies().set("session", token)
     (await cookies()).set("user_session", JSON.stringify({
         id: usuarioEncontrado.id,
-        name: usuarioEncontrado.name
+        name: usuarioEncontrado.name,
+        role: usuarioEncontrado.role
     }));
 
     redirect("/")
