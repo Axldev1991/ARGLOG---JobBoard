@@ -5,7 +5,7 @@ import { getSession } from "@/lib/session";
 import cloudinary from "@/lib/cloudinary";
 import { revalidatePath } from "next/cache";
 
-export async function deleteCV() {
+export async function deleteCV(_formData?: FormData) {
     const session = await getSession();
     if (!session) return { error: "No autorizado" };
 
