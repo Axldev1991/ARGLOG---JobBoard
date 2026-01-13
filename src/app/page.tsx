@@ -31,11 +31,9 @@ export default async function Home(props: {
       category ? { category } : {},
       modality ? { modality } : {},
       selectedTags.length > 0 ? {
-        tags: {
-          some: {
-            name: { in: selectedTags }
-          }
-        }
+        AND: selectedTags.map(t => ({
+          tags: { some: { name: { contains: t.trim(), mode: "insensitive" } } }
+        }))
       } : {}
     ]
   };
