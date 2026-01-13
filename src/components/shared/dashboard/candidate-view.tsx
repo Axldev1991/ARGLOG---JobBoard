@@ -232,7 +232,7 @@ export function CandidateView({ user }: { user: any }) {
                                 </a>
 
                                 {/* Botón Borrar */}
-                                <form action={deleteCV}>
+                                <form action={async () => { await deleteCV(); }}>
                                     <Button
                                         type="submit"
                                         variant="outline"
