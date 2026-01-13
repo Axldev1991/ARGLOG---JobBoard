@@ -1,4 +1,12 @@
-"use server" // <--- ¡MAGIA! Esto convierte la función en un API invisible
+// --------------------------------------------------------------------------
+// 🧠 SERVER ACTION: REGISTRO DE USUARIO
+// --------------------------------------------------------------------------
+// 1. Recibe formData del cliente.
+// 2. Valida inputs básicos.
+// 3. Hashea la contraseña con `bcryptjs` (Standard de seguridad).
+// 4. Crea usuario en PostgreSQL via Prisma.
+// --------------------------------------------------------------------------
+
 import { prisma } from "@/lib/db"
 import { hash } from "bcryptjs"
 import { redirect } from "next/navigation"
@@ -22,7 +30,7 @@ export async function registerUser(formData: FormData) {
         data: {
             name,
             email,
-            password: await hash(password, 10), 
+            password: await hash(password, 10),
             role
         }
     })

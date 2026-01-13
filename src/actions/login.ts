@@ -1,4 +1,12 @@
-"use server"
+// --------------------------------------------------------------------------
+// 🧠 SERVER ACTION: LOGIN DE USUARIO
+// --------------------------------------------------------------------------
+// Este archivo maneja la autenticación segura en el servidor.
+// 1. Verifica si el email existe.
+// 2. Compara el password hasheado usando `bcryptjs`.
+// 3. Crea una sesión simple basada en cookies (JWT o JSON).
+// --------------------------------------------------------------------------
+
 import { prisma } from "@/lib/db"
 import { compare } from "bcryptjs"
 import { redirect } from "next/navigation"

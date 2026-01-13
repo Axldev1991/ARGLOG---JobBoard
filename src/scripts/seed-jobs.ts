@@ -1,3 +1,13 @@
+/**
+ * --------------------------------------------------------------------------
+ * 🌱 SCRIPT DE POBLACIÓN (SEEDING) DE EMPLEOS
+ * --------------------------------------------------------------------------
+ * Uso: npx tsx src/scripts/seed-jobs.ts
+ * 
+ * Este script genera 30 empleos ficticios asignados a un usuario existente.
+ * Útil para probar paginación, filtros y búsquedas con datos masivos.
+ * --------------------------------------------------------------------------
+ */
 
 import { PrismaClient } from "@prisma/client";
 

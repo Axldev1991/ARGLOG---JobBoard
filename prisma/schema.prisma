@@ -20,6 +20,7 @@ model User {
   password  String                                 // Guardaremos la pass encriptada
   name      String
   role      String   @default("candidate")         // "candidate" o "company"
+  resumeUrl String?                                // URL del CV en Cloudinary
   createdAt DateTime @default(now())               // Fecha de registro automática
   jobs      Job[]                                  // <--- Agrega esto (Un usuario tiene MUCHOS jobs)
 }

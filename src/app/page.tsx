@@ -18,6 +18,14 @@ export default async function Home({ searchParams }: Props) {
   const tagsParam = params.tags as string || ""; // Nuevo parámetro
   const selectedTags = tagsParam ? tagsParam.split(',') : [];
 
+  // --------------------------------------------------------------------------
+  // 🧠 LÓGICA DE FILTRADO (Prisma + URL Params)
+  // --------------------------------------------------------------------------
+  // Construimos una query dinámica que combina:
+  // 1. Búsqueda Textual (q): Usa lógica "O" (OR). Buscamos coincidencias en Título O Descripción O Tags.
+  // 2. Filtros Estrictos (category, modality): Usa lógica "Y" (AND). El trabajo debe cumplir exactamente.
+  // 3. Tags (tags): Usa lógica "Y" (AND). Si eliges varios tags, el trabajo debe tener TODOS ellos.
+
   const jobs = await prisma.job.findMany({
     where: {
       // 1. Buscador de Texto (OR) -> Solo si hay texto escrito
@@ -29,10 +37,12 @@ export default async function Home({ searchParams }: Props) {
         ]
       } : {}),
 
-      // 2. Filtros Estrictos (AND implícito) -> Solo si se seleccionó algo
+      // 2. Filtros Estrictos (AND implícito) -> Solo si se seleccionó algo en los dropdowns
       ...(category ? { category: { equals: category } } : {}),
       ...(modality ? { modality: { equals: modality } } : {}),
+
       // 3. Filtro por Tag Pill (AND explícito)
+      // Si el usuario selecciona "React" y "Remoto", queremos trabajos que tengan AMBOS.
       ...(selectedTags.length > 0 ? {
         AND: selectedTags.map(t => ({
           tags: { some: { name: { contains: t, mode: 'insensitive' } } }

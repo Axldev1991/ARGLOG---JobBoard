@@ -4,13 +4,31 @@ import { getSession } from "@/lib/session";
 import { deleteJob } from "@/actions/delete-jobs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { CandidateView } from "@/components/shared/dashboard/candidate-view";
 
 
 export default async function DashboardPage() {
 
-    const user = await getSession();
+    const session = await getSession();
+    if (!session) {
+        redirect("/login");
+    }
+
+    // Obtenemos el usuario FRESCO de la base de datos
+    const user = await prisma.user.findUnique({
+        where: { id: session.id }
+    });
+
     if (!user) {
         redirect("/login");
+    }
+
+    if (user.role === 'candidate') {
+        return (
+            <div className="p-10">
+                <CandidateView user={user} />
+            </div>
+        );
     }
 
     const myJobs = await prisma.job.findMany({

@@ -5,8 +5,17 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { TagPill } from "./tag-pill";
 
 export function SearchFilters() {
-    const router = useRouter(); // 🚗 El conductor (para cambiar de ruta)
-    const searchParams = useSearchParams(); // 🕵️ El detective (lee la URL actual)
+    // --------------------------------------------------------------------------
+    // 🧠 PATRÓN: URL COMO ESTADO (URL as State)
+    // --------------------------------------------------------------------------
+    // En lugar de usar `useState` de React para los filtros, usamos la URL.
+    // 1. Shareability: El usuario puede copiar el link y compartirlo con los filtros aplicados.
+    // 2. Refresh: Si recargas la página, no pierdes tu búsqueda.
+    // 3. Server Component: La página (`page.tsx`) lee la URL directamente para hacer la query initial.
+    // --------------------------------------------------------------------------
+
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
     // Función que se ejecuta al darle "Buscar" o Enter
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
