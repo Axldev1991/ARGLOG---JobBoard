@@ -20,3 +20,12 @@ export function isProfileComplete(user: any): boolean {
 
   return requiredFields.every(field => field && field.trim().length > 0);
 }
+
+export function formatDate(date: Date | string): string {
+  if (!date) return "";
+  return new Date(date).toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
