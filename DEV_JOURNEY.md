@@ -1,117 +1,135 @@
-# 📘 Bitácora de Desarrollo: Job Board Premium
+# 📘 Anatomía y Cronología del Desarrollo: Job Board Premium
 
-Este documento narra la evolución técnica, las decisiones arquitectónicas y los aprendizajes obtenidos durante la construcción de esta plataforma de empleos. Es una guía viva de cómo pasamos de un "Hola Mundo" a una aplicación de producción robusta, segura y con una UI de alto nivel.
-
----
-
-## 🏗️ Fase 1: Los Cimientos (Auth & Data Layer)
-**Fecha:** 10 - 11 de Enero de 2026
-
-El objetivo inicial fue establecer una base sólida. No queríamos una demo frágil, sino una arquitectura escalable.
-
-### 🧠 Tecnologías y Aprendizajes Clave
-
-#### **1. Next.js 15 & App Router**
-Decidimos usar la última versión estable de Next.js.
-*   **Lección:** El cambio mental de `pages/` a `app/` es fundamental.
-    *   **Server Components (Default):** Aprendimos que todo componente es "Servidor" por defecto. Esto significa que podemos acceder a la Base de Datos (`prisma.job.findMany`) directamente dentro del componente. ¡Adiós a `useEffect` para hacer fetch de datos iniciales!
-    *   **Client Components (`"use client"`):** Solo los usamos cuando necesitamos interactividad (onClick, hooks, estados). Esto reduce drásticamente el JavaScript que enviamos al navegador.
-
-#### **2. Server Actions**
-En lugar de crear una API REST (`/api/login`, `/api/register`), utilizamos **Server Actions**.
-*   **¿Por qué?:** Son funciones asíncronas que corren en el servidor pero se pueden importar y llamar desde el cliente (o usar en `action` de formularios HTML).
-*   **Ventaja:** Tipo seguro (TypeScript sabe qué entra y qué sale) y cero boilerplate de API.
-
-#### **3. Base de Datos: PostgreSQL + Neon + Prisma**
-*   **Neon:** Elegimos Neon por ser una base de datos PostgreSQL "Serverless". Escala a cero si no se usa y es rapidísima para Vercel.
-*   **Prisma ORM:**
-    *   Definimos el esquema en `schema.prisma` (`User`, `Job`).
-    *   **Migraciones:** Aprendimos que cada cambio en el esquema requiere un `npx prisma migrate dev` para sincronizar la base de datos real.
-
-**Hitos de esta fase:**
-*   Sistema de Registro y Login (sin librerías externas pesadas como Auth.js, sino cookies/sesiones manuales para control total).
-*   Roles de usuario: `CANDIDATE` vs `COMPANY` vs `ADMIN`.
+Este documento ofrece una **disección detallada archivo por archivo** de la plataforma. Narra no solo qué hace cada archivo, sino por qué fue creado en ese momento específico y cómo contribuye a la arquitectura global.
 
 ---
 
-## 🛠️ Fase 2: Gestión de Ofertas y Dashboard
-**Fecha:** 12 de Enero de 2026
+## 📅 Fase 1: El Núcleo (Configuración, BD y Autenticación)
+*Objetivo: Establecer un servidor seguro y una base de datos conectada.*
 
-Con la autenticación lista, construimos el corazón de la app: el ABM (Alta, Baja, Modificación) de ofertas.
+### 1. `lib/db.ts`
+* **Qué es:** El "Singleton" de la conexión a la base de datos.
+* **Por qué:** En desarrollo, Next.js recarga constantemente. Si creamos una nueva conexión a la BD cada vez, saturaríamos a Postgres (error `too many connections`).
+* **Anatomía:** Guarda la instancia `prisma` en una variable global (`globalThis`) para reutilizarla entre recargas.
 
-### 🧠 Desafíos Técnicos
+### 2. `prisma/schema.prisma`
+* **Qué es:** El plano arquitectónico de nuestra data.
+* **Evolución:**
+    *   *Día 1:* Solo modelos `User` y `Job`.
+    *   *Día 2:* Agregamos relación `User` (author) -> `Job`.
+    *   *Día 3:* Agregamos `Application` y campos para Cloudinary (`resumeUrl`, `resumePublicId`).
+* **Clave Técnica:** Uso de Enums (`Role`, `JobStatus`) para forzar integridad a nivel de base de datos.
 
-#### **1. CRUD con Server Actions**
-Implementamos la creación de empleos (`createJob`), edición y borrado.
-*   **Reto:** ¿Cómo proteger estas acciones?
-*   **Solución:** Creamos funciones utilitarias como `getSession()` y verificaciones de rol dentro de cada Server Action. *Security by Design*.
+### 3. `lib/session.ts`
+* **Qué es:** Nuestro sistema de autenticación personalizado (sin Auth.js/NextAuth).
+* **Anatomía:**
+    *   Usa `jose` para firmar y verificar tokens JWT.
+    *   Guarda el JWT en una **HTTP-Only Cookie** (inaccesible para JS del lado cliente, máxima seguridad).
+    *   Función `getSession()`: Se llama en casi todos los componentes de servidor para saber "¿Quién me está pidiendo esto?".
 
-#### **2. UI/UX con Tailwind CSS y Shadcn/ui**
-*   Adoptamos **Shadcn** para componentes base (Botones, Inputs, Cards).
-*   **Filosofía:** No es una librería que se instala y no se toca. Es código que *copias y pegas* en tu proyecto. Esto nos dio control total para modificar el `Button` (como hicimos hoy agregando el tamaño `icon`).
-
----
-
-## 👤 Fase 3: El Candidato y la Gestión de Archivos
-**Fecha:** 13 de Enero de 2026 (Mañana/Tarde)
-
-Aquí la aplicación dejó de ser un simple CRUD para convertirse en una plataforma operativa real.
-
-### 🧠 Integración Crítica: Cloudinary
-
-**El Problema:** Necesitábamos que los usuarios subieran su CV en PDF.
-**El Error Común:** Guardar el archivo binario (blob) en PostgreSQL. Esto hace la base de datos lenta y costosa.
-**La Solución:** Usar un almacenamiento de objetos (Cloudinary).
-
-*   **Flujo Implementado:**
-    1.  El usuario selecciona el PDF.
-    2.  El servidor (Action) recibe el `FormData`.
-    3.  Convertimos el archivo a `Buffer` y lo subimos a Cloudinary.
-    4.  **Clave:** Solo guardamos la **URL** (`secure_url`) y el **Public ID** en nuestra base de datos Postgres.
-
-### 🧠 Postulaciones (Relaciones SQL)
-Creamos la tabla `Application` que conecta `User` y `Job`.
-*   **Lógica de Negocio:** Un usuario no puede postularse dos veces a la misma oferta. Esto se validó en el backend (`findFirst` antes de crear).
+### 4. `actions/register.ts` & `actions/login.ts`
+* **Qué es:** Server Actions para el ingreso.
+* **Anatomía:**
+    *   Reciben `FormData` del cliente.
+    *   Verifican si el usuario existe en Prisma.
+    *   Hashean/Verifican contraseñas con `bcryptjs`.
+    *   Generan la cookie de sesión y redirigen.
 
 ---
 
-## 🏢 Fase 4: La Experiencia "Premium" (Empresa & Home)
-**Fecha:** 13 de Enero de 2026 (Noche)
+## 📅 Fase 2: Gestión de Ofertas (Core Business)
+*Objetivo: Permitir a las empresas publicar contenido.*
 
-El sprint final. El objetivo era pulir, profesionalizar y optimizar.
+### 5. `app/jobs/new/page.tsx`
+* **Qué es:** El formulario de creación de ofertas.
+* **Evolución:**
+    *   *Versión 1:* Inputs simples HTML.
+    *   *Versión Final:* UI "Dark Premium" con selectores estilizados y validación visual.
+* **Detalle Técnico:** Es un Server Component que renderiza el formulario, pero usa componentes cliente pequeños (como el selector de tags) incrustados.
 
-### 🧠 Refactorización Visual (Dark Mode Puro)
-Pasamos de una mezcla de blanco/oscuro a un tema **"Midnight Blue"** consistente (`slate-950`, `slate-900`, `slate-800`).
-*   **Detalles:** Bordes sutiles, sombras suaves y colores de acento vibrantes (Azul eléctrico, Naranja quemado).
-*   **Iconografía:** Eliminamos todos los emojis (🚀, 🏢) y los reemplazamos por **Lucide React Icons** (SVGs vectoriales) para una apariencia profesional y escalable.
+### 6. `components/ui/tag-selector.tsx`
+* **Qué es:** Componente de cliente para elegir habilidades (React, Node, Excel).
+* **Anatomía:**
+    *   Mantiene un estado local (`selectedTags[]`).
+    *   Input oculto (`<input type="hidden" />`): Truco clave para enviar el array de tags dentro del `FormData` estándar HTML al servidor sin usar JSON complex.
 
-### 🧠 Algoritmos de Filtrado y Búsqueda
-Reescribimos la `Home` (`page.tsx`) para soportar filtros complejos.
-*   **URL as State:** Decidimos que los filtros (Búsqueda, Categoría, Tags) vivan en la URL (`?q=react&category=dev`).
-    *   **¿Por qué?** Permite compartir el link con la búsqueda exacta. Si recargas la página, no pierdes tu búsqueda.
+### 7. `actions/create-job.ts`
+* **Qué es:** El cerebro detrás de "Publicar Oferta".
+* **Anatomía:**
+    *   Verificación de Rol: `if (session.role !== 'COMPANY') throw Error`.
+    *   Transacción Prisma: Crea el `Job` y conecta/crea los `Tags` relacionándolos en la tabla pivot `_JobToTag`.
+    *   `revalidatePath('/')`: Ordena a Next.js borrar la caché de la home para que la nueva oferta aparezca al instante.
 
-### 🧠 El Carrusel Híbrido y la Paginación
-El desafío era mostrar "Destacados" sin duplicar contenido ni romper la UX.
+---
 
-1.  **Tecnología:** `embla-carousel-react` para el slider suave.
-2.  **Lógica de Exclusión Inteligente:**
-    *   Si el usuario está en modo "Descubrimiento" (sin filtros), mostramos el carrusel con el Top 6 y **excluimos** esos 6 de la lista principal para evitar duplicados.
-    *   Si el usuario está en modo "Búsqueda" (ej: buscando "Excel"), desactivamos la exclusión para garantizar que vea *todos* los resultados relevantes, aunque estén en el carrusel.
-3.  **Client Component para UX:** Creamos `<ScrollToTopOnChange />` para que, al cambiar de página, la vista suba suavemente al inicio de la lista, sin recargar toda la web bruscamente.
+## � Fase 3: El Candidato y Gestión de Archivos (Cloudinary)
+*Objetivo: Permitir postulaciones reales con CV.*
+
+### 8. `lib/cloudinary.ts`
+* **Qué es:** Configuración del SDK de Cloudinary.
+* **Por qué:** Necesitábamos credenciales seguras (`API_SECRET` en servidor) para firmar subidas.
+
+### 9. `actions/upload-cv.ts`
+* **Qué es:** Manejador de subida de archivos binarios.
+* **Anatomía:**
+    *   Recibe el archivo como `File` object.
+    *   Lo convierte a `ArrayBuffer` -> `Base64`.
+    *   Lo envía a Cloudinary usando una "Data URI".
+    *   **Crucial:** Actualiza el registro del `User` en la BD guardando solo la URL resultante.
+
+### 10. `app/dashboard/page.tsx` (Candidate Logic)
+* **Qué es:** El centro de comando del usuario.
+* **Lógica Inteligente:**
+    *   Renderizado Condicional: Detecta el rol (`session.role`).
+    *   Si es `CANDIDATE`: Muestra `CandidateView` con su CV y sus postulaciones.
+    *   Si es `COMPANY`: Muestra `CompanyView` con sus ofertas y métricas.
 
 ---
 
-## 🚀 Estado Actual y Futuro
+## 📅 Fase 4: La Empresa y el Dashboard Avanzado
+*Objetivo: Dar herramientas de gestión a los reclutadores.*
 
-**Logrado:**
-*   ✅ Plataforma 100% funcional End-to-End.
-*   ✅ Seguridad robusta y validación de datos.
-*   ✅ UI de nivel comercial ("Premium").
+### 11. `components/shared/dashboard/company/view.tsx`
+* **Qué es:** Contenedor principal del panel de empresa.
+* **Función:** Recibe los datos crudos (ofertas) y renderiza la lista filtrable.
 
-**Próximos Pasos Posibles:**
-*   📧 Emails transaccionales (cuando alguien se postula).
-*   📊 Analytics para empresas (vistas por oferta).
-*   🤖 IA para matchear candidatos con ofertas automáticamente.
+### 12. `components/shared/dashboard/company/use-job-filter.ts`
+* **Qué es:** Un **Custom Hook** extraído para limpiar el código.
+* **Por qué:** El componente de lista tenía demasiada lógica (filtrar por texto, ordenar por fecha, ordenar por candidatos).
+* **Anatomía:** Encapsula todos los `useState`, `useMemo` y la lógica de ordenamiento (`sort()`), devolviendo una lista limpia `processedJobs`.
+
+### 13. `actions/apply-jobs.ts`
+* **Qué es:** La acción de postularse.
+* **Validaciones:**
+    1.  ¿El usuario tiene CV subido?
+    2.  ¿Ya se postuló antes a esta ID?
+    3.  Crear registro en tabla `Application`.
 
 ---
-*Documento generado automáticamente por tu Asistente de IA (Antigravity).*
+
+## 📅 Fase 5: Refinamiento UI/UX (Premium Dark Mode)
+*Objetivo: Transformar una herramienta funcional en un producto deseable.*
+
+### 14. `app/page.tsx` (La Página Principal)
+* **Qué es:** La entrada a la aplicación. El archivo más complejo lógicamente.
+* **Evolución Lógica (El "Bug de Excel"):**
+    *   Inicialmente excluía duplicados del carrusel siempre.
+    *   **Fix:** Ahora solo excluye si NO hay filtros activos. Si buscas algo, te muestra todo.
+*   **Anatomía:**
+    *   Hace fetches paralelos (`Promise.all`) de jobs y conteos.
+    *   Orquesta el carrusel y la lista paginada.
+
+### 15. `components/shared/featured-carousel.tsx`
+* **Qué es:** Carrusel de "Últimas Novedades" usando `embla-carousel`.
+* **Detalle:** Renderizado visual puro con iconos `Lucide` (Sparkles, Building) reemplazando emojis antiguos.
+
+### 16. `components/shared/scroll-to-top-on-change.tsx`
+* **Qué es:** Un "Efecto Invisible".
+* **Anatomía:**
+    *   Es un componente cliente que no renderiza HTML (`return null`).
+    *   Usa `useEffect` escuchando `searchParams`.
+    *   Cuando cambia la página, ejecuta `element.scrollIntoView({ behavior: 'smooth' })`.
+    *   **Resultado:** UX suave al paginar sin recargas bruscas.
+
+---
+*Este documento fue construido mediante análisis forense del código fuente y el historial de cambios, detallando la función exacta de cada pieza en el engranaje del sistema.*
