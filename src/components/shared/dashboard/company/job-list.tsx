@@ -34,7 +34,7 @@ export function JobList({ jobs = [] }: { jobs: any[] }) {
                     </h2>
 
                     <Link href="/jobs/new" className="hidden sm:block">
-                        <Button variant="secondary" size="sm" className="bg-blue-600 text-white hover:bg-blue-500 border-0">
+                        <Button variant="default" size="sm" className="bg-blue-600 text-white hover:bg-blue-500 border-0">
                             + Nueva Oferta
                         </Button>
                     </Link>
