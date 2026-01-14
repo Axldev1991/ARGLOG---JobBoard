@@ -11,6 +11,7 @@ export async function updateProfile(formData: FormData) {
         return { error: "No autorizado" };
     }
 
+    const name = formData.get("name") as string;
     const headline = formData.get("headline") as string;
     const bio = formData.get("bio") as string;
     const phone = formData.get("phone") as string;
@@ -21,6 +22,7 @@ export async function updateProfile(formData: FormData) {
         await prisma.user.update({
             where: { id: session.id },
             data: {
+                name,
                 headline,
                 bio,
                 phone,

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ApplyButton } from "./apply-button";
+
 
 interface JobWithTags {
     id: number;
@@ -9,7 +9,9 @@ interface JobWithTags {
     tags?: { id: number, name: string }[];
 }
 
-export function JobCard({ job, hasApplied }: { job: JobWithTags; hasApplied: boolean }) {
+import { CheckCircle } from "lucide-react";
+
+export function JobCard({ job, hasApplied }: { job: JobWithTags, hasApplied: boolean }) {
     return (
         <div className="bg-white border border-slate-200 hover:shadow-xl hover:border-blue-100 transition-all rounded-2xl group flex flex-col h-full relative overflow-hidden">
 
@@ -38,19 +40,30 @@ export function JobCard({ job, hasApplied }: { job: JobWithTags; hasApplied: boo
                 )}
             </Link>
 
-            {/* 2. Sección de Acción (Botón e Info extra) */}
+            {/* 2. Sección de Acción (Botón Ver oferta) */}
             <div className="px-6 pb-6 pt-2 space-y-4">
-                <div className="flex justify-between items-center text-sm border-t border-slate-50 pt-4">
+                <div className="flex justify-between items-center text-sm border-t border-slate-50 pt-4 mb-3">
                     <span className="font-bold text-slate-900">
                         {job.salary ? `$${job.salary}` : 'Sueldo a convenir'}
                     </span>
-                    <Link href={`/jobs/${job.id}`} className="text-blue-600 font-medium hover:underline text-xs">
-                        Ver detalle
-                    </Link>
                 </div>
 
-                {/* 🔘 BOTÓN DE POSTULACIÓN (Aislado del link principal) */}
-                <ApplyButton jobId={job.id} hasApplied={hasApplied} />
+                {hasApplied ? (
+                    <Link
+                        href={`/jobs/${job.id}`}
+                        className="flex items-center justify-center gap-2 w-full text-center bg-green-100 border border-green-200 text-green-700 font-bold py-3 rounded-xl transition-all cursor-pointer hover:bg-green-200"
+                    >
+                        <CheckCircle size={18} />
+                        Ya te postulaste
+                    </Link>
+                ) : (
+                    <Link
+                        href={`/jobs/${job.id}`}
+                        className="block w-full text-center bg-slate-900 hover:bg-blue-600 text-white font-medium py-3 rounded-xl transition-all"
+                    >
+                        Ver Oferta
+                    </Link>
+                )}
             </div>
         </div>
     );

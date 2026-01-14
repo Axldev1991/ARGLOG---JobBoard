@@ -7,18 +7,22 @@ import { revalidatePath } from "next/cache";
 
 export async function applyToJob(jobId: number) {
     const session = await getSession();
-    
+
     if (!session) {
         return { error: "Debes iniciar sesión para postularte." };
     }
 
-        // 1. Obtener usuario de la DB (para tener datos frescos)
+    // 1. Obtener usuario de la DB (para tener datos frescos)
     const user = await prisma.user.findUnique({
         where: { id: session.id }
     });
 
-    if (!user || user.role !== 'candidate') {
-        return { error: "Solo los candidatos pueden postularse." };
+    // Verificamos el rol de la SESIÓN (que puede estar impersonada)
+    // TODO: REMOVE FOR PRODUCTION (Strict DB check is safer)
+    const activeRole = session.role;
+
+    if (!user || (activeRole !== 'candidate' && activeRole !== 'admin')) {
+        return { error: `Solo los candidatos pueden postularse (Tu rol actual: ${activeRole})` };
     }
 
     // 2. EL GATEKEEPER 👮: Verificar perfil completo
@@ -26,7 +30,7 @@ export async function applyToJob(jobId: number) {
         return { error: "Tu perfil está incompleto. Sube tu CV y completa tu info en el Dashboard." };
     }
 
-        try {
+    try {
         // 3. ¿Ya se postuló antes?
         const existingApplication = await prisma.application.findUnique({
             where: {

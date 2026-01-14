@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { CandidateView } from "@/components/shared/dashboard/candidate-view";
-import { CompanyView } from "@/components/shared/dashboard/company-view";
+import { CandidateView } from "@/components/shared/dashboard/candidate/view";
+// import { CompanyView } from "@/components/shared/dashboard/company/view";
 
 
 export default async function DashboardPage() {
@@ -27,9 +27,15 @@ export default async function DashboardPage() {
     const effectiveRole = session.role;
 
     if (effectiveRole === 'candidate') {
+        const applications = await prisma.application.findMany({
+            where: { userId: user.id },
+            include: { job: true }, // Traemos info del trabajo
+            orderBy: { createdAt: 'desc' }
+        });
+
         return (
             <div className="p-10">
-                <CandidateView user={user} />
+                <CandidateView user={user} applications={applications} />
             </div>
         );
     }

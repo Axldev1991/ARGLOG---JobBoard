@@ -76,12 +76,11 @@ export default async function Home(props: {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {jobs.map((job) => {
               const hasApplied = job.applications.length > 0;
-
               return (
                 <JobCard
                   key={job.id}
                   job={job}
-                  hasApplied={hasApplied} // <--- Pasamos esta prop nueva
+                  hasApplied={hasApplied}
                 />
               );
             })}
