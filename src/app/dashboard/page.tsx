@@ -26,6 +26,11 @@ export default async function DashboardPage() {
     // Si usáramos user.role (DB), siempre veríamos la vista de Admin/Dev.
     const effectiveRole = session.role;
 
+    // Si eres Admin o Dev, te mandamos a tu panel especial
+    if (effectiveRole === 'admin' || effectiveRole === 'dev') {
+        redirect("/admin/dashboard");
+    }
+
     if (effectiveRole === 'candidate') {
         const applications = await prisma.application.findMany({
             where: { userId: user.id },

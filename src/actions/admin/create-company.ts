@@ -1,0 +1,91 @@
+"use server"
+
+import { prisma } from "@/lib/db"
+import { hash } from "bcryptjs"
+import { resend } from "@/lib/resend"
+import { requireAdminAction } from "@/lib/auth-guard"
+
+/**
+ * Server Action para dar de alta una nueva empresa (B2B).
+ * 1. Crea el usuario y el perfil de empresa en una transacción.
+ * 2. Envía un email de bienvenida con credenciales temporales.
+ * 
+ * @param formData Datos del formulario de creación
+ */
+export async function createCompany(formData: FormData) {
+    // 🛡️ SEGURIDAD: Solo admins pueden ejecutar esto
+    await requireAdminAction();
+
+    const name = formData.get("name") as string
+    const email = formData.get("email") as string
+    const website = formData.get("website") as string
+
+    // Datos Legales
+    const legalName = formData.get("legalName") as string
+    const cuit = formData.get("cuit") as string
+    const industry = formData.get("industry") as string
+
+    // Validación básica de campos requeridos
+    if (!name || !email || !legalName || !cuit || !industry) {
+        return { error: "Todos los campos marcados son obligatorios." }
+    }
+
+    // Generamos contraseña temporal aleatoria
+    const tempPassword = "Arlog" + Math.floor(Math.random() * 10000);
+
+    try {
+        const hashedPassword = await hash(tempPassword, 10);
+
+        // Nested Write: Creamos Usuario + Perfil en un solo paso atómico
+        await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                role: "company",
+                companyProfile: {
+                    create: {
+                        legalName,
+                        cuit,
+                        industry,
+                        website,
+                        description: "Empresa verificada por ArLog. Pendiente de completar descripción."
+                    }
+                }
+            }
+        });
+
+        // Notificación por Email
+        // Nota: En modo DEV de Resend, solo funciona si el destinatario es tu propio email verificado.
+        await resend.emails.send({
+            from: 'onboarding@resend.dev',
+            to: email,
+            subject: '👑 Bienvenido a ArLog - Accesos de Empresa',
+            html: `
+                <div style="font-family: sans-serif; color: #333;">
+                    <h1>¡Bienvenido ${name}!</h1>
+                    <p>El equipo de ArLog ha dado de alta tu perfil corporativo.</p>
+                    <hr style="border: 0; border-top: 1px solid #eaeaea;" />
+                    <p><strong>Razón Social:</strong> ${legalName} (CUIT: ${cuit})</p>
+                    
+                    <div style="background: #f4f4f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <p style="margin:0 0 10px 0;"><strong>Tus credenciales temporales:</strong></p>
+                        <p style="margin:5px 0;">📧 Email: <strong>${email}</strong></p>
+                        <p style="margin:0;">🔑 Contraseña: <strong>${tempPassword}</strong></p>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #666;">
+                        Por favor ingresa y cambia tu contraseña desde tu perfil.
+                    </p>
+                </div>
+            `
+        });
+
+        return { success: true };
+
+    } catch (error: any) {
+        console.error("[createCompany] Error:", error);
+        // Devolvemos el mensaje técnico para facilitar el debug en desarrollo
+        return { error: `Error técnico: ${error.message}` };
+    }
+}

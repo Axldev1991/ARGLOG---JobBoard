@@ -128,3 +128,33 @@ src/
 
 ---
 *Este documento mapea la arquitectura física y lógica construida durante el desarrollo.*
+
+---
+
+## 📅 Fase 5: Módulo Administrativo y Gestión B2B 🏢
+*Objetivo: Control centralizado y flujo B2B (Business-to-Business).*
+
+### 13. `/src/app/admin/dashboard`
+* **Ubicación:** Rutas protegidas exclusivas.
+* **Qué es:** Panel de comando para administradores.
+* **Separación de Responsabilidades:** Se separa visual y lógicamente del dashboard de usuario común (`/dashboard`). Implementa su propia tabla de gestión de empresas con acciones rápidas.
+
+### 14. Server Actions de Gestión (`create`, `update`, `delete`)
+* **Ubicación:** `/src/actions/admin/`
+* **Lógica Avanzada:**
+    *   `create-company.ts`: Transacción atómica (Crea Usuario + Perfil) e integración con **Resend** para envío inmediato de credenciales.
+    *   `delete-company.ts`: Aprovecha **Cascade Delete** (configurado en Prisma) para eliminar una empresa y limpiar automáticamente todos sus trabajos y postulaciones asociadas sin dejar huérfanos.
+
+### 15. `/src/components/admin/company-actions.tsx`
+* **Ubicación:** Componente Cliente en Dashboard Admin.
+* **Qué es:** Botonera interactiva para cada fila de la tabla.
+* **UX/UI:** Implementa un patrón de **Double Tap Confirmation** (el icono cambia a advertencia al primer clic) en lugar de usar alertas nativas intrusivas, mejorando la experiencia de borrado seguro.
+
+### 16. DevTools 2.0 (`impersonation`)
+* **Mejora:** Se perfeccionó el sistema de "Modo Dios". Ahora permite saltar dinámicamente entre roles (Admin, Company, Candidate) redirigiendo automáticamente al dashboard correspondiente (`/admin/dashboard` vs `/dashboard`), eliminando la fricción al testear diferentes flujos de usuario.
+
+### 17. Security Layer (The Iron Dome) 🛡️
+* **NUEVO:** `src/lib/auth-guard.ts`
+* **Función:** Centraliza la lógica de autorización.
+    *   `requireAdminAction()`: Se inyecta al inicio de todas las Server Actions sensibles (`create`, `update`, `delete`). Si la petición no viene de un admin autenticado, lanza una excepción y aborta. Esto previene ataques vía API/Curl.
+    *   `protectAdminRoute()`: Se usa en `src/app/admin/layout.tsx`. Protege toda la carpeta `/admin`. Si un usuario normal intenta entrar por URL, es redirigido a su dashboard correspondiente.

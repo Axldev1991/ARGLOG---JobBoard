@@ -33,7 +33,10 @@ model User {
   
   createdAt DateTime @default(now())               // Fecha de registro automática
   jobs      Job[]                                  // <--- Agrega esto (Un usuario tiene MUCHOS jobs)
-  applications Application[] // <--- AGREGAR ESTO
+  applications Application[] 
+  
+  // --- PERFIL EMPRESA (Opcional, 1-a-1) ---
+  companyProfile CompanyProfile? 
 }
 
 model Job {
@@ -42,22 +45,25 @@ model Job {
   description String
   salary      String?
   // --- NUEVOS CAMPOS ---
-  category    String   @default("Otros") // Default para no romper ofertas viejas
+  category    String   @default("Otros") 
   modality    String   @default("Remoto")
   location    String?
   // ---------------------
   createdAt   DateTime @default(now())
   authorId    Int
-  author      User     @relation(fields: [authorId], references: [id])
+  
+  // Cascade: Si borras al usuario Author, borras el Job
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
   tags        Tag[]
-  applications Application[] // <--- AGREGAR ESTO
+  applications Application[]
 }
+
 model Tag {
   id          Int      @id @default(autoincrement())
   name        String   @unique
   type        String
   jobs        Job[]
-
 }
 
 model Application {
@@ -67,12 +73,26 @@ model Application {
 
   // Relación: Quién se postula
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relación: A qué oferta
   jobId     Int
-  job       Job      @relation(fields: [jobId], references: [id])
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
   // Candado: ¡Solo una postulación por usuario por oferta!
   @@unique([userId, jobId])
+}
+
+model CompanyProfile {
+  id          Int     @id @default(autoincrement())
+  logo        String? // URL del logo (subido a Cloudinary)
+  website     String? // https://techcorp.com
+  description String? // "Somos líderes en..."
+  
+  // Relación 1-a-1 con User
+  userId      Int     @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  legalName   String
+  cuit        String 
+  industry    String
 }

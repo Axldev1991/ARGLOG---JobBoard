@@ -32,12 +32,15 @@ export async function Navbar() {
           {user ? (
             // Opción A: Usuario Logueado
             <>
-              <Link href="/dashboard" className="flex items-center gap-2 font-medium bg-gray-100 p-2 rounded-full px-4 hover:bg-gray-200 transition-colors">
+              {/* Enrutamiento Inteligente: Admin/Dev -> Panel Admin, Resto -> Dashboard normal */}
+              <Link href={(user.role === 'admin' || user.role === 'dev') ? "/admin/dashboard" : "/dashboard"} className="flex items-center gap-2 font-medium bg-gray-100 p-2 rounded-full px-4 hover:bg-gray-200 transition-colors">
                 <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs">
                   {user.name?.[0]?.toUpperCase() || "U"}
                 </span>
                 <span className="text-sm font-semibold text-gray-900">{user.name}</span>
               </Link>
+
+
 
               <form action={logout}>
                 <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">

@@ -1,3 +1,5 @@
+"use server"
+
 // --------------------------------------------------------------------------
 // 🧠 SERVER ACTION: LOGIN DE USUARIO
 // --------------------------------------------------------------------------
@@ -44,5 +46,6 @@ export async function loginUser(formData: FormData) {
         role: usuarioEncontrado.role
     }));
 
-    redirect("/")
+    // redirect("/") <-- Lo quitamos para manejarlo en el cliente
+    return { success: true }
 }

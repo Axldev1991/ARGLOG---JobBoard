@@ -1,3 +1,5 @@
+"use server"
+
 // --------------------------------------------------------------------------
 // 🧠 SERVER ACTION: REGISTRO DE USUARIO
 // --------------------------------------------------------------------------
@@ -9,33 +11,44 @@
 
 import { prisma } from "@/lib/db"
 import { hash } from "bcryptjs"
-import { redirect } from "next/navigation"
 
 export async function registerUser(formData: FormData) {
-    // 1. Convertir FormData a Objeto simple
-    const name = formData.get("name") as string
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    const role = formData.get("role") as string
+    try {
+        // 1. Convertir FormData a Objeto simple
+        const name = formData.get("name") as string
+        const email = formData.get("email") as string
+        const password = formData.get("password") as string
+        const role = formData.get("role") as string
 
-    // 2. Validar que no falte nada (Basic)
-    if (!name || !email || !password || !role) {
-        console.log("Faltan datos")
-        return
-    }
-
-    // 3. Crear el usuario en la DB
-    // Await es clave: esperamos a la DB, y hasheamos la pass (10 rondas de seguridad)
-    await prisma.user.create({
-        data: {
-            name,
-            email,
-            password: await hash(password, 10),
-            role
+        // 2. Validar que no falte nada (Basic)
+        if (!name || !email || !password || !role) {
+            return { error: "Todos los campos son obligatorios" }
         }
-    })
 
-    console.log("Usuario creado!")
-    // 4. Redirigir al Login
-    redirect("/login")
+        // 2.1 Verificar si ya existe
+        const existingUser = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (existingUser) {
+            return { error: "Este email ya está registrado" }
+        }
+
+        // 3. Crear el usuario en la DB
+        await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: await hash(password, 10),
+                role
+            }
+        })
+
+        // 4. Retornar éxito en lugar de redirigir
+        return { success: true }
+
+    } catch (error) {
+        console.error("Error creating user:", error);
+        return { error: "Error al crear usuario" }
+    }
 }

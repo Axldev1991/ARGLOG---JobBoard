@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { isProfileComplete } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
+import { resend } from "@/lib/resend";
 
 export async function applyToJob(jobId: number) {
     const session = await getSession();
@@ -45,6 +46,11 @@ export async function applyToJob(jobId: number) {
             return { error: "Ya te has postulado a esta oferta anteriormente." };
         }
 
+        const job = await prisma.job.findUnique({
+            where: { id: jobId },
+            include: { author: true }
+        });
+
         // 4. CREAR POSTULACIÓN ✨
         await prisma.application.create({
             data: {
@@ -52,6 +58,16 @@ export async function applyToJob(jobId: number) {
                 jobId: jobId
             }
         });
+
+                // ENVIAR EMAIL 🚀
+        if (job) {
+             await resend.emails.send({
+                from: 'onboarding@resend.dev',
+                to: 'castellanoaxl@gmail.com', // <--- CAMBIA ESTO POR TU EMAIL
+                subject: `Nueva postulación: ${job.title}`,
+                html: `<p>El usuario ${user.name} se postuló a ${job.title}</p>`
+            });
+        }
 
         // Refrescar para que se vea el botón de "Ya te postulaste" (lo haremos luego)
         revalidatePath("/");

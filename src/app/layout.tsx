@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/shared/navbar";
 import { DevTools } from "@/components/shared/dev-tools";
+import { Toaster } from "sonner";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -20,13 +21,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body
         className={`${outfit.variable} font-sans antialiased bg-gray-50`}
       >
         <Navbar />
         {children}
         <DevTools />
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );
