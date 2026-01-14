@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { CandidateView } from "@/components/shared/dashboard/candidate/view";
-// import { CompanyView } from "@/components/shared/dashboard/company/view";
+import { CompanyView } from "@/components/shared/dashboard/company/view";
 
 
 export default async function DashboardPage() {
