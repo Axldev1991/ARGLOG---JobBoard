@@ -45,6 +45,9 @@ export default async function DashboardPage() {
         where: {
             authorId: user.id
         },
+        include: {
+            applications: true // Traemos las postulaciones para contarlas
+        },
         orderBy: {
             createdAt: 'desc'
         }

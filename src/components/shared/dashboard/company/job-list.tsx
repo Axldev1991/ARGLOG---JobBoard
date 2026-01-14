@@ -1,8 +1,190 @@
+"use client";
+
+import { Users, Calendar, Eye, Briefcase, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useJobFilter, SortKey } from "./use-job-filter";
+
 export function JobList({ jobs = [] }: { jobs: any[] }) {
+    const {
+        processedJobs,
+        searchTerm,
+        setSearchTerm,
+        sortKey,
+        sortDirection,
+        toggleSort
+    } = useJobFilter(jobs);
+
+    if (jobs.length === 0) {
+        return <EmptyState />;
+    }
+
     return (
-        <div className="space-y-4">
-            {/* Aquí iterarás sobre los jobs para mostrarlos */}
-            <h2 className="text-xl font-bold text-white">Mis Ofertas Publicadas</h2>
+        <div className="space-y-6">
+            {/* Header + Toolbar */}
+            <div>
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <Briefcase size={20} className="text-blue-400" />
+                        Mis Ofertas Publicadas
+                        <span className="text-sm font-normal text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full ml-2">
+                            {processedJobs.length}
+                        </span>
+                    </h2>
+
+                    <Link href="/jobs/new" className="hidden sm:block">
+                        <Button variant="secondary" size="sm" className="bg-blue-600 text-white hover:bg-blue-500 border-0">
+                            + Nueva Oferta
+                        </Button>
+                    </Link>
+                </div>
+
+                {/* Barra de Herramientas */}
+                <div className="flex flex-col md:flex-row gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800/50">
+                    <div className="relative flex-grow max-w-md">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                        <Input
+                            placeholder="Buscar por puesto o categoría..."
+                            className="pl-9 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <SortControls sortKey={sortKey} sortDirection={sortDirection} onToggle={toggleSort} />
+
+                    <Link href="/jobs/new" className="sm:hidden mt-2">
+                        <Button className="w-full bg-blue-600 hover:bg-blue-500">+ Nueva Oferta</Button>
+                    </Link>
+                </div>
+            </div>
+
+            {/* Tabla */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <table className="w-full text-left text-sm">
+                    <TableHeader sortKey={sortKey} onToggle={toggleSort} />
+                    <tbody className="divide-y divide-slate-100">
+                        {processedJobs.length === 0 ? (
+                            <tr>
+                                <td colSpan={4} className="p-8 text-center text-slate-500">
+                                    No se encontraron ofertas que coincidan con tu búsqueda.
+                                </td>
+                            </tr>
+                        ) : (
+                            processedJobs.map((job) => <JobRow key={job.id} job={job} />)
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
+    );
+}
+
+// --- Sub-Components (para mantener limpio el componente principal) ---
+
+function EmptyState() {
+    return (
+        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+            <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Briefcase className="text-slate-400" size={32} />
+            </div>
+            <h3 className="text-lg font-bold text-slate-800 mb-2">No has publicado ofertas</h3>
+            <p className="text-slate-500 mb-6">Comienza a buscar talento publicando tu primera oportunidad.</p>
+            <Link href="/jobs/new">
+                <Button className="bg-blue-600 hover:bg-blue-700">Publicar Oferta</Button>
+            </Link>
+        </div>
+    );
+}
+
+function SortControls({ sortKey, sortDirection, onToggle }: { sortKey: SortKey, sortDirection: string, onToggle: (k: SortKey) => void }) {
+    const filters: { label: string, key: SortKey }[] = [
+        { label: 'Fecha', key: 'date' },
+        { label: 'Nombre', key: 'title' },
+        { label: 'Postulantes', key: 'applicants' }
+    ];
+
+    return (
+        <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
+            {filters.map(({ label, key }) => (
+                <button
+                    key={key}
+                    onClick={() => onToggle(key)}
+                    className={`px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all whitespace-nowrap border ${sortKey === key ? 'bg-blue-600/10 border-blue-600 text-blue-400' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'}`}
+                >
+                    {label}
+                    {sortKey === key && (sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />)}
+                </button>
+            ))}
+        </div>
+    );
+}
+
+function TableHeader({ sortKey, onToggle }: { sortKey: SortKey, onToggle: (k: SortKey) => void }) {
+    return (
+        <thead className="bg-slate-50 border-b border-slate-100 text-slate-900 font-semibold uppercase text-xs">
+            <tr>
+                <th className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors select-none" onClick={() => onToggle('title')}>
+                    <div className="flex items-center gap-1">Puesto <ArrowUpDown size={12} className={sortKey === 'title' ? 'text-blue-500' : 'text-slate-300'} /></div>
+                </th>
+                <th className="px-6 py-4 text-center cursor-pointer hover:bg-slate-100 transition-colors select-none" onClick={() => onToggle('applicants')}>
+                    <div className="flex items-center justify-center gap-1">Postulantes <ArrowUpDown size={12} className={sortKey === 'applicants' ? 'text-blue-500' : 'text-slate-300'} /></div>
+                </th>
+                <th className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors select-none" onClick={() => onToggle('date')}>
+                    <div className="flex items-center gap-1">Fecha <ArrowUpDown size={12} className={sortKey === 'date' ? 'text-blue-500' : 'text-slate-300'} /></div>
+                </th>
+                <th className="px-6 py-4 text-right">Acciones</th>
+            </tr>
+        </thead>
+    );
+}
+
+function JobRow({ job }: { job: any }) {
+    const applicationCount = job.applications?.length || 0;
+
+    return (
+        <tr className="hover:bg-slate-50 transition-colors">
+            <td className="px-6 py-4">
+                <p className="font-bold text-slate-900">{job.title}</p>
+                <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                        {job.category}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                        {job.modality}
+                    </span>
+                </div>
+            </td>
+
+            <td className="px-6 py-4 text-center">
+                {applicationCount > 0 ? (
+                    <Link href={`/dashboard/jobs/${job.id}`} className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full font-bold text-xs border border-blue-100 hover:bg-blue-100 transition-colors group">
+                        <Users size={14} className="text-blue-500 group-hover:scale-110 transition-transform" />
+                        <span>{applicationCount} Candidatos</span>
+                    </Link>
+                ) : (
+                    <span className="text-slate-400 text-xs flex items-center justify-center gap-1">
+                        <Users size={14} /> 0
+                    </span>
+                )}
+            </td>
+
+            <td className="px-6 py-4 text-slate-500">
+                <div className="flex items-center gap-2">
+                    <Calendar size={14} />
+                    {new Date(job.createdAt).toLocaleDateString()}
+                </div>
+            </td>
+
+            <td className="px-6 py-4 text-right">
+                <div className="flex items-center justify-end gap-2">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50" title="Ver detalle">
+                        <Link href={`/jobs/${job.id}`}>
+                            <Eye size={16} />
+                        </Link>
+                    </Button>
+                </div>
+            </td>
+        </tr>
     );
 }
