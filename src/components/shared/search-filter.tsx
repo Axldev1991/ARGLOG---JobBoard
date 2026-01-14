@@ -4,58 +4,46 @@ import { Input } from "../ui/input"
 import { useRouter, useSearchParams } from "next/navigation"
 import { TagPill } from "./tag-pill";
 import { JOB_CATEGORIES, JOB_MODALITIES, QUICK_FILTER_TAGS } from "@/lib/constants";
+import { Search } from "lucide-react";
 
 export function SearchFilters() {
-    // --------------------------------------------------------------------------
-    // 🧠 PATRÓN: URL COMO ESTADO (URL as State)
-    // --------------------------------------------------------------------------
-    // En lugar de usar `useState` de React para los filtros, usamos la URL.
-    // 1. Shareability: El usuario puede copiar el link y compartirlo con los filtros aplicados.
-    // 2. Refresh: Si recargas la página, no pierdes tu búsqueda.
-    // 3. Server Component: La página (`page.tsx`) lee la URL directamente para hacer la query initial.
-    // --------------------------------------------------------------------------
-
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // Función que se ejecuta al darle "Buscar" o Enter
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); // 🛑 Evitamos el recargo completo de página
-
-        // 1. Leemos los datos del formulario
+        e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const q = formData.get("q") as string;
         const category = formData.get("category") as string;
         const modality = formData.get("modality") as string;
 
-        // 2. Construimos los parámetros URL de forma limpia
         const params = new URLSearchParams();
-
         if (q) params.set("q", q);
         if (category) params.set("category", category);
         if (modality) params.set("modality", modality);
 
-        // 3. Empujamos la nueva URL (sin recargar)
-        // scroll: false evita que la página salte hacia arriba al buscar
         router.push(`/?${params.toString()}`, { scroll: false });
     }
 
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-8">
+        <div className="w-full">
             <form onSubmit={handleSubmit} className="flex gap-4 flex-col md:flex-row">
-                <Input
-                    name="q"
-                    placeholder="Buscar por puesto o palabra clave..."
-                    className="flex-1"
-                    defaultValue={searchParams.get("q")?.toString()} // ✨ Mantiene lo que escribiste si refrescas
-                />
+                <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <Input
+                        name="q"
+                        placeholder="Buscar por puesto o palabra clave..."
+                        className="pl-10 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500 focus-visible:ring-blue-500 h-10"
+                        defaultValue={searchParams.get("q")?.toString()}
+                    />
+                </div>
 
                 <select
                     name="category"
                     defaultValue={searchParams.get("category")?.toString()}
-                    className="bg-white border border-slate-200 p-2 rounded-md text-sm text-slate-700 h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="bg-slate-800 border border-slate-600 text-white p-2 rounded-md text-sm h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400"
                 >
-                    <option value="">Todas las Categorías</option>
+                    <option value="" className="text-slate-400">Todas las Categorías</option>
                     {JOB_CATEGORIES.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                     ))}
@@ -64,26 +52,23 @@ export function SearchFilters() {
                 <select
                     name="modality"
                     defaultValue={searchParams.get("modality")?.toString()}
-                    className="bg-white border border-slate-200 p-2 rounded-md text-sm text-slate-700 h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="bg-slate-800 border border-slate-600 text-white p-2 rounded-md text-sm h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400"
                 >
-                    <option value="">Cualquier Modalidad</option>
+                    <option value="" className="text-slate-400">Cualquier Modalidad</option>
                     {JOB_MODALITIES.map(mod => (
                         <option key={mod} value={mod}>{mod}</option>
                     ))}
                 </select>
 
-                <Button type="submit">Buscar</Button>
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white px-8">Buscar</Button>
             </form>
 
             {/* Sugerencias de Tags Pro (Multi-Select) */}
             <div className="mt-4 flex flex-wrap gap-2 items-center">
                 <span className="text-xs text-slate-400 font-medium mr-2">Filtros rápidos:</span>
                 {QUICK_FILTER_TAGS.map((tag) => {
-                    // 1. Leemos los tags actuales de la URL (separados por coma)
                     const currentTagsParam = searchParams.get("tags");
                     const currentTags = currentTagsParam ? currentTagsParam.split(",") : [];
-
-                    // 2. Verificamos si ESTE tag está en la lista
                     const isActive = currentTags.includes(tag);
 
                     return (
@@ -96,20 +81,16 @@ export function SearchFilters() {
                                 let newTags = [...currentTags];
 
                                 if (isActive) {
-                                    // Si ya estaba, lo quitamos
                                     newTags = newTags.filter(t => t !== tag);
                                 } else {
-                                    // Si no estaba, lo agregamos
                                     newTags.push(tag);
                                 }
 
-                                // Actualizamos la URL
                                 if (newTags.length > 0) {
                                     params.set("tags", newTags.join(","));
                                 } else {
-                                    params.delete("tags"); // Si no queda ninguno, limpiamos el param
+                                    params.delete("tags");
                                 }
-
                                 router.push(`/?${params.toString()}`, { scroll: false });
                             }}
                         />
