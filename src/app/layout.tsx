@@ -4,6 +4,8 @@ import "./globals.css";
 import { Navbar } from "@/components/shared/navbar";
 import { DevTools } from "@/components/shared/dev-tools";
 import { Toaster } from "sonner";
+import { isMaintenanceMode } from "@/lib/system";
+import MaintenanceScreen from "@/components/shared/maintenance-screen";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -15,11 +17,23 @@ export const metadata: Metadata = {
   description: "Conectamos a las empresas líderes con los profesionales que mueven el mundo.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isMaintenance = await isMaintenanceMode();
+
+  if (isMaintenance) {
+    return (
+      <html lang="es" suppressHydrationWarning>
+        <body className={outfit.className}>
+          <MaintenanceScreen />
+        </body>
+      </html>
+    );
+  }
+
   return (
     <html lang="es" suppressHydrationWarning>
       <body
