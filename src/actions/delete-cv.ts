@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import cloudinary from "@/lib/cloudinary";
 import { revalidatePath } from "next/cache";
+import { Logger } from "@/lib/logger";
 
 export async function deleteCV(_formData?: FormData) {
     const session = await getSession();
