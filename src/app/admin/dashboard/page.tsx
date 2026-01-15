@@ -1,93 +1,159 @@
 import Link from "next/link";
-import { Building2, Users, FileText } from "lucide-react";
+import { Building2, Users, Tags } from "lucide-react";
 import { prisma } from "@/lib/db";
-import { formatDate } from "@/lib/utils";
-import { CompanyActions } from "@/components/admin/company-actions";
+import { CompaniesView } from "@/components/admin/views/companies-view";
+import { CandidatesView } from "@/components/admin/views/candidates-view";
+import { TagsView } from "@/components/admin/views/tags-view";
 
-export default async function AdminDashboard() {
-    // 1. Obtener empresas
-    const companies = await prisma.user.findMany({
-        where: { role: 'company' },
-        include: { companyProfile: true },
-        orderBy: { createdAt: 'desc' }
-    });
+interface AdminDashboardProps {
+    searchParams: Promise<{ view?: string, q?: string }>;
+}
+
+export default async function AdminDashboard(props: AdminDashboardProps) {
+
+    const searchParams = await props.searchParams;
+    const view = searchParams.view || 'companies';
+    const q = searchParams.q || "";
+
+    /**
+     * Dynamic Prisma 'where' clauses for filtering based on search query 'q'.
+     * We construct these separately to keep the main query clean.
+     */
+    const companyWhere: any = { role: 'company' };
+    if (q) {
+        companyWhere.OR = [
+            { name: { contains: q, mode: 'insensitive' } },
+            { email: { contains: q, mode: 'insensitive' } },
+            { companyProfile: { legalName: { contains: q, mode: 'insensitive' } } }
+        ];
+    }
+
+    const candidateWhere: any = { role: 'candidate' };
+    if (q) {
+        candidateWhere.OR = [
+            { name: { contains: q, mode: 'insensitive' } },
+            { email: { contains: q, mode: 'insensitive' } },
+            { headline: { contains: q, mode: 'insensitive' } },
+            { city: { contains: q, mode: 'insensitive' } }
+        ];
+    }
+
+    const tagWhere: any = {};
+    if (q) {
+        tagWhere.name = { contains: q, mode: 'insensitive' };
+    }
+
+    /**
+     * Parallel data fetching for all admin views.
+     * Note: In a larger app, we might want to fetch only the data for the active view,
+     * but for now, fetching all counts/tables is acceptable for this scale.
+     */
+    const [companies, candidates, tags] = await Promise.all([
+        prisma.user.findMany({
+            where: companyWhere,
+            include: { companyProfile: true },
+            orderBy: { createdAt: 'desc' }
+        }),
+        prisma.user.findMany({
+            where: candidateWhere,
+            orderBy: { createdAt: 'desc' },
+            include: { _count: { select: { applications: true } } }
+        }),
+        prisma.tag.findMany({
+            where: tagWhere,
+            orderBy: { name: 'asc' },
+            include: { _count: { select: { jobs: true } } }
+        })
+    ]);
+
 
     return (
-        <main className="p-10 bg-gray-50 min-h-screen">
+        <main className="p-10 bg-gray-50 min-h-screen font-sans">
             <h1 className="text-3xl font-bold mb-8 text-slate-900">Panel de Control</h1>
 
-            {/* GRILLA DE ACCIONES */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {/* TARJETA 1: Crear Empresa */}
+            {/* SELECCIÓN DE VISTA (Tablero) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {/* CARD 1: Gestionar Empresas */}
                 <Link
-                    href="/admin/companies/new"
-                    className="group bg-white p-6 rounded-xl border hover:shadow-lg transition-all"
+                    href="/admin/dashboard?view=companies"
+                    className={`group p-6 rounded-xl border transition-all ${view === 'companies'
+                        ? 'bg-blue-50 border-blue-200 shadow-md ring-1 ring-blue-200'
+                        : 'bg-white hover:shadow-lg hover:border-blue-200'
+                        }`}
                 >
-                    <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                        <Building2 size={24} />
+                    <div className="flex items-center justify-between mb-2">
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'companies' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'
+                            }`}>
+                            <Building2 size={24} />
+                        </div>
+                        {view === 'companies' && <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">Activo</span>}
                     </div>
-                    <h3 className="text-lg font-bold text-slate-800">Nueva Empresa</h3>
-                    <p className="text-slate-500 text-sm mt-1">Dar de alta y enviar accesos.</p>
+
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <h3 className={`text-lg font-bold ${view === 'companies' ? 'text-blue-900' : 'text-slate-800'}`}>Empresas</h3>
+                            <p className="text-slate-500 text-sm mt-1">Control B2B y accesos.</p>
+                        </div>
+                        <span className="text-2xl font-bold text-slate-700">{companies.length}</span>
+                    </div>
                 </Link>
 
-                {/* TARJETA 2: Placeholder Candidatos */}
-                <div className="bg-white p-6 rounded-xl border opacity-50 cursor-not-allowed">
-                    <div className="bg-gray-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-gray-500">
-                        <Users size={24} />
+                {/* CARD 2: Gestionar Candidatos */}
+                <Link
+                    href="/admin/dashboard?view=candidates"
+                    className={`group p-6 rounded-xl border transition-all ${view === 'candidates'
+                        ? 'bg-purple-50 border-purple-200 shadow-md ring-1 ring-purple-200'
+                        : 'bg-white hover:shadow-lg hover:border-purple-200'
+                        }`}
+                >
+                    <div className="flex items-center justify-between mb-2">
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'candidates' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-purple-100'
+                            }`}>
+                            <Users size={24} />
+                        </div>
+                        {view === 'candidates' && <span className="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full">Activo</span>}
                     </div>
-                    <h3 className="text-lg font-bold text-slate-800">Candidatos</h3>
-                    <p className="text-slate-500 text-sm mt-1">Gestión de usuarios (Pronto).</p>
-                </div>
+
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <h3 className={`text-lg font-bold ${view === 'candidates' ? 'text-purple-900' : 'text-slate-800'}`}>Candidatos</h3>
+                            <p className="text-slate-500 text-sm mt-1">Talento registrado.</p>
+                        </div>
+                        <span className="text-2xl font-bold text-slate-700">{candidates.length}</span>
+                    </div>
+                </Link>
+
+                {/* CARD 3: Gestionar Tags */}
+                <Link
+                    href="/admin/dashboard?view=tags"
+                    className={`group p-6 rounded-xl border transition-all ${view === 'tags'
+                        ? 'bg-green-50 border-green-200 shadow-md ring-1 ring-green-200'
+                        : 'bg-white hover:shadow-lg hover:border-green-200'
+                        }`}
+                >
+                    <div className="flex items-center justify-between mb-2">
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'tags' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-600 group-hover:bg-green-600 group-hover:text-white'
+                            }`}>
+                            <Tags size={24} />
+                        </div>
+                        {view === 'tags' && <span className="bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">Activo</span>}
+                    </div>
+
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <h3 className={`text-lg font-bold ${view === 'tags' ? 'text-green-900' : 'text-slate-800'}`}>Habilidades</h3>
+                            <p className="text-slate-500 text-sm mt-1">Diccionario de tags.</p>
+                        </div>
+                        <span className="text-2xl font-bold text-slate-700">{tags.length}</span>
+                    </div>
+                </Link>
             </div>
 
-            {/* TABLA DE EMPRESAS */}
-            <h2 className="text-xl font-bold text-slate-800 mb-4">Empresas Registradas ({companies.length})</h2>
+            {/* RENDERIZADO DE VISTAS */}
+            {view === 'companies' && <CompaniesView companies={companies} />}
+            {view === 'candidates' && <CandidatesView candidates={candidates} />}
+            {view === 'tags' && <TagsView tags={tags} />}
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 border-b">
-                        <tr>
-                            <th className="p-4 font-semibold text-slate-600">Nombre Comercial</th>
-                            <th className="p-4 font-semibold text-slate-600">Razón Social</th>
-                            <th className="p-4 font-semibold text-slate-600">CUIT</th>
-                            <th className="p-4 font-semibold text-slate-600">Email Responsable</th>
-                            <th className="p-4 font-semibold text-slate-600">Fecha Alta</th>
-                            <th className="p-4 font-semibold text-slate-600 text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                        {companies.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className="p-8 text-center text-slate-400">
-                                    No hay empresas registradas aún.
-                                </td>
-                            </tr>
-                        ) : (
-                            companies.map((company) => (
-                                <tr key={company.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="p-4 font-medium text-slate-900">{company.name}</td>
-                                    <td className="p-4 text-slate-600">
-                                        {company.companyProfile?.legalName || "-"}
-                                    </td>
-                                    <td className="p-4 font-mono text-slate-500 text-xs">
-                                        {company.companyProfile?.cuit || "-"}
-                                    </td>
-                                    <td className="p-4 text-blue-600">
-                                        {company.email}
-                                    </td>
-                                    <td className="p-4 text-slate-400">
-                                        {new Date(company.createdAt).toLocaleDateString()}
-                                    </td>
-                                    <td className="p-4 text-right">
-                                        <CompanyActions companyId={company.id} companyName={company.name} />
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-        </main>
+        </main >
     );
 }
