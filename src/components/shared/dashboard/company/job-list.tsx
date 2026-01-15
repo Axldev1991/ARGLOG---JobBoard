@@ -130,17 +130,17 @@ function TableHeader({ sortKey, onToggle }: { sortKey: SortKey, onToggle: (k: So
     return (
         <thead className="bg-slate-50 border-b border-slate-100 text-slate-900 font-semibold uppercase text-xs">
             <tr>
-                <th className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors select-none" onClick={() => onToggle('title')}>
+                <th className="px-6 py-4 w-[40%] cursor-pointer hover:bg-slate-100 transition-colors select-none" onClick={() => onToggle('title')}>
                     <div className="flex items-center gap-1">Puesto <ArrowUpDown size={12} className={sortKey === 'title' ? 'text-blue-500' : 'text-slate-300'} /></div>
                 </th>
-                <th className="px-6 py-4 text-center cursor-pointer hover:bg-slate-100 transition-colors select-none" onClick={() => onToggle('applicants')}>
+                <th className="px-6 py-4 w-[15%] text-center cursor-pointer hover:bg-slate-100 transition-colors select-none whitespace-nowrap" onClick={() => onToggle('applicants')}>
                     <div className="flex items-center justify-center gap-1">Postulantes <ArrowUpDown size={12} className={sortKey === 'applicants' ? 'text-blue-500' : 'text-slate-300'} /></div>
                 </th>
-                <th className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors select-none" onClick={() => onToggle('date')}>
+                <th className="px-6 py-4 w-[15%] cursor-pointer hover:bg-slate-100 transition-colors select-none whitespace-nowrap" onClick={() => onToggle('date')}>
                     <div className="flex items-center gap-1">Fecha <ArrowUpDown size={12} className={sortKey === 'date' ? 'text-blue-500' : 'text-slate-300'} /></div>
                 </th>
-                <th className="px-6 py-4 text-center">Estado</th>
-                <th className="px-6 py-4 text-right">Acciones</th>
+                <th className="px-6 py-4 w-[15%] text-center whitespace-nowrap">Estado</th>
+                <th className="px-6 py-4 w-[15%] text-right whitespace-nowrap">Acciones</th>
             </tr>
         </thead>
     );
