@@ -32,7 +32,7 @@ export function Hero({ user }: HeroProps) {
         </p>
 
         {/* Las 3 Estadísticas */}
-        <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mt-12 border-t border-slate-800 pt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto mt-12 border-t border-slate-800 pt-8">
           <div>
             <div className="text-3xl font-bold">128</div>
             <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">Oportunidades</div>

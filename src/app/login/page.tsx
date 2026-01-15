@@ -37,8 +37,8 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="flex min-h-screen items-center justify-center bg-gray-50">
-            <div className="border border-slate-200 p-8 rounded-xl shadow-lg w-[400px] bg-white text-slate-900">
+        <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+            <div className="border border-slate-200 p-8 rounded-xl shadow-lg w-full max-w-[400px] bg-white text-slate-900">
                 <form action={handleSubmit} className="flex flex-col gap-5">
                     <div className="text-center mb-2">
                         <h1 className="font-bold text-3xl text-slate-900">Iniciar Sesión</h1>

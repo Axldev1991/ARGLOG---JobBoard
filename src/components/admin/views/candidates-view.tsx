@@ -25,7 +25,7 @@ export function CandidatesView({ candidates }: Props) {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border shadow-sm overflow-hidden overflow-x-auto">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-slate-50 border-b">
                         <tr>

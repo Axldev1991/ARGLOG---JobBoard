@@ -18,17 +18,12 @@ export async function deleteCV(_formData?: FormData) {
 
         // 2. Si hay ID, borramos en Cloudinary
         if (user?.resumePublicId) {
-            console.log("🗑️ Intentando borrar ID Cloudinary:", user.resumePublicId);
-
             // Intentamos RAW primero (PDFs subidos como raw)
-            // invalidate: true fuerza a limpiar el caché del CDN
             const resRaw = await cloudinary.uploader.destroy(user.resumePublicId, { resource_type: 'raw', invalidate: true });
-            console.log("👉 Resultado Cloudinary (RAW):", resRaw);
 
             // Si falló (not found), probamos como imagen por si acaso
             if (resRaw.result !== 'ok') {
-                const resImg = await cloudinary.uploader.destroy(user.resumePublicId, { resource_type: 'image', invalidate: true });
-                console.log("👉 Resultado Cloudinary (IMG):", resImg);
+                await cloudinary.uploader.destroy(user.resumePublicId, { resource_type: 'image', invalidate: true });
             }
         }
 
@@ -43,9 +38,8 @@ export async function deleteCV(_formData?: FormData) {
 
         revalidatePath("/dashboard");
         return { success: true };
-    } catch (error: any) { // Type any para obtener el mensaje
-        console.error("🔥 Error Catch General:", error);
-        // RETORNAMOS EL ERROR REAL A LA UI
-        return { error: error.message || "Error desconocido al subir" };
+    } catch (error) {
+        await Logger.error("Error deleting CV", "SERVER_ACTION", error, { userId: session.id });
+        return { error: "Error desconocido al eliminar el archivo" };
     }
 }

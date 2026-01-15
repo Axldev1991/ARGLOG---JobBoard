@@ -14,7 +14,8 @@ export default async function DashboardPage() {
 
     // Obtenemos el usuario FRESCO de la base de datos
     const user = await prisma.user.findUnique({
-        where: { id: session.id }
+        where: { id: session.id },
+        include: { companyProfile: true }
     });
 
     if (!user) {
@@ -59,6 +60,6 @@ export default async function DashboardPage() {
     })
 
     return (
-        <CompanyView jobs={myJobs} />
+        <CompanyView jobs={myJobs} profile={user.companyProfile} />
     );
 }

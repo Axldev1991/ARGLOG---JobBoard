@@ -32,7 +32,7 @@ export function CompaniesView({ companies }: Props) {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden mb-12">
+            <div className="bg-white rounded-xl border shadow-sm overflow-hidden overflow-x-auto mb-12">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-slate-50 border-b">
                         <tr>

@@ -57,7 +57,6 @@ export async function applyToJob(jobId: number) {
         }
 
         // 🛡️ VALIDACIÓN EXTRA: ¿Está publicada?
-        // 🛡️ VALIDACIÓN EXTRA: ¿Está publicada?
         if (job.status !== 'PUBLISHED') {
             return { error: "Esta oferta ya no está recibiendo postulaciones." };
         }
@@ -76,10 +75,10 @@ export async function applyToJob(jobId: number) {
         });
 
         // ENVIAR EMAIL 🚀
-        if (job) {
+        if (job && job.author.email) {
             await resend.emails.send({
                 from: 'onboarding@resend.dev',
-                to: 'castellanoaxl@gmail.com', // <--- CAMBIA ESTO POR TU EMAIL
+                to: job.author.email,
                 subject: `Nueva postulación: ${job.title}`,
                 html: `<p>El usuario ${user.name} se postuló a ${job.title}</p>`
             });

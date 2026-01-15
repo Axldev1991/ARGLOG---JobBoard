@@ -44,7 +44,6 @@ export async function uploadCV(formData: FormData) {
     // Envolvemos en Promise porque la SDK de Cloudinary usa Callbacks antiguos para streams.
     // --------------------------------------------------------------------------
     try {
-        console.log("📤 Iniciando subida a Cloudinary...");
         // 4. Subir a Cloudinary (Promesa)
         const uploadResult = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
@@ -68,8 +67,6 @@ export async function uploadCV(formData: FormData) {
             uploadStream.end(buffer);
         });
 
-        console.log("✅ Archivo subido:", uploadResult.secure_url);
-
         // 5. Guardar URL + Public ID en DB
         const finalUser = await prisma.user.update({
             where: { id: user.id },
@@ -78,7 +75,6 @@ export async function uploadCV(formData: FormData) {
                 resumePublicId: uploadResult.public_id // <--- NUEVO CAMPO
             }
         });
-        console.log("💾 Guardado en DB. Usuario:", finalUser.email, "URL:", finalUser.resumeUrl);
 
         revalidatePath("/dashboard");
         return { success: true, url: uploadResult.secure_url };

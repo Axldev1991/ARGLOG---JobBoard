@@ -62,9 +62,9 @@ export function JobList({ jobs = [] }: { jobs: any[] }) {
                 </div>
             </div>
 
-            {/* Tabla */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <table className="w-full text-left text-sm">
+            {/* Tabla Responsive */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden overflow-x-auto">
+                <table className="w-full text-left text-sm min-w-[600px] md:min-w-0">
                     <TableHeader sortKey={sortKey} onToggle={toggleSort} />
                     <tbody className="divide-y divide-slate-100">
                         {processedJobs.length === 0 ? (
@@ -165,14 +165,19 @@ function JobRow({ job }: { job: any }) {
 
             <td className="px-6 py-4 text-center">
                 {applicationCount > 0 ? (
-                    <Link href={`/dashboard/jobs/${job.id}`} className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full font-bold text-xs border border-blue-100 hover:bg-blue-100 transition-colors group">
-                        <Users size={14} className="text-blue-500 group-hover:scale-110 transition-transform" />
-                        <span>{applicationCount} Candidatos</span>
+                    <Link href={`/dashboard/jobs/${job.id}`} className="group inline-flex flex-col items-center">
+                        <span className="text-xl font-bold text-blue-600 group-hover:text-blue-700 transition-colors">
+                            {applicationCount}
+                        </span>
+                        <span className="text-xs font-medium text-slate-500 group-hover:text-slate-700">
+                            Candidatos
+                        </span>
                     </Link>
                 ) : (
-                    <span className="text-slate-400 text-xs flex items-center justify-center gap-1">
-                        <Users size={14} /> 0
-                    </span>
+                    <div className="flex flex-col items-center opacity-50">
+                        <span className="text-xl font-bold text-slate-300">0</span>
+                        <span className="text-xs text-slate-400">Sin postulantes</span>
+                    </div>
                 )}
             </td>
 
