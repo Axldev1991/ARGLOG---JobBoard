@@ -79,6 +79,7 @@ export async function updateJob(formData: FormData) {
                 category,
                 modality,
                 location,
+                expiresAt: formData.get("expiresAt") ? new Date(formData.get("expiresAt") as string) : null,
                 ...tagUpdateData
             }
         });

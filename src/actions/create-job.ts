@@ -39,6 +39,7 @@ export async function createJob(formData: FormData) {
                 category,
                 modality,
                 location,
+                expiresAt: formData.get("expiresAt") ? new Date(formData.get("expiresAt") as string) : null,
                 authorId: user.id,
                 tags: {
                     connect: tagIds.map((id: number) => ({ id: id }))

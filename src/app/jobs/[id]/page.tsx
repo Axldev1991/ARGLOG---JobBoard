@@ -40,6 +40,10 @@ export default async function JobDetailPage({ params }: Props) {
 
   const hasApplied = job.applications.length > 0;
 
+  // Lógica de expiración visual
+  const isExpired = job.expiresAt && new Date(job.expiresAt) < new Date();
+  const isAvailable = job.status === 'PUBLISHED' && !isExpired;
+
   return (
     <main className="min-h-screen bg-[#0f172a] pb-20">
       {/* 1. Header Navigation */}
@@ -53,6 +57,12 @@ export default async function JobDetailPage({ params }: Props) {
         <div className="bg-[#1e293b] rounded-2xl border border-slate-700/50 p-8 shadow-2xl">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
+              {!isAvailable && (
+                <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-semibold">
+                  <Clock size={14} />
+                  Esta oferta ha finalizado o expirado
+                </div>
+              )}
               <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight">
                 {job.title}
               </h1>
@@ -110,10 +120,18 @@ export default async function JobDetailPage({ params }: Props) {
             </div>
 
             <div className="mb-8">
-              <ApplyButton jobId={job.id} hasApplied={hasApplied} />
-              <p className="text-xs text-slate-500 text-center mt-3">
-                Al postularte, aceptas compartir tu perfil profesional con la empresa.
-              </p>
+              {isAvailable ? (
+                <>
+                  <ApplyButton jobId={job.id} hasApplied={hasApplied} />
+                  <p className="text-xs text-slate-500 text-center mt-3">
+                    Al postularte, aceptas compartir tu perfil profesional con la empresa.
+                  </p>
+                </>
+              ) : (
+                <Button disabled className="w-full bg-slate-700 text-slate-400 cursor-not-allowed">
+                  Postulaciones Cerradas
+                </Button>
+              )}
             </div>
 
             <div className="border-t border-slate-700 pt-6 space-y-4">

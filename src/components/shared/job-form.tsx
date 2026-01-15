@@ -16,6 +16,7 @@ interface JobFormProps {
         category: string; // Valores por defecto: 'Otros'
         modality: string; // 'Remoto', etc
         location?: string | null;
+        expiresAt?: Date | null;
         tags?: { id: number; name: string; type: string }[];
     };
     availableTags: { id: number; name: string; type: string }[];
@@ -91,6 +92,18 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
                             defaultValue={initialData?.salary || ""}
                             placeholder="Ej: $1,500 - $2,500 USD"
                             className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                            📅 Cierre (Opcional)
+                        </label>
+                        <Input
+                            type="date"
+                            name="expiresAt"
+                            defaultValue={initialData?.expiresAt ? new Date(initialData.expiresAt).toISOString().split('T')[0] : ""}
+                            className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600 appearance-none w-full"
                         />
                     </div>
                 </div>

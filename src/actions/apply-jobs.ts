@@ -57,8 +57,14 @@ export async function applyToJob(jobId: number) {
         }
 
         // 🛡️ VALIDACIÓN EXTRA: ¿Está publicada?
+        // 🛡️ VALIDACIÓN EXTRA: ¿Está publicada?
         if (job.status !== 'PUBLISHED') {
             return { error: "Esta oferta ya no está recibiendo postulaciones." };
+        }
+
+        // 🛡️ VALIDACIÓN EXTRA: ¿Expiró?
+        if (job.expiresAt && new Date(job.expiresAt) < new Date()) {
+            return { error: "Esta oferta ha expirado y ya no recibe postulaciones." };
         }
 
         // 4. CREAR POSTULACIÓN ✨

@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, Calendar, Eye, Briefcase, ArrowUpDown, ArrowUp, ArrowDown, Search, Pencil } from "lucide-react";
+import { Users, Calendar, Eye, Briefcase, ArrowUpDown, ArrowUp, ArrowDown, Search, Pencil, Clock } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -177,9 +177,17 @@ function JobRow({ job }: { job: any }) {
             </td>
 
             <td className="px-6 py-4 text-slate-500">
-                <div className="flex items-center gap-2">
-                    <Calendar size={14} />
-                    {new Date(job.createdAt).toLocaleDateString()}
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2" title="Fecha de Publicación">
+                        <Calendar size={14} />
+                        {new Date(job.createdAt).toLocaleDateString()}
+                    </div>
+                    {job.expiresAt && (
+                        <div className="flex items-center gap-2 text-xs text-amber-600 font-medium" title="Fecha de Vencimiento">
+                            <Clock size={12} />
+                            Vence: {new Date(job.expiresAt).toLocaleDateString()}
+                        </div>
+                    )}
                 </div>
             </td>
 
