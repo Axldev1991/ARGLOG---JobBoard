@@ -1,14 +1,20 @@
 import Link from "next/link";
-import { Building2, Users, Tags } from "lucide-react";
+import { Building2, Users, Tags, Briefcase } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { CompaniesView } from "@/components/admin/views/companies-view";
 import { CandidatesView } from "@/components/admin/views/candidates-view";
 import { TagsView } from "@/components/admin/views/tags-view";
+import { JobsView } from "@/components/admin/views/jobs-view";
 
 interface AdminDashboardProps {
     searchParams: Promise<{ view?: string, q?: string }>;
 }
 
+/**
+ * Main Admin Dashboard Controller.
+ * Orchestrates data fetching and view selection based on URL parameters.
+ * Implements parallel data fetching for performance.
+ */
 export default async function AdminDashboard(props: AdminDashboardProps) {
 
     const searchParams = await props.searchParams;
@@ -43,12 +49,26 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
         tagWhere.name = { contains: q, mode: 'insensitive' };
     }
 
+    const jobWhere: any = {};
+    if (q) {
+        jobWhere.OR = [
+            { title: { contains: q, mode: 'insensitive' } },
+            { description: { contains: q, mode: 'insensitive' } },
+            {
+                author: {
+                    OR: [
+                        { name: { contains: q, mode: 'insensitive' } },
+                        { companyProfile: { legalName: { contains: q, mode: 'insensitive' } } }
+                    ]
+                }
+            }
+        ];
+    }
+
     /**
      * Parallel data fetching for all admin views.
-     * Note: In a larger app, we might want to fetch only the data for the active view,
-     * but for now, fetching all counts/tables is acceptable for this scale.
      */
-    const [companies, candidates, tags] = await Promise.all([
+    const [companies, candidates, tags, jobs] = await Promise.all([
         prisma.user.findMany({
             where: companyWhere,
             include: { companyProfile: true },
@@ -63,6 +83,11 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
             where: tagWhere,
             orderBy: { name: 'asc' },
             include: { _count: { select: { jobs: true } } }
+        }),
+        prisma.job.findMany({
+            where: jobWhere,
+            orderBy: { createdAt: 'desc' },
+            include: { author: { include: { companyProfile: true } } }
         })
     ]);
 
@@ -72,7 +97,7 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
             <h1 className="text-3xl font-bold mb-8 text-slate-900">Panel de Control</h1>
 
             {/* SELECCIÓN DE VISTA (Tablero) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 {/* CARD 1: Gestionar Empresas */}
                 <Link
                     href="/admin/dashboard?view=companies"
@@ -147,12 +172,38 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
                         <span className="text-2xl font-bold text-slate-700">{tags.length}</span>
                     </div>
                 </Link>
+
+                {/* CARD 4: Gestionar Ofertas (Moderación) */}
+                <Link
+                    href="/admin/dashboard?view=jobs"
+                    className={`group p-6 rounded-xl border transition-all ${view === 'jobs'
+                        ? 'bg-orange-50 border-orange-200 shadow-md ring-1 ring-orange-200'
+                        : 'bg-white hover:shadow-lg hover:border-orange-200'
+                        }`}
+                >
+                    <div className="flex items-center justify-between mb-2">
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'jobs' ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-600 group-hover:bg-orange-600 group-hover:text-white'
+                            }`}>
+                            <Briefcase size={24} />
+                        </div>
+                        {view === 'jobs' && <span className="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full">Activo</span>}
+                    </div>
+
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <h3 className={`text-lg font-bold ${view === 'jobs' ? 'text-orange-900' : 'text-slate-800'}`}>Ofertas</h3>
+                            <p className="text-slate-500 text-sm mt-1">Moderación de contenido.</p>
+                        </div>
+                        <span className="text-2xl font-bold text-slate-700">{jobs.length}</span>
+                    </div>
+                </Link>
             </div>
 
             {/* RENDERIZADO DE VISTAS */}
             {view === 'companies' && <CompaniesView companies={companies} />}
             {view === 'candidates' && <CandidatesView candidates={candidates} />}
             {view === 'tags' && <TagsView tags={tags} />}
+            {view === 'jobs' && <JobsView jobs={jobs} />}
 
         </main >
     );

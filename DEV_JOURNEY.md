@@ -158,3 +158,47 @@ src/
 * **Función:** Centraliza la lógica de autorización.
     *   `requireAdminAction()`: Se inyecta al inicio de todas las Server Actions sensibles (`create`, `update`, `delete`). Si la petición no viene de un admin autenticado, lanza una excepción y aborta. Esto previene ataques vía API/Curl.
     *   `protectAdminRoute()`: Se usa en `src/app/admin/layout.tsx`. Protege toda la carpeta `/admin`. Si un usuario normal intenta entrar por URL, es redirigido a su dashboard correspondiente.
+
+## 📅 Fase 5.5: Expansión del Admin Dashboard (Gestión de Personas y Contenido)
+*Objetivo: Escalar el panel de control administración para manejar no solo empresas, sino todo el ecosistema.*
+
+### 18. Tab-Based Navigation
+*   **Refactorización UI/UX:** Se transformó el dashboard monolítico en una arquitectura de vistas (`src/components/admin/views/`).
+*   **Separación:** Ahora existen secciones claras para "Empresas", "Candidatos" y "Habilidades" (Tags), accesibles vía URL params (`?view=...`), permitiendo compartir links directos a una sección específica manteniendo el estado.
+
+### 19. Sistema de Clasificación y Tags ("Tag Garden") 🏷️
+*   **Problemática:** La proliferación de etiquetas duplicadas (React, react.js, REACT) ensucia la base de datos.
+*   **Solución:** Se implementó un ABM (Alta-Baja-Modificación) de Tags.
+    *   **Creación Inline:** Un formulario minimalista en la cabecera del dashboard para estandarizar tecnologías al vuelo.
+    *   **Contadores de Uso:** Visualización de cuántas ofertas utilizan cada tag antes de decidir borrarlo.
+
+### 20. Gestión de Candidatos
+*   **Control Total:** Los administradores ahora pueden ver la lista completa de talento registrado.
+*   **Acciones:** Acceso directo a los CVs (PDF) subidos a Cloudinary y capacidad de eliminar usuarios conflictivos con borrado en cascada (User -> Applications -> Files).
+
+### 21. Búsqueda Universal con Debounce
+*   **Componente:** `src/components/admin/admin-search.tsx`
+*   **Optimización:** Implementación de un buscador que filtra en tiempo real sobre las 3 vistas (Empresas, Candidatos, Tags).
+*   **Performance:** Uso de técnica de **Debounce (300ms)** manual (sin librerías externas) para evitar saturar la base de datos con peticiones parciales mientras el usuario escribe.
+
+### 22. Refactorización para DRY (Don't Repeat Yourself)
+*   **Limpieza de Código:** Se detectó repetición en la lógica de botones de borrado.
+*   **Solución:** Creación del componente genérico `DeleteButton.tsx`. Ahora, la lógica de "Double Tap Confirmation", feedback visual de carga y notificaciones Toast está centralizada. Si cambiamos la UX de borrado, cambia en toda la app automáticamente.
+
+## 📅 Fase 6: Moderación de Contenido y Blindaje ("The Shield & The Gavel") 🛡️⚖️
+*Objetivo: Control de calidad del contenido y protección contra errores humanos o malintencionados.*
+
+### 23. Sistema de Moderación de Ofertas (The Gavel)
+*   **Nueva Entidad:** Se agregó el campo `status` ("PUBLISHED" | "REJECTED") al modelo `Job`.
+*   **Switch de Visibilidad:** En el Dashboard Admin, ahora se puede ocultar una oferta instantáneamente sin borrarla (Soft Ban).
+*   **Filtrado Público:** La Home Page (`/`) ignora automáticamente cualquier oferta con status `REJECTED`, protegiendo la reputación del sitio.
+
+### 24. Protocolo de "Usuarios Intocables" (The Shield)
+*   **Riesgo:** Un admin comprometido o un error de dedo podría borrar al CEO o al Developer principal.
+*   **Solución:** Implementación de `src/lib/protected-users.ts`.
+*   **Lógica:** Una lista blanca (whitelist) de emails críticos. Las Server Actions `deleteUser` verifican esta lista antes de ejecutar. Si intentas borrar a un intocable, el sistema lanza un error "Acción Denegada".
+
+### 25. Generación Masiva de Datos (Seeding V2)
+*   **Herramienta:** `prisma/seed.ts` reescrito para generar volumen realista.
+*   **Capacidad:** Crea automáticamete 10 empresas, 50 candidatos y 50 ofertas con tags y categorías variadas.
+*   **Botón de Pánico:** Script `prisma/create-dev-user.ts` para restaurar acceso de Super Admin/Dev en segundos si la base de datos se corrompe o reinicia.

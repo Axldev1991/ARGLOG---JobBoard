@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { requireAdminAction } from "@/lib/auth-guard"
+import { isProtectedUser } from "@/lib/protected-users"
 
 /**
  * Server Action para eliminar permanentemente una empresa.
@@ -11,6 +12,14 @@ import { requireAdminAction } from "@/lib/auth-guard"
 export async function deleteCompany(companyId: number) {
     // 🛡️ SEGURIDAD
     await requireAdminAction();
+
+    const company = await prisma.user.findUnique({
+        where: { id: companyId }
+    });
+
+    if (company && isProtectedUser(company.email)) {
+        return { error: "Acción Denegada: Esta cuenta está protegida." };
+    }
 
     try {
         await prisma.user.delete({

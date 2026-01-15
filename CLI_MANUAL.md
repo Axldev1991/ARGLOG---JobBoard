@@ -70,6 +70,27 @@ A continuación, los comandos que se implementarán.
 | `seed` | Poblar BD con datos falsos. | `--count <n>` |
 | `health` | Verificar conexión BD y servicios. | - |
 
+### 🏷️ Gestión de Tags (`tags`)
+| Comando | Descripción | Argumentos |
+| :--- | :--- | :--- |
+| `list` | Listar tags y uso. | `--sort usage` |
+| `add` | Crear tag estandarizado. | `<name> <type>` |
+| `prune` | Borrar tags sin uso (0 jobs). | `--dry-run` |
+
+| `add` | Crear tag estandarizado. | `<name> <type>` |
+| `prune` | Borrar tags sin uso (0 jobs). | `--dry-run` |
+
+### 🚨 Scripts de Emergencia (Sin CLI)
+Estos scripts se ejecutan directamente con `ts-node` antes de que el CLI esté construido:
+
+*   **Restaurar Super Admin:**
+    `npx ts-node prisma/create-dev-user.ts`
+    *(Crea o actualiza al usuario dev/admin si perdiste el acceso)*
+
+*   **Poblar Base de Datos (Reset):**
+    `npx prisma db seed`
+    *(BORRA TODO y crea 50+ registros de prueba)*
+
 ---
 
 ## 🚀 4. Guía de Implementación (Paso a Paso)

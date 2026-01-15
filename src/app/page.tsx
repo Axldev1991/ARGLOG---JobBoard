@@ -32,6 +32,7 @@ export default async function Home(props: {
   // 2. CARRUSEL: Siempre obtener "Featured"
   const featuredJobs = await prisma.job.findMany({
     take: 6,
+    where: { status: "PUBLISHED" },
     orderBy: { createdAt: "desc" },
     include: { tags: true, author: true }
   });
@@ -40,6 +41,7 @@ export default async function Home(props: {
   // 3. LISTA PRINCIPAL
   const whereClause: any = {
     AND: [
+      { status: "PUBLISHED" },
       query ? {
         OR: [
           { title: { contains: query, mode: "insensitive" } },

@@ -42,10 +42,17 @@ This document serves as the **SINGLE SOURCE OF TRUTH** for any AI agent or devel
 2.  **Job Board:** Public visibility, applying logic, tag filtering.
 3.  **Candidate Profile:** CV upload (Cloudinary), profile editing.
 4.  **Admin B2B (The "Iron Dome"):**
-    - Dashboard at `/admin/dashboard`.
+    - Dashboard at `/admin/dashboard` (Tab-based: Companies, Candidates, Tags).
     - Secure CRUD for Companies (Create, Edit, Delete).
+    - **Candidate Management:** View list, access CVs, delete users.
+    - **Tag Management:** Create/Delete standardized skills ("Tag Garden").
+    - **Universal Search:** Debounced search across all entities.
+    - **Job Moderation:** Publish/Reject content with instant public update.
     - Automated Credentials Emailing (Resend).
 5.  **DevTools:** Floating widget for role impersonation (`src/components/shared/dev-tools-content.tsx`).
+6.  **Security Core:**
+    - **Protected Users:** Hardcoded whitelist in `src/lib/protected-users.ts` prevents accidental deletion of Admins/Devs.
+    - **Safe Seeding:** Scripts generation for volume testing.
 
 ### 🚧 Roadmap & Future Tasks (Granular)
 *Pick a task from this list to continue development:*
@@ -68,6 +75,11 @@ This document serves as the **SINGLE SOURCE OF TRUTH** for any AI agent or devel
 - [ ] **Rich Text Editor:** Replace `<textarea>` in Job Form with Tiptap/Quill for bold/bullet points.
 - [ ] **Advanced Filters:** Add "Distance from ZipCode" or "Salary Range" slider to Search.
 
+#### Phase 10: Advanced Moderation Automation (Shield) 🛡️
+- [ ] **Community Policing:** Add "Report Job" button (5 reports = auto-hide).
+- [ ] **Identity Verification:** Integrate Stripe Identity or domain whitelist for companies.
+- [ ] **AI Sentinel:** Use OpenAI API to score job description toxicity/spam probability.
+
 
 ---
 
@@ -84,7 +96,7 @@ src/
 │   ├── dashboard/       # 🧠 Smart Dashboard (renders view based on Role)
 │   └── ...
 ├── components/
-│   ├── admin/           # Admin-specific UI (forms, tables)
+│   ├── admin/           # Admin-specific UI (forms, views, actions)
 │   ├── shared/          # Reusable UI (Navbar, Cards, DevTools)
 │   └── ui/              # Shadcn primitives
 └── lib/                 # The Toolbox (DB, Auth, Utils)
