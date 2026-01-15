@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 const tracker = new Map<string, number[]>();
 
 export function rateLimit(request: NextRequest, limit: number = 10, windowMs: number = 60 * 1000): boolean {
-    const ip = request.ip || "127.0.0.1";
+    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
     const now = Date.now();
 
     // Get timestamps for this IP
