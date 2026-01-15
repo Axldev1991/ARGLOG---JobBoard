@@ -5,6 +5,7 @@ import { hash } from "bcryptjs"
 import { resend } from "@/lib/resend"
 import { requireAdminAction } from "@/lib/auth-guard"
 import { z } from "zod"
+import { Logger } from "@/lib/logger"
 
 /**
  * Server Action para dar de alta una nueva empresa (B2B).
@@ -100,8 +101,14 @@ export async function createCompany(formData: FormData) {
         return { success: true };
 
     } catch (error: any) {
-        console.error("[createCompany] Error:", error);
-        // Devolvemos el mensaje técnico para facilitar el debug en desarrollo
-        return { error: `Error técnico: ${error.message}` };
+        // 🔍 LOGGING: Guardamos el error con contexto para debug via CLI
+        await Logger.error(
+            "Falló al crear empresa (createCompany)",
+            "SERVER_ACTION",
+            error,
+            { intent: { email, legalName } }
+        );
+
+        return { error: `Error registrado en logs: ${error.message}` };
     }
 }

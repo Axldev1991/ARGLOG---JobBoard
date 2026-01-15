@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { Logger } from "@/lib/logger";
 
 // --------------------------------------------------------------------------
 // 🧠 SERVER ACTION: CREAR EMPLEO
@@ -29,20 +30,30 @@ export async function createJob(formData: FormData) {
         redirect("/login");
     }
 
-    await prisma.job.create({
-        data: {
-            title,
-            description,
-            salary,
-            category,
-            modality,
-            location,
-            authorId: user.id,
-            tags: {
-                connect: tagIds.map((id: number) => ({ id: id }))
+    try {
+        await prisma.job.create({
+            data: {
+                title,
+                description,
+                salary,
+                category,
+                modality,
+                location,
+                authorId: user.id,
+                tags: {
+                    connect: tagIds.map((id: number) => ({ id: id }))
+                }
             }
-        }
-    })
+        })
+    } catch (error) {
+        await Logger.error("Falló createJob", "SERVER_ACTION", error, { userId: user.id, title });
+        // NOTE: Como usamos redirect, no podemos hacer return normal aquí a menos que cambiemos la estructura.
+        // Pero redirect lanzá un "NEXT_REDIRECT" error que NO debemos capturar, o debemos relanzar.
+        // Prisma error sí lo capturamos.
+        // Mejor approach: Catch general loguea y relanza si no es conocido, o redirige a error page.
+        // Para simplificar: Logueamos y lanzamos error para que la UI lo maneje (o Next error boundary).
+        throw error;
+    }
 
     redirect("/dashboard")
 }

@@ -103,3 +103,15 @@ model SystemSetting {
   value       String
   description String?
 }
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  level     String   // "ERROR", "WARN"
+  message   String
+  metadata  Json?    // Stack trace, user_id, path
+  source    String   // "SERVER_ACTION", "MIDDLEWARE"
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([createdAt])
+}

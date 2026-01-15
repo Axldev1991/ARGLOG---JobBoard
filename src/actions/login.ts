@@ -13,6 +13,7 @@ import { prisma } from "@/lib/db"
 import { compare } from "bcryptjs"
 import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
+import { Logger } from "@/lib/logger"
 
 export async function loginUser(formData: FormData) {
     const email = formData.get("email") as string
@@ -23,29 +24,34 @@ export async function loginUser(formData: FormData) {
         return { error: "Todos los campos son obligatorios" }
     }
 
-    const usuarioEncontrado = await prisma.user.findUnique({
-        where: { email }
-    })
+    try {
+        const usuarioEncontrado = await prisma.user.findUnique({
+            where: { email }
+        })
 
-    // Usamos el mismo error para ambos casos por seguridad
-    if (!usuarioEncontrado) {
-        return { error: "Credenciales incorrectas" }
+        // Usamos el mismo error para ambos casos por seguridad
+        if (!usuarioEncontrado) {
+            return { error: "Credenciales incorrectas" }
+        }
+
+        const passwordEsCorrecta = await compare(password, usuarioEncontrado.password)
+
+        if (!passwordEsCorrecta) {
+            return { error: "Credenciales incorrectas" }
+        }
+
+        // TODO: Aquí deberías setear la cookie de sesión (ej. con jose o NextAuth)
+        // cookies().set("session", token)
+        (await cookies()).set("user_session", JSON.stringify({
+            id: usuarioEncontrado.id,
+            name: usuarioEncontrado.name,
+            role: usuarioEncontrado.role
+        }));
+
+        // redirect("/") <-- Lo quitamos para manejarlo en el cliente
+        return { success: true }
+    } catch (error) {
+        await Logger.error("Error en Login", "SERVER_ACTION", error, { email });
+        return { error: "Error interno del servidor" }
     }
-
-    const passwordEsCorrecta = await compare(password, usuarioEncontrado.password)
-
-    if (!passwordEsCorrecta) {
-        return { error: "Credenciales incorrectas" }
-    }
-
-    // TODO: Aquí deberías setear la cookie de sesión (ej. con jose o NextAuth)
-    // cookies().set("session", token)
-    (await cookies()).set("user_session", JSON.stringify({
-        id: usuarioEncontrado.id,
-        name: usuarioEncontrado.name,
-        role: usuarioEncontrado.role
-    }));
-
-    // redirect("/") <-- Lo quitamos para manejarlo en el cliente
-    return { success: true }
 }

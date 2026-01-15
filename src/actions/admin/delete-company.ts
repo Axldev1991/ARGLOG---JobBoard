@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { requireAdminAction } from "@/lib/auth-guard"
 import { isProtectedUser } from "@/lib/protected-users"
+import { Logger } from "@/lib/logger"
 
 /**
  * Server Action para eliminar permanentemente una empresa.
@@ -30,7 +31,7 @@ export async function deleteCompany(companyId: number) {
         return { success: true };
 
     } catch (error: any) {
-        console.error("[deleteCompany] Error:", error);
+        await Logger.error("Falló deleteCompany", "SERVER_ACTION", error, { companyId });
         return { error: `No se pudo eliminar: ${error.message}` };
     }
 }

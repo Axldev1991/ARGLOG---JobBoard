@@ -4,6 +4,7 @@ import cloudinary from "@/lib/cloudinary";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
+import { Logger } from "@/lib/logger";
 
 export async function uploadCV(formData: FormData) {
     const file = formData.get("cv") as File;
@@ -56,7 +57,7 @@ export async function uploadCV(formData: FormData) {
                 },
                 (error, result) => {
                     if (error) {
-                        console.error("Cloudinary Error:", error);
+                        Logger.error("Cloudinary Callback Error", "SERVER_ACTION", error);
                         reject(error);
                     } else {
                         if (!result) return reject(new Error("No result from Cloudinary"));
@@ -83,7 +84,7 @@ export async function uploadCV(formData: FormData) {
         return { success: true, url: uploadResult.secure_url };
 
     } catch (error) {
-        console.error("🔥 Error Catch General:", error);
+        await Logger.error("Falló uploadCV", "SERVER_ACTION", error, { userId: user.id });
         return { error: "Error al subir el archivo a la nube" };
     }
 }

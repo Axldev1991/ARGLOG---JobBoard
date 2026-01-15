@@ -5,6 +5,7 @@ import { getSession } from "@/lib/session";
 import { isProfileComplete } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { resend } from "@/lib/resend";
+import { Logger } from "@/lib/logger";
 
 export async function applyToJob(jobId: number) {
     const session = await getSession();
@@ -59,9 +60,9 @@ export async function applyToJob(jobId: number) {
             }
         });
 
-                // ENVIAR EMAIL 🚀
+        // ENVIAR EMAIL 🚀
         if (job) {
-             await resend.emails.send({
+            await resend.emails.send({
                 from: 'onboarding@resend.dev',
                 to: 'castellanoaxl@gmail.com', // <--- CAMBIA ESTO POR TU EMAIL
                 subject: `Nueva postulación: ${job.title}`,
@@ -76,7 +77,7 @@ export async function applyToJob(jobId: number) {
         return { success: true };
 
     } catch (error) {
-        console.error("Error al postularse:", error);
+        await Logger.error("Falló applyToJob", "SERVER_ACTION", error, { jobId, userId: user?.id });
         return { error: "Ocurrió un error inesperado. Inténtalo de nuevo." };
     }
 }
