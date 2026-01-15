@@ -97,3 +97,9 @@ model CompanyProfile {
   cuit        String 
   industry    String
 }
+
+model SystemSetting {
+  key         String  @id
+  value       String
+  description String?
+}
