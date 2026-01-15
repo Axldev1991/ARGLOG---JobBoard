@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db"
 import { hash } from "bcryptjs"
 import { resend } from "@/lib/resend"
 import { requireAdminAction } from "@/lib/auth-guard"
+import { z } from "zod"
 
 /**
  * Server Action para dar de alta una nueva empresa (B2B).
@@ -16,19 +17,34 @@ export async function createCompany(formData: FormData) {
     // 🛡️ SEGURIDAD: Solo admins pueden ejecutar esto
     await requireAdminAction();
 
-    const name = formData.get("name") as string
-    const email = formData.get("email") as string
-    const website = formData.get("website") as string
+    // 🛡️ SEGURIDAD: Definimos el esquema de validación estricto
+    const CreateCompanySchema = z.object({
+        name: z.string().min(2, "El nombre de contacto es muy corto"),
+        email: z.string().email("Email inválido"),
+        website: z.string().url("Debe ser una URL válida (https://...)").optional().or(z.literal("")),
+        legalName: z.string().min(2, "Razón social requerida"),
+        cuit: z.string().regex(/^\d{11}$/, "CUIT debe tener 11 números sin guiones"),
+        industry: z.string().min(2, "Industria requerida")
+    });
 
-    // Datos Legales
-    const legalName = formData.get("legalName") as string
-    const cuit = formData.get("cuit") as string
-    const industry = formData.get("industry") as string
+    // Parseamos los datos del FormData
+    const rawData = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        website: formData.get("website"),
+        legalName: formData.get("legalName"),
+        cuit: formData.get("cuit"),
+        industry: formData.get("industry")
+    };
 
-    // Validación básica de campos requeridos
-    if (!name || !email || !legalName || !cuit || !industry) {
-        return { error: "Todos los campos marcados son obligatorios." }
+    // Validamos
+    const validation = CreateCompanySchema.safeParse(rawData);
+
+    if (!validation.success) {
+        return { error: validation.error.errors[0].message };
     }
+
+    const { name, email, website, legalName, cuit, industry } = validation.data;
 
     // Generamos contraseña temporal aleatoria
     const tempPassword = "Arlog" + Math.floor(Math.random() * 10000);
