@@ -1,31 +1,20 @@
-import { type ClassValue, clsx } from "clsx"
+import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// user type es 'any' por ahora, idealmente inferido de Prisma
 export function isProfileComplete(user: any): boolean {
   if (!user) return false;
 
-  // Lista de campos requeridos para postularse
-  const requiredFields = [
-    user.resumeUrl,
-    user.headline,
-    user.phone,
-    user.city
-    // Bio y LinkedIn pueden ser opcionales
-  ];
+  // Validamos campos básicos dependiendo del rol (o general)
+  // Asumimos candidato por defecto para esta validación simple
+  const hasName = !!user.name;
+  const hasEmail = !!user.email;
+  const hasHeadline = !!user.headline;
+  const hasCity = !!user.city;
+  // const hasResume = !!user.resumeUrl; // Opcional según criterio
 
-  return requiredFields.every(field => field && field.trim().length > 0);
-}
-
-export function formatDate(date: Date | string): string {
-  if (!date) return "";
-  return new Date(date).toLocaleDateString("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  return hasName && hasEmail && hasHeadline && hasCity;
 }

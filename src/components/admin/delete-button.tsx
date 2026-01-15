@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Trash2, AlertTriangle } from "lucide-react";
+import { Trash2, AlertTriangle, X, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -21,19 +21,7 @@ export function DeleteButton({
     const [isConfirming, setIsConfirming] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    /**
-     * Handles the click event. The first click activates confirmation mode.
-     * The second click (within 3s) triggers the deletion.
-     */
-    const handleClick = async () => {
-        if (!isConfirming) {
-            setIsConfirming(true);
-            // Auto-reset after 3 seconds if not confirmed
-            setTimeout(() => setIsConfirming(false), 3000);
-            return;
-        }
-
-        // Execute deletion
+    const handleConfirm = async () => {
         setIsLoading(true);
         const toastId = toast.loading(loadingMessage);
 
@@ -42,38 +30,75 @@ export function DeleteButton({
 
             if (result.error) {
                 toast.error(result.error, { id: toastId });
+                setIsLoading(false);
             } else {
                 toast.success(successMessage, { id: toastId });
+                setIsConfirming(false);
+                setIsLoading(false);
             }
         } catch (error) {
             toast.error("Ocurrió un error inesperado", { id: toastId });
-        } finally {
             setIsLoading(false);
-            setIsConfirming(false);
         }
     };
 
     return (
-        <div className="flex gap-2 justify-end items-center">
-            {isConfirming && (
-                <span className="text-xs text-red-500 font-bold animate-pulse mr-2">
-                    ¿Confirmar?
-                </span>
-            )}
-
-            <Button
-                variant="ghost"
-                size="icon"
-                disabled={isLoading}
-                className={`transition-colors ${isConfirming
-                    ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                    : 'hover:text-red-600 hover:bg-red-50'
+        <div
+            className={`relative h-9 flex items-center justify-end overflow-hidden transition-all duration-300 ease-in-out ${isConfirming ? 'w-20' : 'w-8'
+                }`}
+        >
+            {/* Capa 1: Botón de Basura (Inicial) */}
+            <div
+                className={`absolute right-0 top-0 transition-all duration-300 ease-in-out transform ${isConfirming ? 'translate-x-[150%] opacity-0' : 'translate-x-0 opacity-100'
                     }`}
-                onClick={handleClick}
-                title={description}
             >
-                {isConfirming ? <AlertTriangle size={16} /> : <Trash2 size={16} />}
-            </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsConfirming(true);
+                    }}
+                    title={description}
+                >
+                    <Trash2 size={16} />
+                </Button>
+            </div>
+
+            {/* Capa 2: Confirmación (Deslizar desde derecha) */}
+            <div
+                className={`absolute right-0 top-0 flex items-center bg-slate-100 rounded-full p-0.5 border border-slate-200 shadow-sm transition-all duration-300 ease-cubic-bezier(0.4, 0, 0.2, 1) transform ${isConfirming ? 'translate-x-0 opacity-100' : 'translate-x-[150%] opacity-0'
+                    }`}
+            >
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 rounded-full text-slate-500 hover:text-slate-700 hover:bg-white transition-colors"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsConfirming(false);
+                    }}
+                    disabled={isLoading}
+                    title="Cancelar"
+                >
+                    <X size={14} />
+                </Button>
+                <div className="w-[1px] h-4 bg-slate-300 mx-0.5"></div>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 rounded-full text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleConfirm();
+                    }}
+                    disabled={isLoading}
+                    title="Confirmar"
+                >
+                    {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+                </Button>
+            </div>
         </div>
     );
 }

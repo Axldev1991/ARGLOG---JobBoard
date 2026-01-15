@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Briefcase } from "lucide-react";
 import { JobActions } from "@/components/admin/job-actions";
+import { JobStatusSwitch } from "@/components/admin/job-status-switch";
 import { AdminSearch } from "@/components/admin/admin-search";
 
 interface Props {
@@ -48,19 +49,18 @@ export function JobsView({ jobs }: Props) {
                             jobs.map((job) => (
                                 <tr key={job.id} className={`transition-colors ${job.status === 'REJECTED' ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-slate-50'}`}>
                                     <td className="p-4">
-                                        <div className="font-medium text-slate-900">{job.title}</div>
-                                        <div className="text-xs font-mono text-slate-400">ID: #{job.id}</div>
-                                    </td>
-                                    <td className="p-4 text-slate-600">
-                                        {job.author?.companyProfile?.legalName || job.author?.name || "Desconocido"}
+                                        <Link href={`/admin/jobs/${job.id}`} className="group block">
+                                            <div className="font-medium text-slate-900 group-hover:text-blue-600 transition-colors">{job.title}</div>
+                                            <div className="text-xs text-slate-400 font-mono">#{job.id}</div>
+                                        </Link>
                                     </td>
                                     <td className="p-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${job.status === 'PUBLISHED'
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-red-100 text-red-700'
-                                            }`}>
-                                            {job.status === 'PUBLISHED' ? 'Visible' : 'Oculto'}
-                                        </span>
+                                        <div className="text-sm text-slate-600">
+                                            {job.author.companyProfile?.legalName || job.author.name}
+                                        </div>
+                                    </td>
+                                    <td className="p-4">
+                                        <JobStatusSwitch jobId={job.id} status={job.status} />
                                     </td>
                                     <td className="p-4 text-slate-400">
                                         {new Date(job.createdAt).toLocaleDateString()}

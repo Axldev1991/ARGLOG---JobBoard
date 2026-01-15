@@ -36,10 +36,8 @@ export function CompaniesView({ companies }: Props) {
                 <table className="w-full text-left text-sm">
                     <thead className="bg-slate-50 border-b">
                         <tr>
-                            <th className="p-4 font-semibold text-slate-600">Nombre Comercial</th>
-                            <th className="p-4 font-semibold text-slate-600">Razón Social</th>
+                            <th className="p-4 font-semibold text-slate-600">Empresa</th>
                             <th className="p-4 font-semibold text-slate-600">CUIT</th>
-                            <th className="p-4 font-semibold text-slate-600">Email Responsable</th>
                             <th className="p-4 font-semibold text-slate-600">Fecha Alta</th>
                             <th className="p-4 font-semibold text-slate-600 text-right">Acciones</th>
                         </tr>
@@ -47,21 +45,24 @@ export function CompaniesView({ companies }: Props) {
                     <tbody className="divide-y">
                         {companies.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="p-8 text-center text-slate-400">
+                                <td colSpan={4} className="p-8 text-center text-slate-400">
                                     No hay empresas registradas aún.
                                 </td>
                             </tr>
                         ) : (
                             companies.map((company) => (
                                 <tr key={company.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="p-4 font-medium text-slate-900">{company.name}</td>
-                                    <td className="p-4 text-slate-600">
-                                        {company.companyProfile?.legalName || "-"}
+                                    <td className="p-4">
+                                        <Link href={`/admin/companies/${company.id}`} className="block group">
+                                            <div className="font-medium text-slate-900 group-hover:text-blue-600 transition-colors">
+                                                {company.companyProfile?.legalName || company.name}
+                                            </div>
+                                            <div className="text-xs text-slate-500">{company.email}</div>
+                                        </Link>
                                     </td>
                                     <td className="p-4 font-mono text-slate-500 text-xs">
                                         {company.companyProfile?.cuit || "-"}
                                     </td>
-                                    <td className="p-4 text-blue-600">{company.email}</td>
                                     <td className="p-4 text-slate-400">
                                         {new Date(company.createdAt).toLocaleDateString()}
                                     </td>
