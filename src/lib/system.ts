@@ -6,6 +6,13 @@ export async function isMaintenanceMode(): Promise<boolean> {
     noStore();
 
     try {
+        // Guard: Check if the model exists (handles stale Prisma instances in dev)
+        // @ts-ignore - Prisma client might be stale in dev
+        if (!prisma.systemSetting) {
+            console.warn("⚠️ SystemSetting model missing. Please restart your dev server.");
+            return false;
+        }
+
         const setting = await prisma.systemSetting.findUnique({
             where: { key: "maintenance_mode" },
         });
