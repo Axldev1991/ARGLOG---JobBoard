@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { ArrowLeft, User, FileText, Linkedin, Mail, Phone, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ApplicationStatusControls } from "./application-status-controls";
 
 export function JobCandidates({ job, applications }: { job: any, applications: any[] }) {
 
@@ -39,13 +40,10 @@ export function JobCandidates({ job, applications }: { job: any, applications: a
                                 <div>
                                     <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                                         {app.user.name}
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold border 
-                                            ${app.status === 'PENDING' ? 'bg-blue-50 text-blue-600 border-blue-100' : ''}
-                                            ${app.status === 'HIRED' ? 'bg-green-50 text-green-600 border-green-100' : ''}
-                                            ${app.status === 'REJECTED' ? 'bg-red-50 text-red-600 border-red-100' : ''}
-                                        `}>
-                                            {app.status === 'PENDING' ? 'Pendiente' : app.status}
-                                        </span>
+                                        <ApplicationStatusControls
+                                            applicationId={app.id}
+                                            currentStatus={app.status}
+                                        />
                                     </h3>
                                     <p className="text-slate-500 font-medium">{app.user.headline || "Sin título profesional"}</p>
                                 </div>

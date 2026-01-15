@@ -1,15 +1,9 @@
 import Link from "next/link";
-import { Briefcase, Trash2, XCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Briefcase } from "lucide-react";
 import { withdrawApplication } from "@/actions/withdraw-application";
+import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
 
 export function ApplicationList({ applications = [] }: { applications?: any[] }) {
-
-    // Función auxiliar para manejar el borrado con confirmación básica
-    const handleWithdraw = async (appId: number) => {
-        if (!confirm("¿Estás seguro de que quieres retirar tu postulación?")) return;
-        await withdrawApplication(appId);
-    };
 
     return (
         <div className="lg:col-span-3 mt-8">
@@ -53,16 +47,14 @@ export function ApplicationList({ applications = [] }: { applications?: any[] })
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         {app.status === 'PENDING' && (
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="text-slate-400 hover:text-red-600 hover:bg-red-50"
-                                                title="Retirar postulación"
-                                                onClick={() => handleWithdraw(app.id)}
-                                                type="button"
-                                            >
-                                                <Trash2 size={16} />
-                                            </Button>
+                                            <ConfirmDeleteButton
+                                                title="¿Retirar Postulación?"
+                                                description="Se eliminará tu solicitud para esta oferta. Deberás postularte nuevamente si cambias de opinión."
+                                                onDelete={async () => {
+                                                    const res = await withdrawApplication(app.id);
+                                                    return { success: res.success || false, message: res.success ? "Postulación retirada" : res.error, error: res.error };
+                                                }}
+                                            />
                                         )}
                                     </td>
                                 </tr>

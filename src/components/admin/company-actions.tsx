@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteCompany } from "@/actions/admin/delete-company";
-import { DeleteButton } from "@/components/admin/delete-button";
+import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,13 @@ export function CompanyActions({ companyId, companyName }: Props) {
                 </Button>
             </Link>
 
-            <DeleteButton
-                onDelete={() => deleteCompany(companyId)}
-                loadingMessage={`Eliminando a ${companyName}...`}
-                successMessage="Empresa eliminada correctamente"
-                description={`Eliminar empresa ${companyName}`}
+            <ConfirmDeleteButton
+                title={`¿Eliminar empresa ${companyName}?`}
+                description="Esto eliminará la empresa y todos sus datos relacionados."
+                onDelete={async () => {
+                    const res = await deleteCompany(companyId);
+                    return { success: !!res.success, error: res.error };
+                }}
             />
         </div>
     );

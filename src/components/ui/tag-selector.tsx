@@ -11,10 +11,11 @@ type TagType = {
 
 interface Props {
     availableTags: TagType[];
+    initialSelectedIds?: number[];
 }
 
-export function TagSelector({ availableTags }: Props) {
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+export function TagSelector({ availableTags, initialSelectedIds = [] }: Props) {
+    const [selectedIds, setSelectedIds] = useState<number[]>(initialSelectedIds);
 
     const toggleTag = (id: number) => {
         if (selectedIds.includes(id)) {

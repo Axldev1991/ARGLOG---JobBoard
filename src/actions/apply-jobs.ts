@@ -52,6 +52,15 @@ export async function applyToJob(jobId: number) {
             include: { author: true }
         });
 
+        if (!job) {
+            return { error: "La oferta no existe." };
+        }
+
+        // 🛡️ VALIDACIÓN EXTRA: ¿Está publicada?
+        if (job.status !== 'PUBLISHED') {
+            return { error: "Esta oferta ya no está recibiendo postulaciones." };
+        }
+
         // 4. CREAR POSTULACIÓN ✨
         await prisma.application.create({
             data: {

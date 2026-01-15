@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteCandidate } from "@/actions/admin/delete-candidate";
-import { DeleteButton } from "@/components/admin/delete-button";
+import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
 
 interface Props {
     candidateId: number;
@@ -11,11 +11,13 @@ interface Props {
 
 export function CandidateActions({ candidateId, candidateName, resumeUrl }: Props) {
     return (
-        <DeleteButton
-            onDelete={() => deleteCandidate(candidateId)}
-            loadingMessage={`Eliminando a ${candidateName}...`}
-            successMessage="Candidato eliminado correctamente"
-            description={`Eliminar candidato ${candidateName}`}
+        <ConfirmDeleteButton
+            onDelete={async () => {
+                const res = await deleteCandidate(candidateId);
+                return { success: !!res.success, error: res.error };
+            }}
+            title={`¿Eliminar a ${candidateName}?`}
+            description="Esta acción eliminará permanentemente al candidato y todos sus datos."
         />
     );
 }

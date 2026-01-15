@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteTag } from "@/actions/admin/delete-tag";
-import { DeleteButton } from "@/components/admin/delete-button";
+import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
@@ -20,11 +20,13 @@ export function TagActions({ tagId, tagName }: Props) {
                 </Button>
             </Link>
 
-            <DeleteButton
-                onDelete={() => deleteTag(tagId)}
-                loadingMessage="Eliminando tag..."
-                successMessage="Tag eliminado correctamente"
-                description={`Eliminar tag ${tagName}`}
+            <ConfirmDeleteButton
+                title={`¿Eliminar tag "${tagName}"?`}
+                description="Esto eliminará el tag de todas las ofertas que lo estén usando."
+                onDelete={async () => {
+                    const res = await deleteTag(tagId);
+                    return { success: !!res.success, error: res.error };
+                }}
             />
         </div>
     );

@@ -1,10 +1,13 @@
 "use client";
 
-import { Users, Calendar, Eye, Briefcase, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
+import { Users, Calendar, Eye, Briefcase, ArrowUpDown, ArrowUp, ArrowDown, Search, Pencil } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useJobFilter, SortKey } from "./use-job-filter";
+import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
+import { deleteJob } from "@/actions/delete-jobs";
+import { JobStatusControls } from "./job-status-controls";
 
 export function JobList({ jobs = [] }: { jobs: any[] }) {
     const {
@@ -24,29 +27,29 @@ export function JobList({ jobs = [] }: { jobs: any[] }) {
         <div className="space-y-6">
             {/* Header + Toolbar */}
             <div>
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <Briefcase size={20} className="text-blue-400" />
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <Briefcase size={20} className="text-blue-600" />
                         Mis Ofertas Publicadas
-                        <span className="text-sm font-normal text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full ml-2">
+                        <span className="text-sm font-normal text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full ml-2 border border-slate-200">
                             {processedJobs.length}
                         </span>
                     </h2>
 
                     <Link href="/jobs/new" className="hidden sm:block">
-                        <Button variant="default" size="sm" className="bg-blue-600 text-white hover:bg-blue-500 border-0">
+                        <Button variant="default" size="sm" className="bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-100">
                             + Nueva Oferta
                         </Button>
                     </Link>
                 </div>
 
                 {/* Barra de Herramientas */}
-                <div className="flex flex-col md:flex-row gap-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800/50">
+                <div className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
                     <div className="relative flex-grow max-w-md">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         <Input
                             placeholder="Buscar por puesto o categoría..."
-                            className="pl-9 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+                            className="pl-9 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-blue-500 focus-visible:border-blue-500"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -110,7 +113,10 @@ function SortControls({ sortKey, sortDirection, onToggle }: { sortKey: SortKey, 
                 <button
                     key={key}
                     onClick={() => onToggle(key)}
-                    className={`px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all whitespace-nowrap border ${sortKey === key ? 'bg-blue-600/10 border-blue-600 text-blue-400' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'}`}
+                    className={`px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all whitespace-nowrap border ${sortKey === key
+                        ? 'bg-blue-50 border-blue-200 text-blue-700'
+                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                        }`}
                 >
                     {label}
                     {sortKey === key && (sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />)}
@@ -133,6 +139,7 @@ function TableHeader({ sortKey, onToggle }: { sortKey: SortKey, onToggle: (k: So
                 <th className="px-6 py-4 cursor-pointer hover:bg-slate-100 transition-colors select-none" onClick={() => onToggle('date')}>
                     <div className="flex items-center gap-1">Fecha <ArrowUpDown size={12} className={sortKey === 'date' ? 'text-blue-500' : 'text-slate-300'} /></div>
                 </th>
+                <th className="px-6 py-4 text-center">Estado</th>
                 <th className="px-6 py-4 text-right">Acciones</th>
             </tr>
         </thead>
@@ -176,13 +183,40 @@ function JobRow({ job }: { job: any }) {
                 </div>
             </td>
 
+            <td className="px-6 py-4 text-center">
+                <JobStatusControls jobId={job.id} currentStatus={job.status} />
+            </td>
+
             <td className="px-6 py-4 text-right">
                 <div className="flex items-center justify-end gap-2">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50" title="Ver detalle">
-                        <Link href={`/jobs/${job.id}`}>
-                            <Eye size={16} />
-                        </Link>
-                    </Button>
+                    <div className="flex items-center justify-end gap-1">
+                        {/* Botón Editar (Lápiz) */}
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400 hover:text-indigo-400 hover:bg-indigo-50" title="Editar Oferta" asChild>
+                            <Link href={`/dashboard/jobs/${job.id}/edit`}>
+                                <Pencil size={16} />
+                            </Link>
+                        </Button>
+
+                        {/* Botón Ver (Ojo) */}
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50" title="Ver detalle público" asChild>
+                            <Link href={`/jobs/${job.id}`}>
+                                <Eye size={16} />
+                            </Link>
+                        </Button>
+
+                        {/* Botón Eliminar */}
+                        <ConfirmDeleteButton
+                            title={`¿Eliminar "${job.title}"?`}
+                            description="Esta oferta y todos sus candidatos serán eliminados permanentemente."
+                            onDelete={async () => {
+                                const fd = new FormData();
+                                fd.append("jobId", job.id.toString());
+                                const res = await deleteJob(fd);
+                                // Adapt response to generic interface if needed
+                                return { success: res.success || false, message: res.message, error: res.message };
+                            }}
+                        />
+                    </div>
                 </div>
             </td>
         </tr>

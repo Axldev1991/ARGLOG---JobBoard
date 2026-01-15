@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteJob } from "@/actions/admin/delete-job";
-import { DeleteButton } from "@/components/admin/delete-button";
+import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
@@ -26,11 +26,13 @@ export function JobActions({ jobId, jobTitle, status }: Props) {
                 </Button>
             </Link>
 
-            <DeleteButton
-                onDelete={() => deleteJob(jobId)}
-                loadingMessage={`Eliminando oferta...`}
-                successMessage="Oferta eliminada permanentemente"
-                description={`Eliminar ${jobTitle}`}
+            <ConfirmDeleteButton
+                title={`¿Eliminar oferta "${jobTitle}"?`}
+                description="Esta acción eliminará permanentemente la oferta y todos los datos asociados."
+                onDelete={async () => {
+                    const res = await deleteJob(jobId);
+                    return { success: !!res.success, error: res.error };
+                }}
             />
         </div>
     );

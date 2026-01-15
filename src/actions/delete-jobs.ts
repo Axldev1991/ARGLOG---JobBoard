@@ -3,35 +3,62 @@
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { Logger } from "@/lib/logger";
 
 export async function deleteJob(formData: FormData) {
-    
-    // 1. ¿Quién eres?
-    const user = await getSession();
-    if (!user) return;
+    const jobIdStr = formData.get("jobId") as string;
 
-    // 2. ¿Qué quieres borrar?
-    const jobId = formData.get("jobId") as string;
-    if (!jobId) return;
-
-    // 3. SEGURIDAD: ¿Esta oferta es TUYA?
-    // Buscamos la oferta primero
-    const job = await prisma.job.findUnique({
-        where: { id: parseInt(jobId) }
-    });
-
-    // Si no existe o el dueño no eres tú... ¡ALTO!
-    if (!job || job.authorId !== user.id) {
-        throw new Error("No tienes permiso para borrar esto.");
+    if (!jobIdStr) {
+        return { success: false, message: "ID de oferta no válido" };
     }
 
-    // 4. ¡Bórralo!
-    await prisma.job.delete({
-        where: { id: parseInt(jobId) }
-    });
+    const jobId = parseInt(jobIdStr);
 
-    // 5. Actualiza la pantalla
-    revalidatePath("/dashboard");
-    revalidatePath("/"); // Para que desaparezca del home también
+    try {
+        // 1. Auth & Session
+        const session = await getSession();
+        if (!session) {
+            return { success: false, message: "No autorizado" };
+        }
+
+        // 2. Ownership Check (Iron Dome)
+        const job = await prisma.job.findUnique({
+            where: { id: jobId }
+        });
+
+        if (!job) {
+            return { success: false, message: "Oferta no encontrada" };
+        }
+
+        const isOwner = job.authorId === session.id;
+        const isAdmin = session.role === 'admin' || session.role === 'dev';
+
+        if (!isOwner && !isAdmin) {
+            await Logger.warn("Intento de borrado de oferta ajena", "SERVER_ACTION", {
+                userId: session.id,
+                targetJobId: jobId
+            });
+            return { success: false, message: "No tienes permisos para borrar esta oferta" };
+        }
+
+        // 3. Delete
+        await prisma.job.delete({
+            where: { id: jobId }
+        });
+
+        // 4. Log & Revalidate
+        await Logger.warn(`Oferta borrada: ${job.title}`, "SERVER_ACTION", {
+            userId: session.id,
+            jobTitle: job.title
+        });
+
+        revalidatePath("/dashboard");
+        revalidatePath("/");
+
+        return { success: true, message: "Oferta eliminada correctamente" };
+
+    } catch (error) {
+        await Logger.error("Error borrando oferta", "SERVER_ACTION", error, { jobId });
+        return { success: false, message: "Error interno al borrar la oferta" };
+    }
 }

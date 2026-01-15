@@ -48,7 +48,8 @@ model Job {
   category    String   @default("Otros") 
   modality    String   @default("Remoto")
   location    String?
-  status      String   @default("PUBLISHED") // PUBLISHED, REJECTED
+  status      String   @default("PUBLISHED") // PUBLISHED, PAUSED, CLOSED
+  expiresAt   DateTime? // Fecha de vencimiento opcional
   // ---------------------
   createdAt   DateTime @default(now())
   authorId    Int
