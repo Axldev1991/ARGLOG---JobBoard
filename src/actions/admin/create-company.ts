@@ -41,7 +41,7 @@ export async function createCompany(formData: FormData) {
     const validation = CreateCompanySchema.safeParse(rawData);
 
     if (!validation.success) {
-        return { error: validation.error.errors[0].message };
+        return { error: validation.error.issues[0].message };
     }
 
     const { name, email, website, legalName, cuit, industry } = validation.data;
