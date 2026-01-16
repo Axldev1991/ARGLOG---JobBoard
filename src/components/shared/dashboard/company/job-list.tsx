@@ -62,9 +62,100 @@ export function JobList({ jobs = [] }: { jobs: any[] }) {
                 </div>
             </div>
 
-            {/* Tabla Responsive */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden overflow-x-auto">
-                <table className="w-full text-left text-sm min-w-[600px] md:min-w-0">
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 gap-4 md:hidden">
+                {processedJobs.length === 0 ? (
+                    <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500">
+                        No se encontraron ofertas que coincidan con tu búsqueda.
+                    </div>
+                ) : (
+                    processedJobs.map((job) => {
+                        const applicationCount = job.applications?.length || 0;
+                        return (
+                            <div key={job.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-1">
+                                        <p className="font-bold text-slate-900 text-lg leading-tight">{job.title}</p>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                                                {job.category}
+                                            </span>
+                                            <span className="text-xs text-slate-500">
+                                                {job.modality}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <JobStatusControls jobId={job.id} currentStatus={job.status} />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 text-sm border-t border-b border-slate-100 py-3">
+                                    <div className="space-y-1">
+                                        <span className="text-xs text-slate-400 uppercase font-semibold">Postulantes</span>
+                                        {applicationCount > 0 ? (
+                                            <Link href={`/dashboard/jobs/${job.id}`} className="flex items-center gap-2 group">
+                                                <span className="text-lg font-bold text-blue-600 group-hover:text-blue-700">
+                                                    {applicationCount}
+                                                </span>
+                                                <Users size={14} className="text-slate-400 group-hover:text-blue-500" />
+                                            </Link>
+                                        ) : (
+                                            <div className="flex items-center gap-2 opacity-50">
+                                                <span className="text-lg font-bold text-slate-300">0</span>
+                                                <Users size={14} className="text-slate-300" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-xs text-slate-400 uppercase font-semibold">Fechas</span>
+                                        <div className="flex flex-col text-slate-600 font-medium text-xs gap-1">
+                                            <div className="flex items-center gap-1.5">
+                                                <Calendar size={12} className="text-slate-400" />
+                                                <span>Pub: {new Date(job.createdAt).toLocaleDateString()}</span>
+                                            </div>
+                                            {job.expiresAt && (
+                                                <div className="flex items-center gap-1.5 text-amber-600">
+                                                    <Clock size={12} />
+                                                    <span>Ven: {new Date(job.expiresAt).toLocaleDateString()}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-end gap-2 pt-1">
+                                    <Button variant="outline" size="sm" className="h-9 text-slate-600" asChild>
+                                        <Link href={`/jobs/${job.id}`}>
+                                            <Eye size={16} className="mr-2" />
+                                            Ver
+                                        </Link>
+                                    </Button>
+                                    <Button variant="outline" size="sm" className="h-9 text-blue-600 border-blue-100 bg-blue-50 hover:bg-blue-100" asChild>
+                                        <Link href={`/dashboard/jobs/${job.id}/edit`}>
+                                            <Pencil size={16} className="mr-2" />
+                                            Editar
+                                        </Link>
+                                    </Button>
+                                    <ConfirmDeleteButton
+                                        title={`¿Eliminar "${job.title}"?`}
+                                        description="Esta acción es irreversible."
+                                        onDelete={async () => {
+                                            const fd = new FormData();
+                                            fd.append("jobId", job.id.toString());
+                                            const res = await deleteJob(fd);
+                                            return { success: res.success || false, message: res.message, error: res.message };
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <table className="w-full text-left text-sm">
                     <TableHeader sortKey={sortKey} onToggle={toggleSort} />
                     <tbody className="divide-y divide-slate-100">
                         {processedJobs.length === 0 ? (
