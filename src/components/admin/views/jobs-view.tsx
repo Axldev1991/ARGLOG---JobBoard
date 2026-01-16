@@ -27,7 +27,48 @@ export function JobsView({ jobs }: Props) {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden overflow-x-auto">
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 gap-4 md:hidden">
+                {jobs.length === 0 ? (
+                    <div className="p-8 text-center text-slate-400 bg-white rounded-xl border shadow-sm">
+                        No hay ofertas que coincidan con la búsqueda.
+                    </div>
+                ) : (
+                    jobs.map((job) => (
+                        <div key={job.id} className={`p-4 rounded-xl border shadow-sm space-y-3 ${job.status === 'REJECTED' ? 'bg-red-50 border-red-100' : 'bg-white'}`}>
+                            <div className="flex justify-between items-start gap-2">
+                                <Link href={`/admin/jobs/${job.id}`} className="block group flex-1">
+                                    <div className="font-medium text-slate-900 group-hover:text-blue-600 transition-colors text-lg leading-tight">
+                                        {job.title}
+                                    </div>
+                                    <div className="text-xs text-slate-400 font-mono mt-1">#{job.id}</div>
+                                </Link>
+                                <JobActions
+                                    jobId={job.id}
+                                    jobTitle={job.title}
+                                    status={job.status}
+                                />
+                            </div>
+
+                            <div className="text-sm text-slate-600 border-b border-slate-100 pb-2">
+                                {job.author.companyProfile?.legalName || job.author.name}
+                            </div>
+
+                            <div className="flex justify-between items-center pt-1">
+                                <div className="text-xs text-slate-400">
+                                    {new Date(job.createdAt).toLocaleDateString()}
+                                </div>
+                                <div>
+                                    <JobStatusSwitch jobId={job.id} status={job.status} />
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block bg-white rounded-xl border shadow-sm overflow-hidden overflow-x-auto">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-slate-50 border-b">
                         <tr>

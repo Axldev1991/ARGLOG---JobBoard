@@ -32,7 +32,46 @@ export function CompaniesView({ companies }: Props) {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden overflow-x-auto mb-12">
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 gap-4 md:hidden mb-12">
+                {companies.length === 0 ? (
+                    <div className="p-8 text-center text-slate-400 bg-white rounded-xl border shadow-sm">
+                        No hay empresas registradas aún.
+                    </div>
+                ) : (
+                    companies.map((company) => (
+                        <div key={company.id} className="bg-white p-4 rounded-xl border shadow-sm space-y-3">
+                            <div className="flex justify-between items-start gap-4">
+                                <Link href={`/admin/companies/${company.id}`} className="block group flex-1">
+                                    <div className="font-medium text-slate-900 group-hover:text-blue-600 transition-colors text-lg">
+                                        {company.companyProfile?.legalName || company.name}
+                                    </div>
+                                    <div className="text-sm text-slate-500">{company.email}</div>
+                                </Link>
+                                <CompanyActions companyId={company.id} companyName={company.name} />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    <span className="text-slate-400 text-xs uppercase block mb-1">CUIT</span>
+                                    <span className="font-mono text-slate-700 font-medium">
+                                        {company.companyProfile?.cuit || "-"}
+                                    </span>
+                                </div>
+                                <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    <span className="text-slate-400 text-xs uppercase block mb-1">Alta</span>
+                                    <span className="text-slate-700">
+                                        {new Date(company.createdAt).toLocaleDateString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block bg-white rounded-xl border shadow-sm overflow-hidden mb-12">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-slate-50 border-b">
                         <tr>
