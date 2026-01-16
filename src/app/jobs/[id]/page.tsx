@@ -4,9 +4,59 @@ import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { ApplyButton } from "@/components/shared/apply-button";
 import { MapPin, Briefcase, Calendar, DollarSign, Clock, ArrowLeft, Tag as TagIcon, Building2 } from "lucide-react";
+import { Metadata } from "next";
+import { absoluteUrl } from "@/lib/utils";
+
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata(
+  { params }: Props,
+): Promise<Metadata> {
+  const { id } = await params
+  const jobId = parseInt(id)
+
+  const job = await prisma.job.findUnique({
+    where: { id: jobId },
+    include: { author: { include: { companyProfile: true } } }
+  })
+
+  if (!job) {
+    return {
+      title: "Oferta no encontrada",
+    }
+  }
+
+  const title = `${job.title} en ${job.author.name}`
+  const description = job.description.slice(0, 160) + "..."
+  const url = absoluteUrl(`/jobs/${job.id}`)
+  const images = job.author.companyProfile?.logo
+    ? [{ url: job.author.companyProfile.logo }]
+    : []
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Job Board Premium',
+      type: 'article',
+      publishedTime: job.createdAt.toISOString(),
+      expirationTime: job.expiresAt?.toISOString(),
+      authors: [job.author.name],
+      images,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images,
+    },
+  }
 }
 
 export default async function JobDetailPage({ params }: Props) {
@@ -17,8 +67,12 @@ export default async function JobDetailPage({ params }: Props) {
   const job = await prisma.job.findUnique({
     where: { id: jobId },
     include: {
-      author: true,
-      tags: true, // ✅ IMPORTANTÍSIMO: Traer los tags
+      author: {
+        include: {
+          companyProfile: true, // ✅ Necesario para el Logo en JSON-LD
+        }
+      },
+      tags: true,
       applications: {
         where: {
           userId: session?.id || -1
@@ -44,8 +98,47 @@ export default async function JobDetailPage({ params }: Props) {
   const isExpired = job.expiresAt && new Date(job.expiresAt) < new Date();
   const isAvailable = job.status === 'PUBLISHED' && !isExpired;
 
+  // --- ESTRUCTURA JSON-LD (Google Jobs) ---
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": job.title,
+    "description": job.description, // Google recomienda HTML, pero texto plano funciona
+    "datePosted": job.createdAt.toISOString(),
+    "validThrough": job.expiresAt?.toISOString(),
+    "employmentType": job.modality === 'Remoto' ? 'TELECOMMUTE' : 'FULL_TIME',
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": job.author.companyProfile?.legalName || job.author.name,
+      "sameAs": job.author.companyProfile?.website,
+      "logo": job.author.companyProfile?.logo
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": job.location || "Remoto",
+        "addressCountry": "ARG"
+      }
+    },
+    "baseSalary": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": {
+        "@type": "QuantitativeValue",
+        "value": job.salary || "A convenir",
+        "unitText": "MONTH"
+      }
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background pb-20">
+      {/* Script de Datos Estructurados */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* 1. Header Navigation */}
       <div className="max-w-6xl mx-auto px-6 py-8">
         <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6">
@@ -100,9 +193,10 @@ export default async function JobDetailPage({ params }: Props) {
             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 border-b border-border pb-4">
               <FileTextIcon /> Descripción del Puesto
             </h3>
-            <div className="prose max-w-none text-muted-foreground leading-relaxed whitespace-pre-line dark:prose-invert">
-              {job.description}
-            </div>
+            <div
+              className="prose prose-slate dark:prose-invert max-w-none text-muted-foreground leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: job.description }}
+            />
           </div>
         </div>
 

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { ArrowLeft, Briefcase, MapPin, DollarSign, LayoutGrid, Globe, FileText, CheckCircle2, Save } from "lucide-react";
 import Link from "next/link";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { useState } from "react";
 
 interface JobFormProps {
     action: (formData: FormData) => Promise<void>;
@@ -28,7 +30,11 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
     // Necesitamos pasarle al TagSelector los IDs ya seleccionados si estamos editando
     // Pero el TagSelector es Client Component y maneja su estado interno.
     // Tendremos que actualizar TagSelector para aceptar `initialSelectedIds`.
+    // Tendremos que actualizar TagSelector para aceptar `initialSelectedIds`.
     const initialTagIds = initialData?.tags?.map(t => t.id) || [];
+
+    // Estado para el editor de texto rico
+    const [description, setDescription] = useState(initialData?.description || "");
 
     return (
         <form action={action} className="space-y-8 relative z-10 w-full">
@@ -167,13 +173,16 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
 
                 <div>
                     <label className="block text-sm font-medium text-muted-foreground mb-2">Descripción Detallada</label>
-                    <textarea
-                        name="description"
-                        defaultValue={initialData?.description}
-                        placeholder="Describe las responsabilidades, requisitos y beneficios del puesto..."
-                        className="w-full bg-background border-input text-foreground rounded-lg p-4 min-h-[200px] focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-muted-foreground leading-relaxed"
-                        required
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-muted-foreground mb-2">Descripción Detallada</label>
+                        {/* Input oculto para que FormData lo capture al enviar */}
+                        <input type="hidden" name="description" value={description} />
+
+                        <RichTextEditor
+                            value={description}
+                            onChange={setDescription}
+                        />
+                    </div>
                 </div>
             </div>
 

@@ -24,7 +24,7 @@ export function CompaniesView({ companies }: Props) {
                 <div className="flex items-center gap-4 w-full md:w-auto">
                     <AdminSearch />
                     <Link href="/admin/companies/new">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
+                        <Button className="whitespace-nowrap shrink-0">
                             <Building2 className="mr-2 h-4 w-4" />
                             Nueva Empresa
                         </Button>
