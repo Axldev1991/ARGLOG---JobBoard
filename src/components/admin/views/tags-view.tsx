@@ -26,7 +26,38 @@ export function TagsView({ tags }: Props) {
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-x-auto">
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 gap-4 md:hidden">
+                {tags.length === 0 ? (
+                    <div className="p-8 text-center text-slate-400 bg-white rounded-xl border shadow-sm">
+                        No hay tags creados aún.
+                    </div>
+                ) : (
+                    tags.map((tag) => (
+                        <div key={tag.id} className="bg-white p-4 rounded-xl border shadow-sm space-y-3">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                                        #{tag.id} • {tag.type}
+                                    </span>
+                                    <span className="bg-slate-100 text-slate-800 px-3 py-1 rounded-md border font-semibold text-lg inline-block">
+                                        {tag.name}
+                                    </span>
+                                </div>
+                                <TagActions tagId={tag.id} tagName={tag.name} />
+                            </div>
+
+                            <div className="flex items-center gap-2 text-sm text-slate-500 bg-slate-50 p-2 rounded-lg">
+                                <span className="font-medium text-slate-700">Uso:</span>
+                                {tag._count.jobs} ofertas
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block bg-white rounded-xl border shadow-sm overflow-hidden">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-slate-50 border-b">
                         <tr>
