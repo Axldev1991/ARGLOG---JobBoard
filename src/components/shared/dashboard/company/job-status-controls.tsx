@@ -46,13 +46,13 @@ export function JobStatusControls({ jobId, currentStatus }: Props) {
     const getStatusConfig = (status: string) => {
         switch (status) {
             case "PUBLISHED":
-                return { icon: PlayCircle, color: "text-green-600 bg-green-50 border-green-200", label: "Publicada" };
+                return { icon: PlayCircle, color: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20", label: "Publicada" };
             case "PAUSED":
-                return { icon: PauseCircle, color: "text-amber-600 bg-amber-50 border-amber-200", label: "Pausada" };
+                return { icon: PauseCircle, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20", label: "Pausada" };
             case "CLOSED":
-                return { icon: XCircle, color: "text-slate-600 bg-slate-100 border-slate-200", label: "Cerrada" };
+                return { icon: XCircle, color: "text-muted-foreground bg-muted border-border", label: "Cerrada" };
             default:
-                return { icon: MoreHorizontal, color: "text-slate-500", label: status };
+                return { icon: MoreHorizontal, color: "text-muted-foreground", label: status };
         }
     };
 

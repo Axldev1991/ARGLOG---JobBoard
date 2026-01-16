@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
@@ -6,6 +7,7 @@ import { DevTools } from "@/components/shared/dev-tools";
 import { Toaster } from "sonner";
 import { isMaintenanceMode } from "@/lib/system";
 import MaintenanceScreen from "@/components/shared/maintenance-screen";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -37,12 +39,19 @@ export default async function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} font-sans antialiased bg-gray-50`}
+        className={`${outfit.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <Navbar />
-        {children}
-        <DevTools />
-        <Toaster position="top-center" richColors />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar />
+          {children}
+          <DevTools />
+          <Toaster position="top-center" richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

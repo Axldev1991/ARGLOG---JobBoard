@@ -48,14 +48,14 @@ export function EditCandidateForm({ candidate }: { candidate: CandidateProps }) 
     }
 
     return (
-        <div className="bg-white border rounded-xl p-8 shadow-sm">
-            <div className="flex items-center gap-3 mb-6 border-b pb-6">
-                <div className="bg-purple-100 p-3 rounded-lg text-purple-600">
+        <div className="bg-card border border-border rounded-xl p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-6 border-b border-border pb-6">
+                <div className="bg-primary/10 p-3 rounded-lg text-primary">
                     <User size={32} />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Editar Candidato</h1>
-                    <p className="text-slate-500 text-sm">Modifica el perfil profesional del usuario.</p>
+                    <h1 className="text-2xl font-bold text-foreground">Editar Candidato</h1>
+                    <p className="text-muted-foreground text-sm">Modifica el perfil profesional del usuario.</p>
                 </div>
             </div>
 
@@ -63,7 +63,7 @@ export function EditCandidateForm({ candidate }: { candidate: CandidateProps }) 
 
                 {/* SECCIÓN 1: IDENTIDAD */}
                 <div className="space-y-4">
-                    <h2 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Información Básica</h2>
+                    <h2 className="text-sm font-bold uppercase text-muted-foreground tracking-wider">Información Básica</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
@@ -82,8 +82,8 @@ export function EditCandidateForm({ candidate }: { candidate: CandidateProps }) 
                 </div>
 
                 {/* SECCIÓN 2: PERFIL */}
-                <div className="space-y-4 pt-4 border-t">
-                    <h2 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Perfil Profesional</h2>
+                <div className="space-y-4 pt-4 border-t border-border">
+                    <h2 className="text-sm font-bold uppercase text-muted-foreground tracking-wider">Perfil Profesional</h2>
 
                     <div className="space-y-1">
                         <label className="text-sm font-medium">Biografía / Sobre Mí</label>
@@ -116,7 +116,7 @@ export function EditCandidateForm({ candidate }: { candidate: CandidateProps }) 
                     </Link>
                     <Button
                         type="submit"
-                        className="w-2/3 bg-slate-900 hover:bg-slate-800 h-12 text-lg font-semibold"
+                        className="w-2/3 bg-primary hover:bg-primary/90 h-12 text-lg font-semibold text-primary-foreground"
                         disabled={isLoading}
                     >
                         <Save className="mr-2" size={18} />

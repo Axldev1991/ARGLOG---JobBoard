@@ -95,7 +95,7 @@ export default async function Home(props: {
   const totalPages = Math.ceil(totalJobs / PAGE_SIZE);
 
   return (
-    <main className="bg-[#0f172a] min-h-screen pb-20">
+    <main className="bg-background min-h-screen pb-20">
       <Hero user={session} />
 
       <div className="max-w-7xl mx-auto px-6 -mt-10 flex flex-col gap-12">
@@ -108,7 +108,7 @@ export default async function Home(props: {
         )}
 
         {/* 2. FILTROS */}
-        <div className="bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl shadow-2xl shadow-black/50 border border-slate-700/50 z-20">
+        <div className="bg-card/80 backdrop-blur-md p-6 rounded-2xl shadow-2xl shadow-black/5 border border-border z-20">
           <SearchFilters />
         </div>
 

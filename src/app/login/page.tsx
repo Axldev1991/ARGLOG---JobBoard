@@ -37,33 +37,33 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-            <div className="border border-slate-200 p-8 rounded-xl shadow-lg w-full max-w-[400px] bg-white text-slate-900">
+        <main className="flex min-h-screen items-center justify-center bg-muted/50 p-4">
+            <div className="border border-border p-8 rounded-xl shadow-lg w-full max-w-[400px] bg-card text-card-foreground">
                 <form action={handleSubmit} className="flex flex-col gap-5">
                     <div className="text-center mb-2">
-                        <h1 className="font-bold text-3xl text-slate-900">Iniciar Sesión</h1>
-                        <p className="text-slate-500 text-sm mt-1">Ingresa a tu cuenta para continuar</p>
+                        <h1 className="font-bold text-3xl text-foreground">Iniciar Sesión</h1>
+                        <p className="text-muted-foreground text-sm mt-1">Ingresa a tu cuenta para continuar</p>
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase text-slate-500 ml-1">Email</label>
+                        <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Email</label>
                         <Input
                             type="email"
                             name="email"
                             placeholder="ejemplo@correo.com"
                             required
-                            className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                            className="bg-background border-input focus:ring-primary transition-colors"
                         />
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase text-slate-500 ml-1">Contraseña</label>
+                        <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Contraseña</label>
                         <Input
                             type="password"
                             name="password"
                             placeholder="••••••••"
                             required
-                            className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                            className="bg-background border-input focus:ring-primary transition-colors"
                         />
                     </div>
 
@@ -72,10 +72,10 @@ export default function LoginPage() {
                     </Button>
                 </form>
 
-                <div className="mt-8 text-center text-sm border-t border-slate-100 pt-6">
-                    <p className="text-slate-500">
+                <div className="mt-8 text-center text-sm border-t border-border pt-6">
+                    <p className="text-muted-foreground">
                         ¿No tienes cuenta?{" "}
-                        <Link href="/register" className="text-blue-600 hover:text-blue-700 hover:underline font-bold transition-colors">
+                        <Link href="/register" className="text-primary hover:text-primary/80 hover:underline font-bold transition-colors">
                             Regístrate aquí
                         </Link>
                     </p>

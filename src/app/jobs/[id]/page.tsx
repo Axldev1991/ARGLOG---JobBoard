@@ -45,16 +45,16 @@ export default async function JobDetailPage({ params }: Props) {
   const isAvailable = job.status === 'PUBLISHED' && !isExpired;
 
   return (
-    <main className="min-h-screen bg-[#0f172a] pb-20">
+    <main className="min-h-screen bg-background pb-20">
       {/* 1. Header Navigation */}
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-6">
+        <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6">
           <ArrowLeft size={18} />
           Volver a Ofertas
         </Link>
 
         {/* Hero Card */}
-        <div className="bg-[#1e293b] rounded-2xl border border-slate-700/50 p-8 shadow-2xl">
+        <div className="bg-card rounded-2xl border border-border p-8 shadow-2xl">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
               {!isAvailable && (
@@ -63,11 +63,11 @@ export default async function JobDetailPage({ params }: Props) {
                   Esta oferta ha finalizado o expirado
                 </div>
               )}
-              <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-4 leading-tight">
                 {job.title}
               </h1>
 
-              <div className="flex flex-wrap gap-4 text-slate-400 text-sm font-medium">
+              <div className="flex flex-wrap gap-4 text-muted-foreground text-sm font-medium">
                 <div className="flex items-center gap-1.5">
                   <Building2 size={16} className="text-blue-500" />
                   <span>{job.author.name}</span>
@@ -78,7 +78,7 @@ export default async function JobDetailPage({ params }: Props) {
                     <span>{job.location}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-1.5 bg-slate-800 px-2 py-1 rounded text-slate-300">
+                <div className="flex items-center gap-1.5 bg-muted px-2 py-1 rounded text-foreground">
                   <Briefcase size={14} />
                   {job.modality}
                 </div>
@@ -96,11 +96,11 @@ export default async function JobDetailPage({ params }: Props) {
 
         {/* COLUMNA IZQUIERDA: Descripción */}
         <div className="lg:col-span-2 space-y-8">
-          <div className="bg-white rounded-2xl p-8 text-slate-800 shadow-lg">
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
+          <div className="bg-card rounded-2xl p-8 text-card-foreground shadow-lg border border-border">
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 border-b border-border pb-4">
               <FileTextIcon /> Descripción del Puesto
             </h3>
-            <div className="prose max-w-none text-slate-600 leading-relaxed whitespace-pre-line">
+            <div className="prose max-w-none text-muted-foreground leading-relaxed whitespace-pre-line dark:prose-invert">
               {job.description}
             </div>
           </div>
@@ -110,10 +110,10 @@ export default async function JobDetailPage({ params }: Props) {
         <div className="space-y-6">
 
           {/* Tarjeta de Aplicación */}
-          <div className="bg-[#1e293b] border border-slate-700 rounded-2xl p-6 shadow-lg sticky top-8">
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-lg sticky top-8">
             <div className="mb-6">
-              <p className="text-slate-400 text-sm mb-1 uppercase font-bold tracking-wider">Salario Ofrecido</p>
-              <div className="text-2xl font-bold text-white flex items-center gap-2">
+              <p className="text-muted-foreground text-sm mb-1 uppercase font-bold tracking-wider">Salario Ofrecido</p>
+              <div className="text-2xl font-bold text-foreground flex items-center gap-2">
                 <DollarSign className="text-green-400" />
                 {job.salary ? job.salary : 'A convenir'}
               </div>
@@ -123,32 +123,32 @@ export default async function JobDetailPage({ params }: Props) {
               {isAvailable ? (
                 <>
                   <ApplyButton jobId={job.id} hasApplied={hasApplied} />
-                  <p className="text-xs text-slate-500 text-center mt-3">
+                  <p className="text-xs text-muted-foreground text-center mt-3">
                     Al postularte, aceptas compartir tu perfil profesional con la empresa.
                   </p>
                 </>
               ) : (
-                <Button disabled className="w-full bg-slate-700 text-slate-400 cursor-not-allowed">
+                <Button disabled className="w-full bg-muted text-muted-foreground cursor-not-allowed">
                   Postulaciones Cerradas
                 </Button>
               )}
             </div>
 
-            <div className="border-t border-slate-700 pt-6 space-y-4">
+            <div className="border-t border-border pt-6 space-y-4">
               <div>
-                <p className="text-slate-400 text-xs mb-1 uppercase font-bold">Categoría</p>
-                <p className="text-white font-medium">{job.category}</p>
+                <p className="text-muted-foreground text-xs mb-1 uppercase font-bold">Categoría</p>
+                <p className="text-foreground font-medium">{job.category}</p>
               </div>
 
               {/* TAGS */}
               {job.tags && job.tags.length > 0 && (
                 <div>
-                  <p className="text-slate-400 text-xs mb-2 uppercase font-bold flex items-center gap-1">
+                  <p className="text-muted-foreground text-xs mb-2 uppercase font-bold flex items-center gap-1">
                     <TagIcon size={12} /> Habilidades Requeridas
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {job.tags.map(tag => (
-                      <span key={tag.id} className="bg-slate-800 border border-slate-600 text-slate-200 text-xs px-2.5 py-1 rounded-full">
+                      <span key={tag.id} className="bg-muted border border-border text-foreground text-xs px-2.5 py-1 rounded-full">
                         {tag.name}
                       </span>
                     ))}
@@ -159,9 +159,9 @@ export default async function JobDetailPage({ params }: Props) {
           </div>
 
           {/* Tarjeta Extra: Compartir (Placeholder) */}
-          <div className="bg-[#1e293b] border border-slate-700 rounded-2xl p-6 shadow-lg">
-            <h4 className="font-bold text-white mb-4">¿Conoces a alguien?</h4>
-            <Button variant="outline" className="w-full border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white">
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-lg">
+            <h4 className="font-bold text-foreground mb-4">¿Conoces a alguien?</h4>
+            <Button variant="outline" className="w-full border-border text-muted-foreground hover:bg-muted hover:text-foreground">
               Compartir Oferta
             </Button>
           </div>

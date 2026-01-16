@@ -25,23 +25,23 @@ export function CreateTagForm() {
         <form
             ref={formRef}
             action={handleSubmit}
-            className="flex gap-2 items-center bg-slate-50 p-2 rounded-lg border border-slate-200"
+            className="flex gap-2 items-center bg-muted/50 p-2 rounded-lg border border-border"
         >
             <Input
                 name="name"
                 placeholder="Nuevo Tag (ej: Python)"
-                className="bg-white h-9 min-w-[200px]"
+                className="bg-background h-9 min-w-[200px]"
                 required
             />
             <select
                 name="type"
-                className="h-9 rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
                 <option value="tech">Tech</option>
                 <option value="location">Ubicación</option>
                 <option value="role">Rol</option>
             </select>
-            <Button type="submit" size="sm" className="bg-slate-900 text-white hover:bg-slate-800">
+            <Button type="submit" size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                 <Plus size={16} className="mr-1" /> Agregar
             </Button>
         </form>

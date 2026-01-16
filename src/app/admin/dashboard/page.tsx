@@ -93,8 +93,8 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
 
 
     return (
-        <main className="p-10 bg-gray-50 min-h-screen font-sans">
-            <h1 className="text-3xl font-bold mb-8 text-slate-900">Panel de Control</h1>
+        <main className="p-10 bg-background min-h-screen font-sans">
+            <h1 className="text-3xl font-bold mb-8 text-foreground">Panel de Control</h1>
 
             {/* SELECCIÓN DE VISTA (Tablero) */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -102,12 +102,12 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
                 <Link
                     href="/admin/dashboard?view=companies"
                     className={`group p-6 rounded-xl border transition-all ${view === 'companies'
-                        ? 'bg-blue-50 border-blue-200 shadow-md ring-1 ring-blue-200'
-                        : 'bg-white hover:shadow-lg hover:border-blue-200'
+                        ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 shadow-md ring-1 ring-blue-200 dark:ring-blue-500/20'
+                        : 'bg-card hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-500/50'
                         }`}
                 >
                     <div className="flex items-center justify-between mb-2">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'companies' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'companies' ? 'bg-blue-600 text-white' : 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white'
                             }`}>
                             <Building2 size={24} />
                         </div>
@@ -116,10 +116,10 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
 
                     <div className="flex justify-between items-end">
                         <div>
-                            <h3 className={`text-lg font-bold ${view === 'companies' ? 'text-blue-900' : 'text-slate-800'}`}>Empresas</h3>
-                            <p className="text-slate-500 text-sm mt-1">Control B2B y accesos.</p>
+                            <h3 className={`text-lg font-bold ${view === 'companies' ? 'text-blue-700 dark:text-blue-400' : 'text-foreground'}`}>Empresas</h3>
+                            <p className="text-muted-foreground text-sm mt-1">Control B2B y accesos.</p>
                         </div>
-                        <span className="text-2xl font-bold text-slate-700">{companies.length}</span>
+                        <span className="text-2xl font-bold text-foreground">{companies.length}</span>
                     </div>
                 </Link>
 
@@ -127,12 +127,12 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
                 <Link
                     href="/admin/dashboard?view=candidates"
                     className={`group p-6 rounded-xl border transition-all ${view === 'candidates'
-                        ? 'bg-purple-50 border-purple-200 shadow-md ring-1 ring-purple-200'
-                        : 'bg-white hover:shadow-lg hover:border-purple-200'
+                        ? 'bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20 shadow-md ring-1 ring-purple-200 dark:ring-purple-500/20'
+                        : 'bg-card hover:shadow-lg hover:border-purple-200 dark:hover:border-purple-500/50'
                         }`}
                 >
                     <div className="flex items-center justify-between mb-2">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'candidates' ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-purple-100'
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'candidates' ? 'bg-purple-600 text-white' : 'bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-purple-100'
                             }`}>
                             <Users size={24} />
                         </div>
@@ -141,10 +141,10 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
 
                     <div className="flex justify-between items-end">
                         <div>
-                            <h3 className={`text-lg font-bold ${view === 'candidates' ? 'text-purple-900' : 'text-slate-800'}`}>Candidatos</h3>
-                            <p className="text-slate-500 text-sm mt-1">Talento registrado.</p>
+                            <h3 className={`text-lg font-bold ${view === 'candidates' ? 'text-purple-700 dark:text-purple-400' : 'text-foreground'}`}>Candidatos</h3>
+                            <p className="text-muted-foreground text-sm mt-1">Talento registrado.</p>
                         </div>
-                        <span className="text-2xl font-bold text-slate-700">{candidates.length}</span>
+                        <span className="text-2xl font-bold text-foreground">{candidates.length}</span>
                     </div>
                 </Link>
 
@@ -152,12 +152,12 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
                 <Link
                     href="/admin/dashboard?view=tags"
                     className={`group p-6 rounded-xl border transition-all ${view === 'tags'
-                        ? 'bg-green-50 border-green-200 shadow-md ring-1 ring-green-200'
-                        : 'bg-white hover:shadow-lg hover:border-green-200'
+                        ? 'bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 shadow-md ring-1 ring-green-200 dark:ring-green-500/20'
+                        : 'bg-card hover:shadow-lg hover:border-green-200 dark:hover:border-green-500/50'
                         }`}
                 >
                     <div className="flex items-center justify-between mb-2">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'tags' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-600 group-hover:bg-green-600 group-hover:text-white'
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'tags' ? 'bg-green-600 text-white' : 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 group-hover:bg-green-600 group-hover:text-white'
                             }`}>
                             <Tags size={24} />
                         </div>
@@ -166,10 +166,10 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
 
                     <div className="flex justify-between items-end">
                         <div>
-                            <h3 className={`text-lg font-bold ${view === 'tags' ? 'text-green-900' : 'text-slate-800'}`}>Habilidades</h3>
-                            <p className="text-slate-500 text-sm mt-1">Diccionario de tags.</p>
+                            <h3 className={`text-lg font-bold ${view === 'tags' ? 'text-green-700 dark:text-green-400' : 'text-foreground'}`}>Habilidades</h3>
+                            <p className="text-muted-foreground text-sm mt-1">Diccionario de tags.</p>
                         </div>
-                        <span className="text-2xl font-bold text-slate-700">{tags.length}</span>
+                        <span className="text-2xl font-bold text-foreground">{tags.length}</span>
                     </div>
                 </Link>
 
@@ -177,12 +177,12 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
                 <Link
                     href="/admin/dashboard?view=jobs"
                     className={`group p-6 rounded-xl border transition-all ${view === 'jobs'
-                        ? 'bg-orange-50 border-orange-200 shadow-md ring-1 ring-orange-200'
-                        : 'bg-white hover:shadow-lg hover:border-orange-200'
+                        ? 'bg-orange-50 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20 shadow-md ring-1 ring-orange-200 dark:ring-orange-500/20'
+                        : 'bg-card hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-500/50'
                         }`}
                 >
                     <div className="flex items-center justify-between mb-2">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'jobs' ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-600 group-hover:bg-orange-600 group-hover:text-white'
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${view === 'jobs' ? 'bg-orange-600 text-white' : 'bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 group-hover:bg-orange-600 group-hover:text-white'
                             }`}>
                             <Briefcase size={24} />
                         </div>
@@ -191,10 +191,10 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
 
                     <div className="flex justify-between items-end">
                         <div>
-                            <h3 className={`text-lg font-bold ${view === 'jobs' ? 'text-orange-900' : 'text-slate-800'}`}>Ofertas</h3>
-                            <p className="text-slate-500 text-sm mt-1">Moderación de contenido.</p>
+                            <h3 className={`text-lg font-bold ${view === 'jobs' ? 'text-orange-700 dark:text-orange-400' : 'text-foreground'}`}>Ofertas</h3>
+                            <p className="text-muted-foreground text-sm mt-1">Moderación de contenido.</p>
                         </div>
-                        <span className="text-2xl font-bold text-slate-700">{jobs.length}</span>
+                        <span className="text-2xl font-bold text-foreground">{jobs.length}</span>
                     </div>
                 </Link>
             </div>

@@ -14,8 +14,8 @@ export function TagPill({ label, selected, onClick }: TagPillProps) {
             className={`
                 text-xs px-3 py-1.5 rounded-full border transition-all font-medium
                 ${selected
-                    ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-500"
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                    : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-primary"
                 }
             `}
         >

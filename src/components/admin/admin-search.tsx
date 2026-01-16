@@ -33,12 +33,12 @@ export function AdminSearch() {
 
     return (
         <div className="relative w-full max-w-sm">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 <Search size={18} />
             </div>
             <Input
                 placeholder="Buscar..."
-                className="pl-10 bg-white border-slate-200 focus-visible:ring-blue-500"
+                className="pl-10 bg-background border-input focus-visible:ring-primary"
                 onChange={(e) => handleSearch(e.target.value)}
                 defaultValue={searchParams.get("q")?.toString()}
             />

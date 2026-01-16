@@ -22,15 +22,15 @@ export function FeaturedCarousel({ jobs }: { jobs: any[] }) {
     return (
         <div className="w-full relative group">
             <div className="flex items-center justify-between mb-4 px-2">
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                    <Sparkles className="text-amber-400" size={20} /> Últimas Novedades
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                    <Sparkles className="text-amber-500" size={20} /> Últimas Novedades
                 </h2>
                 <div className="flex gap-2">
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={scrollPrev}
-                        className="h-8 w-8 rounded-full bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
+                        className="h-8 w-8 rounded-full bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
                     >
                         <ChevronLeft size={16} />
                     </Button>
@@ -38,7 +38,7 @@ export function FeaturedCarousel({ jobs }: { jobs: any[] }) {
                         variant="ghost"
                         size="icon"
                         onClick={scrollNext}
-                        className="h-8 w-8 rounded-full bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white"
+                        className="h-8 w-8 rounded-full bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
                     >
                         <ChevronRight size={16} />
                     </Button>
@@ -50,37 +50,37 @@ export function FeaturedCarousel({ jobs }: { jobs: any[] }) {
                     {jobs.map((job) => (
                         <div key={job.id} className="flex-[0_0_100%] md:flex-[0_0_45%] lg:flex-[0_0_32%] min-w-0">
                             <Link href={`/jobs/${job.id}`} className="block h-full">
-                                <div className="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 h-full hover:border-blue-500/50 transition-all hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:-translate-y-1 relative group/card overflow-hidden">
+                                <div className="bg-card border border-border rounded-2xl p-6 h-full hover:border-primary/50 transition-all hover:shadow-[0_0_30px_rgba(var(--primary),0.1)] hover:-translate-y-1 relative group/card overflow-hidden">
                                     {/* Gradiente sutil */}
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
 
                                     <div className="relative z-10 flex flex-col h-full">
 
                                         <div className="flex justify-between items-start mb-4">
                                             {/* Icono de Empresa Consistente (Sin emoji) */}
-                                            <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400">
+                                            <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
                                                 <Building2 size={20} />
                                             </div>
-                                            <span className="text-xs font-bold text-blue-400 bg-blue-400/10 px-2 py-1 rounded-full border border-blue-400/20">
+                                            <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-full border border-primary/20">
                                                 NUEVO
                                             </span>
                                         </div>
 
-                                        <h3 className="text-lg font-bold text-white mb-1 line-clamp-1 group-hover/card:text-blue-400 transition-colors">
+                                        <h3 className="text-lg font-bold text-foreground mb-1 line-clamp-1 group-hover/card:text-primary transition-colors">
                                             {job.title}
                                         </h3>
-                                        <div className="text-sm text-slate-400 mb-4 flex items-center gap-2">
+                                        <div className="text-sm text-muted-foreground mb-4 flex items-center gap-2">
                                             <Building2 size={14} />
                                             {job.author?.name || "Empresa Confidencial"}
                                         </div>
 
                                         <div className="mt-auto space-y-3">
-                                            <div className="flex flex-wrap gap-2 text-xs text-slate-300">
-                                                <span className="bg-slate-800/50 px-2 py-1 rounded-md flex items-center gap-1 border border-slate-700/50">
-                                                    <Briefcase size={12} className="text-slate-400" /> {job.modality}
+                                            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                                                <span className="bg-muted px-2 py-1 rounded-md flex items-center gap-1 border border-border">
+                                                    <Briefcase size={12} className="text-muted-foreground" /> {job.modality}
                                                 </span>
-                                                <span className="bg-slate-800/50 px-2 py-1 rounded-md flex items-center gap-1 border border-slate-700/50">
-                                                    <MapPin size={12} className="text-emerald-400" /> {job.location || "Remoto"}
+                                                <span className="bg-muted px-2 py-1 rounded-md flex items-center gap-1 border border-border">
+                                                    <MapPin size={12} className="text-emerald-500" /> {job.location || "Remoto"}
                                                 </span>
                                             </div>
                                         </div>

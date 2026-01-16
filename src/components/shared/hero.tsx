@@ -15,35 +15,35 @@ export function Hero({ user }: HeroProps) {
   const isGuest = !user;
 
   return (
-    <div className="bg-[#0f172a] text-white pt-20 pb-24 px-6 relative overflow-hidden">
+    <div className="bg-background text-foreground pt-20 pb-24 px-6 relative overflow-hidden transition-colors duration-300">
       {/* Efecto de fondo (opcional, una luz violeta sutil) */}
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-indigo-500/10 blur-[100px]"></div>
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[100px]"></div>
 
       <div className="max-w-6xl mx-auto text-center relative z-10">
         <h1 className="text-5xl md:text-6xl font-extrabold mt-6 leading-tight">
           El Hub del Talento <br />
-          <span className="text-white">
+          <span className="text-primary">
             Logístico & Operativo.
           </span>
         </h1>
 
-        <p className="text-slate-400 mt-6 text-lg max-w-2xl mx-auto">
+        <p className="text-muted-foreground mt-6 text-lg max-w-2xl mx-auto">
           Conectamos a las empresas líderes con los profesionales que mueven el mundo. Simple, rápido y efectivo.
         </p>
 
         {/* Las 3 Estadísticas */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto mt-12 border-t border-slate-800 pt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto mt-12 border-t border-border pt-8">
           <div>
             <div className="text-3xl font-bold">128</div>
-            <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">Oportunidades</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Oportunidades</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-blue-400">840</div>
-            <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">Talentos</div>
+            <div className="text-3xl font-bold text-primary">840</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Talentos</div>
           </div>
           <div>
             <div className="text-3xl font-bold">42</div>
-            <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">Empresas</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-widest mt-1">Empresas</div>
           </div>
         </div>
 

@@ -40,13 +40,13 @@ export default function RegisterPage() {
     };
 
     return (
-        <main className="flex min-h-screen items-center justify-center bg-gray-50/50 p-6">
-            <div className="border border-slate-200 p-8 rounded-2xl shadow-xl w-full max-w-md bg-white text-slate-900">
+        <main className="flex min-h-screen items-center justify-center bg-muted/50 p-6">
+            <div className="border border-border p-8 rounded-2xl shadow-xl w-full max-w-md bg-card text-card-foreground">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight">
                         Únete a ArLog
                     </h1>
-                    <p className="text-slate-500 mt-2 text-sm">
+                    <p className="text-muted-foreground mt-2 text-sm">
                         Crea tu perfil profesional y encuentra tu próximo desafío.
                     </p>
                 </div>
@@ -57,18 +57,18 @@ export default function RegisterPage() {
                     <input type="hidden" name="role" value="candidate" />
 
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase text-slate-500 ml-1">Nombre Completo</label>
-                        <Input type="text" name="name" placeholder="Ej: Juan Pérez" required className="bg-slate-50 border-slate-200 focus:bg-white" />
+                        <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Nombre Completo</label>
+                        <Input type="text" name="name" placeholder="Ej: Juan Pérez" required className="bg-background border-input focus:ring-primary" />
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase text-slate-500 ml-1">Email</label>
-                        <Input type="email" name="email" placeholder="nombre@ejemplo.com" required className="bg-slate-50 border-slate-200 focus:bg-white" />
+                        <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Email</label>
+                        <Input type="email" name="email" placeholder="nombre@ejemplo.com" required className="bg-background border-input focus:ring-primary" />
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase text-slate-500 ml-1">Contraseña</label>
-                        <Input type="password" name="password" placeholder="••••••••" required minLength={6} className="bg-slate-50 border-slate-200 focus:bg-white" />
+                        <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Contraseña</label>
+                        <Input type="password" name="password" placeholder="••••••••" required minLength={6} className="bg-background border-input focus:ring-primary" />
                     </div>
 
                     <Button
@@ -80,10 +80,10 @@ export default function RegisterPage() {
                     </Button>
                 </form>
 
-                <div className="mt-8 text-center text-sm border-t border-slate-100 pt-6">
-                    <p className="text-slate-500">
+                <div className="mt-8 text-center text-sm border-t border-border pt-6">
+                    <p className="text-muted-foreground">
                         ¿Ya tienes cuenta?{" "}
-                        <Link href="/login" className="text-blue-600 hover:text-blue-700 hover:underline font-bold transition-colors">
+                        <Link href="/login" className="text-primary hover:text-primary/80 hover:underline font-bold transition-colors">
                             Inicia sesión
                         </Link>
                     </p>

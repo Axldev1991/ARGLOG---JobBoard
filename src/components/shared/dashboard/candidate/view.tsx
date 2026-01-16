@@ -16,18 +16,18 @@ export function CandidateView({ user, applications = [] }: { user: any, applicat
             {/* Header: Bienvenida */}
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Hola, {user.name}</h1>
-                    <p className="text-slate-400">Bienvenido a tu panel de control.</p>
+                    <h1 className="text-3xl font-bold text-foreground">Hola, {user.name}</h1>
+                    <p className="text-muted-foreground">Bienvenido a tu panel de control.</p>
                 </div>
             </div>
 
             {/* Warning Banner: Perfil Incompleto */}
             {!profileComplete && (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 flex items-start gap-3">
-                    <AlertCircle className="text-amber-600 mt-1" size={24} />
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-8 flex items-start gap-3">
+                    <AlertCircle className="text-amber-600 dark:text-amber-500 mt-1" size={24} />
                     <div>
-                        <h3 className="font-bold text-amber-900">Tu perfil está incompleto</h3>
-                        <p className="text-amber-700 text-sm">
+                        <h3 className="font-bold text-amber-900 dark:text-amber-500">Tu perfil está incompleto</h3>
+                        <p className="text-amber-700 dark:text-amber-400/80 text-sm">
                             Para poder postularte a las ofertas, necesitas completar tu información profesional y subir tu CV.
                         </p>
                     </div>

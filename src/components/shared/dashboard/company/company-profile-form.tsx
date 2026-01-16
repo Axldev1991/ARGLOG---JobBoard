@@ -47,19 +47,20 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
     };
 
     return (
-        <form action={handleSubmit} className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 w-full">
-            <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                <Building2 className="text-blue-600" />
+        <form action={handleSubmit} className="bg-card rounded-xl border border-border shadow-sm p-8 w-full">
+            <h2 className="text-xl font-bold text-card-foreground mb-6 flex items-center gap-2">
+                <Building2 className="text-primary" />
                 Información de la Empresa
             </h2>
 
             <div className="space-y-6">
 
                 {/* LOGO */}
+                {/* LOGO */}
                 <div>
-                    <Label className="mb-2 block text-slate-700">Logo de la Empresa</Label>
+                    <Label className="mb-2 block text-muted-foreground">Logo de la Empresa</Label>
                     <div className="flex items-center gap-6">
-                        <div className="w-24 h-24 rounded-lg bg-slate-50 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative group">
+                        <div className="w-24 h-24 rounded-lg bg-muted/50 border-2 border-dashed border-border flex items-center justify-center overflow-hidden relative group">
                             {previewUrl ? (
                                 <Image
                                     src={previewUrl}
@@ -68,11 +69,11 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                                     className="object-cover"
                                 />
                             ) : (
-                                <ImageIcon className="text-slate-300" size={32} />
+                                <ImageIcon className="text-muted-foreground" size={32} />
                             )}
                         </div>
                         <div className="flex-1">
-                            <Label htmlFor="logo-upload" className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+                            <Label htmlFor="logo-upload" className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium text-foreground hover:bg-muted/50 transition-colors shadow-sm">
                                 <Upload size={16} />
                                 {previewUrl ? "Cambiar Logo" : "Subir Logo"}
                             </Label>
@@ -84,7 +85,7 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                                 className="hidden"
                                 onChange={handleFileChange}
                             />
-                            <p className="text-xs text-slate-500 mt-2">
+                            <p className="text-xs text-muted-foreground mt-2">
                                 Recomendado: 200x200px (JPG, PNG). Máx 2MB.
                             </p>
                         </div>
@@ -93,24 +94,24 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <Label htmlFor="legalName" className="text-slate-700">Razón Social / Nombre Comercial</Label>
+                        <Label htmlFor="legalName" className="text-foreground">Razón Social / Nombre Comercial</Label>
                         <Input
                             id="legalName"
                             name="legalName"
                             defaultValue={profile?.legalName || ""}
                             required
-                            className="mt-1.5"
+                            className="mt-1.5 bg-background border-input"
                             placeholder="Ej: Tech Solutions Inc."
                         />
                     </div>
                     <div>
-                        <Label htmlFor="industry" className="text-slate-700">Industria / Sector</Label>
+                        <Label htmlFor="industry" className="text-foreground">Industria / Sector</Label>
                         <div className="relative mt-1.5">
                             <select
                                 id="industry"
                                 name="industry"
                                 defaultValue={profile?.industry || "Tecnología"}
-                                className="w-full h-10 pl-3 pr-10 bg-white border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                                className="w-full h-10 pl-3 pr-10 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent appearance-none text-foreground"
                             >
                                 <option value="Tecnología">Tecnología & Software</option>
                                 <option value="Finanzas">Finanzas & Fintech</option>
@@ -126,36 +127,36 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                 </div>
 
                 <div>
-                    <Label htmlFor="website" className="text-slate-700">Sitio Web</Label>
+                    <Label htmlFor="website" className="text-foreground">Sitio Web</Label>
                     <div className="relative mt-1.5">
-                        <Globe size={16} className="absolute left-3 top-3 text-slate-400" />
+                        <Globe size={16} className="absolute left-3 top-3 text-muted-foreground" />
                         <Input
                             id="website"
                             name="website"
                             defaultValue={profile?.website || ""}
-                            className="pl-9"
+                            className="pl-9 bg-background border-input"
                             placeholder="https://tuempresa.com"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <Label htmlFor="description" className="text-slate-700">Descripción de la Empresa</Label>
+                    <Label htmlFor="description" className="text-foreground">Descripción de la Empresa</Label>
                     <div className="relative mt-1.5">
                         <textarea
                             id="description"
                             name="description"
                             defaultValue={profile?.description || ""}
                             rows={4}
-                            className="w-full p-3 bg-white border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-slate-400"
+                            className="w-full p-3 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground text-foreground"
                             placeholder="Cuéntanos qué hace tu empresa, su cultura y misión..."
                         />
                     </div>
-                    <p className="text-xs text-slate-500 mt-1 text-right">Esta info aparecerá en tus ofertas.</p>
+                    <p className="text-xs text-muted-foreground mt-1 text-right">Esta info aparecerá en tus ofertas.</p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex justify-end">
-                    <Button type="submit" disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white min-w-[140px]">
+                <div className="pt-4 border-t border-border flex justify-end">
+                    <Button type="submit" disabled={isSaving} className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[140px]">
                         {isSaving ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

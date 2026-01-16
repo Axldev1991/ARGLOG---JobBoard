@@ -29,11 +29,11 @@ export function SearchFilters() {
         <div className="w-full">
             <form onSubmit={handleSubmit} className="flex gap-4 flex-col md:flex-row">
                 <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                     <Input
                         name="q"
                         placeholder="Buscar por puesto o palabra clave..."
-                        className="pl-10 bg-slate-800 border-slate-600 text-white placeholder:text-slate-500 focus-visible:ring-blue-500 h-10"
+                        className="pl-10 h-10"
                         defaultValue={searchParams.get("q")?.toString()}
                     />
                 </div>
@@ -41,9 +41,9 @@ export function SearchFilters() {
                 <select
                     name="category"
                     defaultValue={searchParams.get("category")?.toString()}
-                    className="bg-slate-800 border border-slate-600 text-white p-2 rounded-md text-sm h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400"
+                    className="flex h-10 w-full md:w-auto items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    <option value="" className="text-slate-400">Todas las Categorías</option>
+                    <option value="" className="text-muted-foreground">Todas las Categorías</option>
                     {JOB_CATEGORIES.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                     ))}
@@ -52,9 +52,9 @@ export function SearchFilters() {
                 <select
                     name="modality"
                     defaultValue={searchParams.get("modality")?.toString()}
-                    className="bg-slate-800 border border-slate-600 text-white p-2 rounded-md text-sm h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400"
+                    className="flex h-10 w-full md:w-auto items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    <option value="" className="text-slate-400">Cualquier Modalidad</option>
+                    <option value="" className="text-muted-foreground">Cualquier Modalidad</option>
                     {JOB_MODALITIES.map(mod => (
                         <option key={mod} value={mod}>{mod}</option>
                     ))}

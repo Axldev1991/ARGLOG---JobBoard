@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Menu, LogOut, LayoutDashboard, User as UserIcon, Building2, Briefcase, PlusCircle } from "lucide-react";
-import { logout } from "@/actions/logout";
+import { useTheme } from "next-themes";
+import { Menu, LogOut, LayoutDashboard, User as UserIcon, Building2, Briefcase, PlusCircle, Sun, Moon, Laptop } from "lucide-react";
 
 interface NavbarClientProps {
     user?: {
@@ -22,6 +22,7 @@ interface NavbarClientProps {
 export function NavbarClient({ user }: NavbarClientProps) {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    const { setTheme, theme } = useTheme();
 
     // Helpers
     const isActive = (path: string) => pathname === path;
@@ -43,7 +44,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
     const dashboardLink = (isAdmin || isDev) ? "/admin/dashboard" : "/dashboard";
 
     return (
-        <nav className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
+        <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
             <div className="container px-4 md:px-6 mx-auto h-16 flex items-center justify-between">
 
                 {/* LOGO */}
@@ -60,7 +61,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`text-sm font-medium transition-colors hover:text-blue-600 ${isActive(item.href) ? "text-blue-600 font-bold" : "text-slate-600"
+                            className={`text-sm font-medium transition-colors hover:text-primary ${isActive(item.href) ? "text-primary font-bold" : "text-muted-foreground"
                                 }`}
                         >
                             {item.label}
@@ -121,7 +122,25 @@ export function NavbarClient({ user }: NavbarClientProps) {
                                 )}
 
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600 focus:text-red-600 cursor-pointer" onSelect={async () => await logout()}>
+                                <DropdownMenuLabel>Tema</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => setTheme("light")} className="cursor-pointer">
+                                    <Sun className="mr-2 h-4 w-4" />
+                                    <span>Claro</span>
+                                    {theme === 'light' && <span className="ml-auto text-xs">✓</span>}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setTheme("dark")} className="cursor-pointer">
+                                    <Moon className="mr-2 h-4 w-4" />
+                                    <span>Oscuro</span>
+                                    {theme === 'dark' && <span className="ml-auto text-xs">✓</span>}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setTheme("system")} className="cursor-pointer">
+                                    <Laptop className="mr-2 h-4 w-4" />
+                                    <span>Sistema</span>
+                                    {theme === 'system' && <span className="ml-auto text-xs">✓</span>}
+                                </DropdownMenuItem>
+
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer" onSelect={async () => await logout()}>
                                     <LogOut className="mr-2 h-4 w-4" />
                                     <span>Cerrar Sesión</span>
                                 </DropdownMenuItem>
@@ -129,6 +148,22 @@ export function NavbarClient({ user }: NavbarClientProps) {
                         </DropdownMenu>
                     ) : (
                         <div className="hidden md:flex gap-2">
+                            {/* Theme Toggle for Non-Logged Users */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="mr-2">
+                                        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                                        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                                        <span className="sr-only">Toggle theme</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => setTheme("light")}>Claro</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setTheme("dark")}>Oscuro</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setTheme("system")}>Sistema</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
                             <Link href="/login">
                                 <Button variant="ghost" size="sm">Ingresar</Button>
                             </Link>
@@ -143,7 +178,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                     {/* MOBILE MENU (Sheet) */}
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="md:hidden text-slate-600">
+                            <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground">
                                 <Menu size={24} />
                                 <span className="sr-only">Menu</span>
                             </Button>
@@ -163,8 +198,8 @@ export function NavbarClient({ user }: NavbarClientProps) {
                                         href={item.href}
                                         onClick={() => setIsOpen(false)}
                                         className={`px-4 py-3 rounded-md text-sm font-medium transition-colors ${isActive(item.href)
-                                                ? "bg-blue-50 text-blue-700"
-                                                : "hover:bg-slate-50 text-slate-700"
+                                            ? "bg-accent text-accent-foreground"
+                                            : "hover:bg-accent/50 text-muted-foreground"
                                             }`}
                                     >
                                         {item.label}

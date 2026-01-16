@@ -49,14 +49,14 @@ export function EditCompanyForm({ company }: { company: CompanyProps }) {
     }
 
     return (
-        <div className="bg-white border rounded-xl p-8 shadow-sm">
-            <div className="flex items-center gap-3 mb-6 border-b pb-6">
-                <div className="bg-amber-100 p-3 rounded-lg text-amber-600">
+        <div className="bg-card border border-border rounded-xl p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-6 border-b border-border pb-6">
+                <div className="bg-amber-500/10 p-3 rounded-lg text-amber-600 dark:text-amber-500">
                     <Building2 size={32} />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Editar Empresa</h1>
-                    <p className="text-slate-500 text-sm">Modifica los datos comerciales o legales.</p>
+                    <h1 className="text-2xl font-bold text-foreground">Editar Empresa</h1>
+                    <p className="text-muted-foreground text-sm">Modifica los datos comerciales o legales.</p>
                 </div>
             </div>
 
@@ -64,7 +64,7 @@ export function EditCompanyForm({ company }: { company: CompanyProps }) {
 
                 {/* SECCIÓN 1: IDENTIDAD COMERCIAL */}
                 <div className="space-y-4">
-                    <h2 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Identidad Comercial</h2>
+                    <h2 className="text-sm font-bold uppercase text-muted-foreground tracking-wider">Identidad Comercial</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
@@ -79,8 +79,8 @@ export function EditCompanyForm({ company }: { company: CompanyProps }) {
                 </div>
 
                 {/* SECCIÓN 2: DATOS LEGALES */}
-                <div className="space-y-4 pt-4 border-t">
-                    <h2 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Datos Fiscales</h2>
+                <div className="space-y-4 pt-4 border-t border-border">
+                    <h2 className="text-sm font-bold uppercase text-muted-foreground tracking-wider">Datos Fiscales</h2>
 
                     <div className="space-y-1">
                         <label className="text-sm font-medium">Razón Social</label>
@@ -100,8 +100,8 @@ export function EditCompanyForm({ company }: { company: CompanyProps }) {
                 </div>
 
                 {/* SECCIÓN 3: CONTACTO */}
-                <div className="space-y-4 pt-4 border-t">
-                    <h2 className="text-sm font-bold uppercase text-slate-400 tracking-wider">Contacto</h2>
+                <div className="space-y-4 pt-4 border-t border-border">
+                    <h2 className="text-sm font-bold uppercase text-muted-foreground tracking-wider">Contacto</h2>
                     <div className="space-y-1">
                         <label className="text-sm font-medium">Email del Responsable</label>
                         <Input type="email" name="email" defaultValue={company.email} required />
@@ -114,7 +114,7 @@ export function EditCompanyForm({ company }: { company: CompanyProps }) {
                     </Link>
                     <Button
                         type="submit"
-                        className="w-2/3 bg-slate-900 hover:bg-slate-800 h-12 text-lg font-semibold"
+                        className="w-2/3 bg-primary hover:bg-primary/90 h-12 text-lg font-semibold text-primary-foreground"
                         disabled={isLoading}
                     >
                         <Save className="mr-2" size={18} />

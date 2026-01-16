@@ -7,17 +7,17 @@ export function ApplicationList({ applications = [] }: { applications?: any[] })
 
     return (
         <div className="lg:col-span-3 mt-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Mis Postulaciones</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Mis Postulaciones</h2>
 
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
                 {applications.length === 0 ? (
-                    <div className="p-12 text-center text-slate-500">
-                        <Briefcase className="mx-auto mb-3 text-slate-300" size={48} />
+                    <div className="p-12 text-center text-muted-foreground">
+                        <Briefcase className="mx-auto mb-3 text-muted-foreground/50" size={48} />
                         <p>Aún no te has postulado a ninguna oferta.</p>
                     </div>
                 ) : (
-                    <table className="w-full text-left text-sm text-slate-600">
-                        <thead className="bg-slate-50 border-b border-slate-100 text-slate-900 font-semibold uppercase text-xs">
+                    <table className="w-full text-left text-sm text-muted-foreground">
+                        <thead className="bg-muted/50 border-b border-border text-foreground font-semibold uppercase text-xs">
                             <tr>
                                 <th className="px-6 py-4">Puesto</th>
                                 <th className="px-6 py-4">Estado</th>
@@ -25,19 +25,19 @@ export function ApplicationList({ applications = [] }: { applications?: any[] })
                                 <th className="px-6 py-4 text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-border">
                             {applications.map((app) => (
-                                <tr key={app.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-slate-900">
-                                        <Link href={`/jobs/${app.job.id}`} className="hover:text-blue-600 hover:underline">
+                                <tr key={app.id} className="hover:bg-muted/50 transition-colors">
+                                    <td className="px-6 py-4 font-medium text-foreground">
+                                        <Link href={`/jobs/${app.job.id}`} className="hover:text-primary hover:underline">
                                             {app.job.title}
                                         </Link>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-bold 
-                                            ${app.status === 'PENDING' ? 'bg-blue-100 text-blue-700' : ''}
-                                            ${app.status === 'HIRED' ? 'bg-green-100 text-green-700' : ''}
-                                            ${app.status === 'REJECTED' ? 'bg-red-100 text-red-700' : ''}
+                                            ${app.status === 'PENDING' ? 'bg-blue-500/10 text-blue-500' : ''}
+                                            ${app.status === 'HIRED' ? 'bg-green-500/10 text-green-500' : ''}
+                                            ${app.status === 'REJECTED' ? 'bg-destructive/10 text-destructive' : ''}
                                         `}>
                                             {app.status === 'PENDING' ? 'En Revisión' : app.status}
                                         </span>

@@ -40,31 +40,31 @@ export function RoleCard({
 
 
     return (
-        <div className={`bg-slate-800/50 p-8 rounded-2xl border border-slate-700 transition-colors group flex flex-col h-full ${borderClass}`}>
-            <div className={`w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center mb-4 text-white transition-colors ${iconBgClass}`}>
+        <div className={`bg-card p-8 rounded-2xl border border-border transition-colors group flex flex-col h-full ${borderClass} shadow-sm hover:shadow-md`}>
+            <div className={`w-10 h-10 bg-muted rounded-full flex items-center justify-center mb-4 text-primary-foreground transition-colors ${iconBgClass}`}>
                 {icon}
             </div>
 
-            <h3 className="text-xl font-bold mb-2">{title}</h3>
-            <p className="text-slate-400 text-sm mb-6">{description}</p>
+            <h3 className="text-xl font-bold mb-2 text-card-foreground">{title}</h3>
+            <p className="text-muted-foreground text-sm mb-6">{description}</p>
 
             <div className="grid grid-cols-2 gap-4 mt-auto">
                 {/* Botón Primario (puede ser Link o Botón normal) */}
                 {primaryAction.href ? (
                     <Link href={primaryAction.href} className="w-full">
-                        <Button className={`w-full font-bold h-12 text-white ${btnClass}`}>
+                        <Button className={`w-full font-bold h-12 text-primary-foreground ${btnClass}`}>
                             {primaryAction.label}
                         </Button>
                     </Link>
                 ) : (
-                    <Button className={`w-full font-bold h-12 text-white ${btnClass}`} onClick={primaryAction.onClick}>
+                    <Button className={`w-full font-bold h-12 text-primary-foreground ${btnClass}`} onClick={primaryAction.onClick}>
                         {primaryAction.label}
                     </Button>
                 )}
 
                 {/* Botón Secundario (Siempre Link Outline) */}
                 <Link href={secondaryAction.href} className="w-full">
-                    <Button variant="outline" className="w-full h-12 border-slate-600 bg-white text-slate-900 hover:bg-slate-100 font-bold">
+                    <Button variant="outline" className="w-full h-12 border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground font-bold">
                         {secondaryAction.label}
                     </Button>
                 </Link>
