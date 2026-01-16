@@ -108,7 +108,8 @@ async function main() {
         { name: "Sofía Martínez", email: "sofia.martinez.demo@test.com", headline: "Product Manager", role: "candidate" }
     ];
 
-    const placeholderPassword = process.env.SEED_CANDIDATE_PASSWORD || 'password123';
+    const placeholderPassword = process.env.SEED_CANDIDATE_PASSWORD;
+    if (!placeholderPassword) throw new Error("SEED_CANDIDATE_PASSWORD must be set in .env");
     const passwordHash = await hash(placeholderPassword, 10);
 
     for (const c of candidatesData) {

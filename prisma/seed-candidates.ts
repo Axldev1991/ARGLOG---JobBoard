@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
     console.log('🌱 Iniciando siembra de candidatos...');
+    if (!process.env.SEED_CANDIDATE_PASSWORD) throw new Error("SEED_CANDIDATE_PASSWORD must be set in .env");
 
     // 1. Obtener todas las ofertas existentes para postularse
     const jobs = await prisma.job.findMany();
@@ -35,7 +36,7 @@ async function main() {
             create: {
                 email: data.email,
                 name: data.name,
-                password: process.env.SEED_CANDIDATE_PASSWORD || "password123", // Contraseña genérica
+                password: process.env.SEED_CANDIDATE_PASSWORD,
                 role: "candidate",
                 headline: data.headline,
                 bio: data.bio,

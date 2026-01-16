@@ -44,7 +44,9 @@ async function main() {
     console.log('🏷️  Created Tags')
 
     // 3. Create Admin
-    const adminPasswordPlain = process.env.ADMIN_SEED_PASSWORD || 'admin123';
+    // 3. Create Admin
+    const adminPasswordPlain = process.env.ADMIN_SEED_PASSWORD;
+    if (!adminPasswordPlain) throw new Error("ADMIN_SEED_PASSWORD must be set in .env");
     const adminPassword = await hash(adminPasswordPlain, 10)
     await prisma.user.create({
         data: {
@@ -57,7 +59,8 @@ async function main() {
     console.log('👮 Admin created')
 
     // 4. Create 10 Companies ( 1 Fixed + 9 Generic)
-    const genericPasswordPlain = process.env.SEED_CANDIDATE_PASSWORD || 'password123';
+    const genericPasswordPlain = process.env.SEED_CANDIDATE_PASSWORD;
+    if (!genericPasswordPlain) throw new Error("SEED_CANDIDATE_PASSWORD must be set in .env");
     const password = await hash(genericPasswordPlain, 10);
     const companyIds: number[] = [];
 
