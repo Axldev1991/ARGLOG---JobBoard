@@ -35,7 +35,7 @@ async function main() {
             create: {
                 email: data.email,
                 name: data.name,
-                password: "password123", // Contraseña genérica
+                password: process.env.SEED_CANDIDATE_PASSWORD || "password123", // Contraseña genérica
                 role: "candidate",
                 headline: data.headline,
                 bio: data.bio,

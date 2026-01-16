@@ -44,7 +44,8 @@ async function main() {
     console.log('🏷️  Created Tags')
 
     // 3. Create Admin
-    const adminPassword = await hash('admin123', 10)
+    const adminPasswordPlain = process.env.ADMIN_SEED_PASSWORD || 'admin123';
+    const adminPassword = await hash(adminPasswordPlain, 10)
     await prisma.user.create({
         data: {
             email: 'admin@jobboard.com',
@@ -56,7 +57,8 @@ async function main() {
     console.log('👮 Admin created')
 
     // 4. Create 10 Companies ( 1 Fixed + 9 Generic)
-    const password = await hash('123456', 10);
+    const genericPasswordPlain = process.env.SEED_CANDIDATE_PASSWORD || 'password123';
+    const password = await hash(genericPasswordPlain, 10);
     const companyIds: number[] = [];
 
     // Fixed Demo Company

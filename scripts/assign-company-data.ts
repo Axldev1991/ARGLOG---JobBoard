@@ -108,7 +108,8 @@ async function main() {
         { name: "Sofía Martínez", email: "sofia.martinez.demo@test.com", headline: "Product Manager", role: "candidate" }
     ];
 
-    const passwordHash = await hash("password123", 10);
+    const placeholderPassword = process.env.SEED_CANDIDATE_PASSWORD || 'password123';
+    const passwordHash = await hash(placeholderPassword, 10);
 
     for (const c of candidatesData) {
         // Upsert candidato

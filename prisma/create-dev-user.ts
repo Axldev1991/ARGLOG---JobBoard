@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 async function main() {
     const email = 'castellanoaxl@gmail.com'
-    const password = 'dev123' // Default password, change it after logging in!
+    const password = process.env.DEV_USER_PASSWORD || 'dev123' // Default password, change it after logging in!
 
     console.log(`🛡️  Creating Super Admin: ${email}...`)
 
