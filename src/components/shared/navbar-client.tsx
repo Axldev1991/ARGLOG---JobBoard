@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import { Menu, LogOut, LayoutDashboard, User as UserIcon, Building2, Briefcase, PlusCircle, Sun, Moon, Laptop } from "lucide-react";
+import { logout } from "@/actions/logout";
 
 interface NavbarClientProps {
     user?: {
