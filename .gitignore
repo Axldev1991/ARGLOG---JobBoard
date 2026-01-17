@@ -41,4 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
-\n# Private Documentation\nprivate_docs/
+
+# Private Documentation
+private_docs/
+
+# Playwright
+/test-results/
+/playwright-report/

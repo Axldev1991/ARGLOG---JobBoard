@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isMaintenanceMode } from "./lib/system";
+
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -24,27 +24,9 @@ export async function middleware(request: NextRequest) {
         response.headers.set(key, value);
     });
 
-    // 3. Maintenance Mode Check (Performant Edge Check)
-    // Skip for assets, api, and admin to allow maintenance bypass
-    if (
-        !pathname.startsWith("/_next") &&
-        !pathname.startsWith("/api") &&
-        !pathname.startsWith("/static")
-    ) {
-        try {
-            // We reuse the existing logic but check it here to block traffic earlier
-            const maintenance = await isMaintenanceMode();
-            // NOTE: If maintenance is ON, we might want to redirect.
-            // For now, we will let RootLayout handle the UI rendering to verify this first.
-
-            // Uncomment below to enforce HARD redirect at edge level later
-            // if (maintenance && !pathname.includes('maintenance')) {
-            //    return NextResponse.rewrite(new URL('/maintenance', request.url));
-            // }
-        } catch (error) {
-            console.error("Middleware Maintenance Check Failed", error);
-        }
-    }
+    // 3. Maintenance Mode Check
+    // Removed from Middleware to avoid "Prisma Client in Edge Runtime" error.
+    // The check is performed safely in `src/app/layout.tsx` (Server Component).
 
     return response;
 }
