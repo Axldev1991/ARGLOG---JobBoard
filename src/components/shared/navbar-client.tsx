@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import { Menu, LogOut, LayoutDashboard, User as UserIcon, Building2, Briefcase, PlusCircle, Sun, Moon, Laptop } from "lucide-react";
 import { logout } from "@/actions/logout";
+import Image from "next/image";
+
 
 interface NavbarClientProps {
     user?: {
@@ -49,12 +51,17 @@ export function NavbarClient({ user }: NavbarClientProps) {
             <div className="container px-4 md:px-6 mx-auto h-16 flex items-center justify-between">
 
                 {/* LOGO */}
-                <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900 hover:opacity-80 transition-opacity">
-                    <div className="bg-blue-600 text-white p-1.5 rounded-lg">
-                        <Briefcase size={20} strokeWidth={2.5} />
-                    </div>
-                    <span className="hidden sm:inline-block">JobBoard</span>
+                <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <Image
+                        src="/logo-arlog.jpg"
+                        alt="Arlog Jobs"
+                        width={140}
+                        height={45}
+                        priority
+                        className="h-10 w-auto object-contain"
+                    />
                 </Link>
+
 
                 {/* DESKTOP NAV LINKS */}
                 <div className="hidden md:flex items-center gap-6">
@@ -185,12 +192,16 @@ export function NavbarClient({ user }: NavbarClientProps) {
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                            <SheetTitle className="text-left font-bold text-xl mb-6 flex items-center gap-2">
-                                <div className="bg-blue-600 text-white p-1 rounded-md">
-                                    <Briefcase size={16} />
-                                </div>
-                                JobBoard
+                            <SheetTitle className="text-left mb-6">
+                                <Image
+                                    src="/logo-arlog.jpg"
+                                    alt="Arlog Jobs"
+                                    width={120}
+                                    height={40}
+                                    className="h-8 w-auto object-contain"
+                                />
                             </SheetTitle>
+
 
                             <nav className="flex flex-col gap-4">
                                 {navItems.map((item) => (
