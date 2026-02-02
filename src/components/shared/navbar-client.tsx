@@ -52,15 +52,26 @@ export function NavbarClient({ user }: NavbarClientProps) {
 
                 {/* LOGO */}
                 <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    {/* Light Mode Logo */}
                     <Image
-                        src="/logo-arlog.jpg"
+                        src="/logo-arlog-light.png"
                         alt="Arlog Jobs"
                         width={140}
                         height={45}
                         priority
-                        className="h-10 w-auto object-contain"
+                        className="h-10 w-auto object-contain dark:hidden"
+                    />
+                    {/* Dark Mode Logo */}
+                    <Image
+                        src="/logo-arlog-dark.png"
+                        alt="Arlog Jobs"
+                        width={140}
+                        height={45}
+                        priority
+                        className="h-10 w-auto object-contain hidden dark:block"
                     />
                 </Link>
+
 
 
                 {/* DESKTOP NAV LINKS */}
@@ -193,14 +204,24 @@ export function NavbarClient({ user }: NavbarClientProps) {
                         </SheetTrigger>
                         <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                             <SheetTitle className="text-left mb-6">
+                                {/* Light Mode Logo */}
                                 <Image
-                                    src="/logo-arlog.jpg"
+                                    src="/logo-arlog-light.png"
                                     alt="Arlog Jobs"
                                     width={120}
                                     height={40}
-                                    className="h-8 w-auto object-contain"
+                                    className="h-8 w-auto object-contain dark:hidden"
+                                />
+                                {/* Dark Mode Logo */}
+                                <Image
+                                    src="/logo-arlog-dark.png"
+                                    alt="Arlog Jobs"
+                                    width={120}
+                                    height={40}
+                                    className="h-8 w-auto object-contain hidden dark:block"
                                 />
                             </SheetTitle>
+
 
 
                             <nav className="flex flex-col gap-4">
