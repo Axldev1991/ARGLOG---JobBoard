@@ -39,13 +39,11 @@ export default async function DashboardPage(props: { searchParams: Promise<{ tab
         });
 
         return (
-            <div className="p-10">
-                <CandidateView
-                    user={user}
-                    applications={applications}
-                    activeTab={activeTab as any}
-                />
-            </div>
+            <CandidateView
+                user={user}
+                applications={applications}
+                activeTab={activeTab as any}
+            />
         );
     }
 

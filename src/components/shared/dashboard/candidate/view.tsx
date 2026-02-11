@@ -27,7 +27,7 @@ export function CandidateView({
     };
 
     return (
-        <div className="max-w-6xl mx-auto text-white">
+        <div className="max-w-6xl mx-auto w-full py-6 md:py-8">
 
             {/* Header: Bienvenida */}
             <div className="flex justify-between items-center mb-6">

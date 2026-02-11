@@ -16,7 +16,7 @@ export function ApplicationList({ applications = [] }: { applications?: any[] })
                         <p>Aún no te has postulado a ninguna oferta.</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto w-full">
                         <table className="w-full text-left text-sm text-muted-foreground min-w-[600px] md:min-w-full">
                             <thead className="bg-muted/50 border-b border-border text-foreground font-semibold uppercase text-xs">
                                 <tr>
