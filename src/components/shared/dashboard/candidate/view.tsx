@@ -1,14 +1,30 @@
-"use client";
+"use client"
 
-import { AlertCircle } from "lucide-react";
-import { isProfileComplete } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { AlertCircle, User, FileText, Briefcase } from "lucide-react";
+import { isProfileComplete, cn } from "@/lib/utils";
 import { ProfileForm } from "./profile-form";
 import { ResumeManager } from "./resume-manager";
 import { ApplicationList } from "./application-list";
 
-export function CandidateView({ user, applications = [] }: { user: any, applications?: any[] }) {
+type Tab = "profile" | "applications";
 
+export function CandidateView({
+    user,
+    applications = [],
+    activeTab: initialTab = "profile"
+}: {
+    user: any,
+    applications?: any[],
+    activeTab?: Tab
+}) {
+    const router = useRouter();
+    const activeTab = initialTab || "profile";
     const profileComplete = isProfileComplete(user);
+
+    const handleTabChange = (newTab: Tab) => {
+        router.push(`/dashboard?tab=${newTab}`, { scroll: false });
+    };
 
     return (
         <div className="max-w-6xl mx-auto text-white">
@@ -17,7 +33,7 @@ export function CandidateView({ user, applications = [] }: { user: any, applicat
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-3xl font-bold text-foreground">Hola, {user.name}</h1>
-                    <p className="text-muted-foreground">Bienvenido a tu panel de control.</p>
+                    <p className="text-muted-foreground">Gestiona tus datos y postulaciones desde un solo lugar.</p>
                 </div>
             </div>
 
@@ -34,21 +50,103 @@ export function CandidateView({ user, applications = [] }: { user: any, applicat
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* TAB NAVIGATION (Cards Style) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {/* CARD 1: Mi Perfil */}
+                <button
+                    onClick={() => handleTabChange("profile")}
+                    className={cn(
+                        "group p-6 rounded-xl border transition-all text-left w-full relative overflow-hidden",
+                        activeTab === "profile"
+                            ? "bg-blue-500/10 border-blue-500 shadow-md ring-1 ring-blue-500"
+                            : "bg-card hover:shadow-lg hover:border-blue-500/50 text-card-foreground"
+                    )}
+                >
+                    <div className="flex items-center justify-between mb-4">
+                        <div className={cn(
+                            "w-12 h-12 rounded-lg flex items-center justify-center transition-colors",
+                            activeTab === "profile"
+                                ? "bg-blue-600 text-white"
+                                : "bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white"
+                        )}>
+                            <User size={24} />
+                        </div>
+                        {activeTab === "profile" && (
+                            <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full animate-in fade-in zoom-in">
+                                Activo
+                            </span>
+                        )}
+                    </div>
 
-                {/* COLUMNA IZQUIERDA: DATOS PERSONALES (2 cols span) */}
-                <div className="lg:col-span-2 space-y-6">
-                    <ProfileForm user={user} />
-                </div>
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <h3 className={cn("text-lg font-bold", activeTab === "profile" ? "text-blue-600 dark:text-blue-400" : "text-foreground")}>
+                                Mi Perfil
+                            </h3>
+                            <p className="text-muted-foreground text-sm mt-1">Datos personales y profesionales.</p>
+                        </div>
+                        <div className="text-right">
+                            {profileComplete ? (
+                                <span className="text-xs font-medium text-green-600 bg-green-100 dark:bg-green-500/10 dark:text-green-400 px-2 py-1 rounded-full">Completo</span>
+                            ) : (
+                                <span className="text-xs font-medium text-amber-600 bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 px-2 py-1 rounded-full">Incompleto</span>
+                            )}
+                        </div>
+                    </div>
+                </button>
 
-                {/* COLUMNA DERECHA: CV y STATUS */}
-                <div className="space-y-6">
-                    <ResumeManager user={user} />
-                </div>
+                {/* CARD 2: Mis Postulaciones */}
+                <button
+                    onClick={() => handleTabChange("applications")}
+                    className={cn(
+                        "group p-6 rounded-xl border transition-all text-left w-full relative overflow-hidden",
+                        activeTab === "applications"
+                            ? "bg-emerald-500/10 border-emerald-500 shadow-md ring-1 ring-emerald-500"
+                            : "bg-card hover:shadow-lg hover:border-emerald-500/50 text-card-foreground"
+                    )}
+                >
+                    <div className="flex items-center justify-between mb-4">
+                        <div className={cn(
+                            "w-12 h-12 rounded-lg flex items-center justify-center transition-colors",
+                            activeTab === "applications"
+                                ? "bg-emerald-600 text-white"
+                                : "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white"
+                        )}>
+                            <Briefcase size={24} />
+                        </div>
+                        {activeTab === "applications" && (
+                            <span className="bg-emerald-600 text-white text-xs font-bold px-2 py-1 rounded-full animate-in fade-in zoom-in">
+                                Activo
+                            </span>
+                        )}
+                    </div>
 
-                {/* ABAJO: LISTA DE APLICACIONES */}
-                <ApplicationList applications={applications} />
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <h3 className={cn("text-lg font-bold", activeTab === "applications" ? "text-emerald-600 dark:text-emerald-400" : "text-foreground")}>
+                                Mis Postulaciones
+                            </h3>
+                            <p className="text-muted-foreground text-sm mt-1">Sigue el estado de tus búsquedas.</p>
+                        </div>
+                        <span className="text-3xl font-bold text-foreground">{applications.length}</span>
+                    </div>
+                </button>
+            </div>
 
+            {/* CONTENT AREA */}
+            <div className="animate-in fade-in duration-500">
+                {activeTab === "profile" ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 space-y-6">
+                            <ProfileForm user={user} />
+                        </div>
+                        <div className="space-y-6">
+                            <ResumeManager user={user} />
+                        </div>
+                    </div>
+                ) : (
+                    <ApplicationList applications={applications} />
+                )}
             </div>
         </div>
     );

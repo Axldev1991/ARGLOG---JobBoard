@@ -5,7 +5,9 @@ import { CandidateView } from "@/components/shared/dashboard/candidate/view";
 import { CompanyView } from "@/components/shared/dashboard/company/view";
 
 
-export default async function DashboardPage() {
+export default async function DashboardPage(props: { searchParams: Promise<{ tab?: string }> }) {
+    const searchParams = await props.searchParams;
+    const activeTab = searchParams.tab;
 
     const session = await getSession();
     if (!session) {
@@ -22,9 +24,6 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
-    // IMPORTANTE: Para saber QUÉ vista mostrar, usamos el rol de la SESIÓN.
-    // Esto permite que el "Impersonate Mode" funcione.
-    // Si usáramos user.role (DB), siempre veríamos la vista de Admin/Dev.
     const effectiveRole = session.role;
 
     // Si eres Admin o Dev, te mandamos a tu panel especial
@@ -35,13 +34,17 @@ export default async function DashboardPage() {
     if (effectiveRole === 'candidate') {
         const applications = await prisma.application.findMany({
             where: { userId: user.id },
-            include: { job: true }, // Traemos info del trabajo
+            include: { job: true },
             orderBy: { createdAt: 'desc' }
         });
 
         return (
             <div className="p-10">
-                <CandidateView user={user} applications={applications} />
+                <CandidateView
+                    user={user}
+                    applications={applications}
+                    activeTab={activeTab as any}
+                />
             </div>
         );
     }
@@ -52,7 +55,7 @@ export default async function DashboardPage() {
             authorId: user.id
         },
         include: {
-            applications: true // Traemos las postulaciones para contarlas
+            applications: true
         },
         orderBy: {
             createdAt: 'desc'
@@ -60,6 +63,10 @@ export default async function DashboardPage() {
     })
 
     return (
-        <CompanyView jobs={myJobs} profile={user.companyProfile} />
+        <CompanyView
+            jobs={myJobs}
+            profile={user.companyProfile}
+            activeTab={activeTab as any}
+        />
     );
 }

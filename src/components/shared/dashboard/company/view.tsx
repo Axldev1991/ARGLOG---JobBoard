@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { JobList } from "./job-list";
 import { CompanyProfileForm } from "./company-profile-form";
 import { Briefcase, Building2 } from "lucide-react";
@@ -8,8 +8,21 @@ import { cn } from "@/lib/utils";
 
 type Tab = "jobs" | "profile";
 
-export function CompanyView({ jobs = [], profile }: { jobs: any[], profile?: any }) {
-    const [activeTab, setActiveTab] = useState<Tab>("jobs");
+export function CompanyView({
+    jobs = [],
+    profile,
+    activeTab: initialTab = "jobs"
+}: {
+    jobs: any[],
+    profile?: any,
+    activeTab?: Tab
+}) {
+    const router = useRouter();
+    const activeTab = initialTab || "jobs";
+
+    const handleTabChange = (newTab: Tab) => {
+        router.push(`/dashboard?tab=${newTab}`, { scroll: false });
+    };
 
     return (
         <div className="max-w-6xl mx-auto py-8 px-6">
@@ -26,7 +39,7 @@ export function CompanyView({ jobs = [], profile }: { jobs: any[], profile?: any
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 {/* CARD 1: Mis Ofertas */}
                 <button
-                    onClick={() => setActiveTab("jobs")}
+                    onClick={() => handleTabChange("jobs")}
                     className={cn(
                         "group p-6 rounded-xl border transition-all text-left w-full relative overflow-hidden",
                         activeTab === "jobs"
@@ -63,7 +76,7 @@ export function CompanyView({ jobs = [], profile }: { jobs: any[], profile?: any
 
                 {/* CARD 2: Perfil de Empresa */}
                 <button
-                    onClick={() => setActiveTab("profile")}
+                    onClick={() => handleTabChange("profile")}
                     className={cn(
                         "group p-6 rounded-xl border transition-all text-left w-full relative overflow-hidden",
                         activeTab === "profile"
