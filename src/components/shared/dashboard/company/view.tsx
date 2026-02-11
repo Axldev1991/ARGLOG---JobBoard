@@ -25,7 +25,7 @@ export function CompanyView({
     };
 
     return (
-        <div className="max-w-6xl mx-auto py-8">
+        <div className="max-w-6xl mx-auto w-full py-6 md:py-8">
             <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold mb-2 text-foreground">Panel de Empresa</h1>

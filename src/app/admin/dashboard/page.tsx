@@ -93,7 +93,7 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
 
 
     return (
-        <main className="p-10 bg-background min-h-screen font-sans">
+        <div className="w-full py-6 md:py-8">
             <h1 className="text-3xl font-bold mb-8 text-foreground">Panel de Control</h1>
 
             {/* SELECCIÓN DE VISTA (Tablero) */}
@@ -205,6 +205,6 @@ export default async function AdminDashboard(props: AdminDashboardProps) {
             {view === 'tags' && <TagsView tags={tags} />}
             {view === 'jobs' && <JobsView jobs={jobs} />}
 
-        </main >
+        </div>
     );
 }
