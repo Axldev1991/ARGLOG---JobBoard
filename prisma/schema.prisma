@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,89 +8,71 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-
 model User {
-  id        Int      @id @default(autoincrement()) // ID numérico automátic (1, 2, 3...)
-  email     String   @unique                       // No puede haber dos iguales
-  password  String                                 // Guardaremos la pass encriptada
-  name      String
-  role      String   @default("candidate")         // "candidate" o "company"
-  resumeUrl String?                                // URL del CV en Cloudinary
-  resumePublicId String?                           // ID para borrar en Cloudinary
-  
-  // --- PERFIL PROFESIONAL (Candidato) ---
-  headline  String?  // Ej: "Senior React Developer"
-  bio       String?  // Sobre mí
-  phone     String?
-  linkedin  String?
-  city      String?
-  
-  createdAt DateTime @default(now())               // Fecha de registro automática
-  jobs      Job[]                                  // <--- Agrega esto (Un usuario tiene MUCHOS jobs)
-  applications Application[] 
-  
-  // --- PERFIL EMPRESA (Opcional, 1-a-1) ---
-  companyProfile CompanyProfile? 
+  id             Int             @id @default(autoincrement())
+  email          String          @unique
+  password       String
+  name           String
+  role           String          @default("candidate")
+  createdAt      DateTime        @default(now())
+  resumeUrl      String?
+  bio            String?
+  city           String?
+  headline       String?
+  linkedin       String?
+  phone          String?
+  resumePublicId String?
+  applications   Application[]
+  companyProfile CompanyProfile?
+  jobs           Job[]
 }
 
 model Job {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  salary      String?
-  // --- NUEVOS CAMPOS ---
-  category    String   @default("Otros") 
-  modality    String   @default("Remoto")
-  location    String?
-  status      String   @default("PUBLISHED") // PUBLISHED, PAUSED, CLOSED
-  expiresAt   DateTime? // Fecha de vencimiento opcional
-  // ---------------------
-  createdAt   DateTime @default(now())
-  authorId    Int
-  
-  // Cascade: Si borras al usuario Author, borras el Job
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
-  tags        Tag[]
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String
+  salary       String?
+  createdAt    DateTime      @default(now())
+  authorId     Int
+  category     String        @default("Otros")
+  location     String?
+  modality     String        @default("Remoto")
+  status       String        @default("PUBLISHED")
+  expiresAt    DateTime?
   applications Application[]
+  author       User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags         Tag[]         @relation("JobToTag")
 }
 
 model Tag {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  type        String
-  jobs        Job[]
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  type String
+  jobs Job[]  @relation("JobToTag")
 }
 
 model Application {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  status    String   @default("PENDING") // PENDING, REJECTED, HIRED
-
-  // Relación: Quién se postula
+  status    String   @default("PENDING")
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Relación: A qué oferta
   jobId     Int
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Candado: ¡Solo una postulación por usuario por oferta!
   @@unique([userId, jobId])
 }
 
 model CompanyProfile {
   id          Int     @id @default(autoincrement())
-  logo        String? // URL del logo (subido a Cloudinary)
-  website     String? // https://techcorp.com
-  description String? // "Somos líderes en..."
-  
-  // Relación 1-a-1 con User
+  logo        String?
+  website     String?
+  description String?
   userId      Int     @unique
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   legalName   String
-  cuit        String 
+  cuit        String
   industry    String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SystemSetting {
@@ -107,10 +83,10 @@ model SystemSetting {
 
 model SystemLog {
   id        String   @id @default(cuid())
-  level     String   // "ERROR", "WARN"
+  level     String
   message   String
-  metadata  Json?    // Stack trace, user_id, path
-  source    String   // "SERVER_ACTION", "MIDDLEWARE"
+  metadata  Json?
+  source    String
   createdAt DateTime @default(now())
 
   @@index([level])
