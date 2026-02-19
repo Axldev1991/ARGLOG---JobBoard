@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { Hero } from "@/components/shared/hero";
@@ -8,6 +10,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ScrollToTopOnChange } from "@/components/shared/scroll-to-top-on-change";
+import { HomeCTA } from "@/components/shared/home-cta";
+import { getFeaturedJobs, getJobs } from "@/actions/jobs/get-jobs";
 
 export default async function Home(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -15,82 +19,39 @@ export default async function Home(props: {
   const searchParams = await props.searchParams;
   const session = await getSession();
 
-  // 1. Obtener Params de Filtro
-  const query = searchParams.q as string || "";
-  const category = searchParams.category as string || "";
-  const modality = searchParams.modality as string || "";
-  const tagsParam = searchParams.tags as string || "";
-  const selectedTags = tagsParam ? tagsParam.split(',') : [];
+  // 1. Parse Search Parameters
+  const query = (searchParams.q as string) || "";
+  const category = (searchParams.category as string) || "";
+  const modality = (searchParams.modality as string) || "";
+  const tagsParam = (searchParams.tags as string) || "";
+  const selectedTags = tagsParam ? tagsParam.split(",") : [];
 
-  // Paginación Params
+  // Pagination Params
   const currentPage = Number(searchParams.page) || 1;
-  const PAGE_SIZE = 9;
+  const PAGE_SIZE = 6;
 
-  // Detectar si hay filtros activos (Search mode)
+  // 2. Fetch Data (Server Actions)
+  const featuredJobs = await getFeaturedJobs(6);
+  const featuredIds = featuredJobs.map((j) => j.id);
+
+  // Detect active filters
   const hasFilters = query || category || modality || selectedTags.length > 0;
 
-  // 2. CARRUSEL: Siempre obtener "Featured"
-  const featuredJobs = await prisma.job.findMany({
-    take: 6,
-    where: {
-      status: "PUBLISHED",
-      OR: [
-        { expiresAt: null },
-        { expiresAt: { gt: new Date() } }
-      ]
-    },
-    orderBy: { createdAt: "desc" },
-    include: { tags: true, author: true }
+  // 3. Fetch Job List
+  // Optimization: We pass the featured IDs to exclude them from the main list directly in the DB query
+  // This ensures pagination is correct and we don't fetch duplicates.
+  const { jobs, totalJobs } = await getJobs({
+    query,
+    category,
+    modality,
+    tags: selectedTags,
+    page: currentPage,
+    pageSize: PAGE_SIZE,
+    userId: session?.id,
+    excludeIds: !hasFilters ? (featuredIds as number[]) : [], // Only exclude if not searching
   });
-  const featuredIds = featuredJobs.map(j => j.id);
 
-  // 3. LISTA PRINCIPAL
-  const whereClause: any = {
-    AND: [
-      {
-        status: "PUBLISHED",
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      },
-      query ? {
-        OR: [
-          { title: { contains: query, mode: "insensitive" } },
-          { description: { contains: query, mode: "insensitive" } },
-        ]
-      } : {},
-      category ? { category } : {},
-      modality ? { modality } : {},
-      selectedTags.length > 0 ? {
-        AND: selectedTags.map(t => ({
-          tags: { some: { name: { contains: t.trim(), mode: "insensitive" } } }
-        }))
-      } : {},
-
-      // LOGICA DE EXCLUSIÓN CORREGIDA:
-      // Solo excluimos si NO hay filtros activos.
-      // Si el usuario busca "Excel", mostramos todos los resultados, aunque estén arriba.
-      (!hasFilters && featuredIds.length > 0) ? { id: { notIn: featuredIds } } : {}
-    ]
-  };
-
-  const [jobs, totalJobs] = await Promise.all([
-    prisma.job.findMany({
-      where: whereClause,
-      include: {
-        tags: true,
-        author: true,
-        applications: {
-          where: { userId: session?.id || -1 }
-        }
-      },
-      orderBy: { createdAt: "desc" },
-      skip: (currentPage - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-    }),
-    prisma.job.count({ where: whereClause })
-  ]);
+  const displayJobs = jobs;
 
   const totalPages = Math.ceil(totalJobs / PAGE_SIZE);
 
@@ -99,20 +60,19 @@ export default async function Home(props: {
       <Hero user={session} />
 
       <div className="max-w-7xl mx-auto px-6 -mt-10 flex flex-col gap-12">
-
-        {/* 1. CARRUSEL DESTACADOS */}
+        {/* 1. FEATURED CAROUSEL */}
         {featuredJobs.length > 0 && (
           <section className="z-30">
             <FeaturedCarousel jobs={featuredJobs} />
           </section>
         )}
 
-        {/* 2. FILTROS */}
+        {/* 2. FILTERS */}
         <div className="bg-card/80 backdrop-blur-md p-6 rounded-2xl shadow-2xl shadow-black/5 border border-border z-20">
           <SearchFilters />
         </div>
 
-        {/* 3. LISTADO PRINCIPAL */}
+        {/* 3. MAIN LIST - FIRST PART */}
         <section scroll-mt="100px" id="job-list-section" className="relative">
           <ScrollToTopOnChange />
 
@@ -126,47 +86,68 @@ export default async function Home(props: {
               </p>
             </div>
             <div className="text-slate-500 text-sm hidden sm:block">
-              Mostrando {jobs.length} de {totalJobs} resultados
+              Mostrando {displayJobs.length} de {totalJobs} resultados
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {jobs.map((job) => {
+            {displayJobs.slice(0, 3).map((job) => {
               const hasApplied = job.applications.length > 0;
               return (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  hasApplied={hasApplied}
-                />
+                <JobCard key={job.id} job={job as any} hasApplied={hasApplied} />
+              );
+            })}
+          </div>
+        </section>
+      </div>
+
+      {/* INTERMEDIATE CTA */}
+      <HomeCTA />
+
+      {/* 4. MAIN LIST - SECOND PART */}
+      <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12">
+        <section>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayJobs.slice(3, 6).map((job) => {
+              const hasApplied = job.applications.length > 0;
+              return (
+                <JobCard key={job.id} job={job as any} hasApplied={hasApplied} />
               );
             })}
           </div>
 
           {/* Empty State */}
-          {jobs.length === 0 && (
+          {displayJobs.length === 0 && (
             <div className="text-center py-32 bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-700">
               <div className="text-5xl mb-4 text-slate-600">🔍</div>
               <h3 className="text-xl font-bold text-white">No hay resultados</h3>
-              <p className="text-slate-400 mt-2">Prueba ajustando los filtros de búsqueda.</p>
+              <p className="text-slate-400 mt-2">
+                Prueba ajustando los filtros de búsqueda.
+              </p>
             </div>
           )}
 
-          {/* CONTROLES DE PAGINACIÓN */}
+          {/* PAGINATION CONTROLS */}
           {totalPages > 1 && (
             <div className="mt-16 flex justify-center items-center gap-4">
-
               {currentPage > 1 ? (
                 <Link
                   href={`/?page=${currentPage - 1}${getQueryString(searchParams)}`}
                   scroll={false}
                 >
-                  <Button variant="outline" className="border-slate-700 text-white bg-slate-800 hover:bg-slate-700 hover:text-white">
+                  <Button
+                    variant="outline"
+                    className="border-slate-700 text-white bg-slate-800 hover:bg-slate-700 hover:text-white"
+                  >
                     <ChevronLeft size={16} className="mr-1" /> Anterior
                   </Button>
                 </Link>
               ) : (
-                <Button disabled variant="outline" className="border-slate-800 text-slate-600 bg-slate-900 opacity-50">
+                <Button
+                  disabled
+                  variant="outline"
+                  className="border-slate-800 text-slate-600 bg-slate-900 opacity-50"
+                >
                   <ChevronLeft size={16} className="mr-1" /> Anterior
                 </Button>
               )}
@@ -180,18 +161,24 @@ export default async function Home(props: {
                   href={`/?page=${currentPage + 1}${getQueryString(searchParams)}`}
                   scroll={false}
                 >
-                  <Button variant="outline" className="border-slate-700 text-white bg-slate-800 hover:bg-slate-700 hover:text-white">
+                  <Button
+                    variant="outline"
+                    className="border-slate-700 text-white bg-slate-800 hover:bg-slate-700 hover:text-white"
+                  >
                     Siguiente <ChevronRight size={16} className="ml-1" />
                   </Button>
                 </Link>
               ) : (
-                <Button disabled variant="outline" className="border-slate-800 text-slate-600 bg-slate-900 opacity-50">
+                <Button
+                  disabled
+                  variant="outline"
+                  className="border-slate-800 text-slate-600 bg-slate-900 opacity-50"
+                >
                   Siguiente <ChevronRight size={16} className="ml-1" />
                 </Button>
               )}
             </div>
           )}
-
         </section>
       </div>
     </main>
@@ -202,10 +189,10 @@ function getQueryString(params: any): string {
   const { page, ...rest } = params;
   const searchParams = new URLSearchParams();
 
-  Object.keys(rest).forEach(key => {
+  Object.keys(rest).forEach((key) => {
     if (rest[key]) searchParams.append(key, rest[key]);
   });
 
   const str = searchParams.toString();
-  return str ? `&${str}` : '';
+  return str ? `&${str}` : "";
 }
