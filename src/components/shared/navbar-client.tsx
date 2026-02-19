@@ -47,7 +47,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
     const dashboardLink = (isAdmin || isDev) ? "/admin/dashboard" : "/dashboard";
 
     return (
-        <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+        <nav className="sticky top-0 z-50 w-full border-b bg-white/30 backdrop-blur-[20px] supports-[backdrop-filter]:bg-background/60 dark:bg-background/80 dark:backdrop-blur-md border-border shadow-sm">
             <div className="container px-4 md:px-6 mx-auto h-16 flex items-center justify-between">
 
                 {/* LOGO */}
@@ -94,7 +94,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                     {/* POST JOB BUTTON (Desktop) - Hidden for Candidates */}
                     {canPostJob && (
                         <Link href="/jobs/new" className="hidden md:block">
-                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm font-semibold">
+                            <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm font-semibold">
                                 <PlusCircle size={16} className="mr-2" />
                                 Publicar Oferta
                             </Button>
@@ -105,10 +105,10 @@ export function NavbarClient({ user }: NavbarClientProps) {
                     {user ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-2 ring-slate-100 hover:ring-slate-200">
+                                <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-2 ring-border hover:ring-accent transition-all">
                                     <Avatar className="h-9 w-9">
                                         <AvatarImage src={user.image || ""} alt={user.name || "User"} />
-                                        <AvatarFallback className="bg-blue-100 text-blue-700 font-bold">
+                                        <AvatarFallback className="bg-muted text-muted-foreground font-bold">
                                             {user.name?.[0]?.toUpperCase() || "U"}
                                         </AvatarFallback>
                                     </Avatar>
@@ -187,7 +187,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                                 <Button variant="ghost" size="sm">Ingresar</Button>
                             </Link>
                             <Link href="/register">
-                                <Button variant="default" size="sm" className="bg-slate-900 text-white hover:bg-slate-800">
+                                <Button variant="default" size="sm" className="font-semibold">
                                     Registrarse
                                 </Button>
                             </Link>
@@ -243,16 +243,16 @@ export function NavbarClient({ user }: NavbarClientProps) {
                                 <div className="border-t border-slate-100 my-2 pt-4 flex flex-col gap-3">
                                     {user ? (
                                         <>
-                                            <div className="px-4 py-2 bg-slate-50 rounded-lg mb-2">
+                                            <div className="px-4 py-2 bg-muted/50 rounded-lg mb-2">
                                                 <div className="flex items-center gap-3">
                                                     <Avatar className="h-10 w-10">
-                                                        <AvatarFallback className="bg-blue-100 text-blue-700">
+                                                        <AvatarFallback className="bg-primary/10 text-primary">
                                                             {user.name?.[0]?.toUpperCase()}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div className="overflow-hidden">
                                                         <p className="text-sm font-bold truncate">{user.name}</p>
-                                                        <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                                                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -277,7 +277,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                                                 <Button variant="outline" className="w-full">Ingresar</Button>
                                             </Link>
                                             <Link href="/register" onClick={() => setIsOpen(false)}>
-                                                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Registrarse</Button>
+                                                <Button className="w-full">Registrarse</Button>
                                             </Link>
                                         </>
                                     )}
@@ -286,7 +286,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                                     {canPostJob && (
                                         <div className="pt-2">
                                             <Link href="/jobs/new" onClick={() => setIsOpen(false)}>
-                                                <Button className="w-full bg-slate-900 text-white hover:bg-slate-800">
+                                                <Button className="w-full" variant="secondary">
                                                     <PlusCircle className="mr-2 h-4 w-4" />
                                                     Publicar Oferta
                                                 </Button>

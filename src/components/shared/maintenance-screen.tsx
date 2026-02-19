@@ -27,7 +27,7 @@ export default function MaintenanceScreen() {
                 </p>
 
                 <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                    <div className="h-2 w-2 animate-pulse rounded-full bg-amber-500"></div>
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]"></div>
                     <span>System upgrade in progress</span>
                 </div>
             </div>

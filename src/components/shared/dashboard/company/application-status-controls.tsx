@@ -36,9 +36,9 @@ export function ApplicationStatusControls({ applicationId, currentStatus }: Prop
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case "HIRED": return "text-green-600 bg-green-50 border-green-100";
-            case "REJECTED": return "text-red-600 bg-red-50 border-red-100";
-            default: return "text-blue-600 bg-blue-50 border-blue-100";
+            case "HIRED": return "text-emerald-600 bg-emerald-500/10 border-emerald-500/20";
+            case "REJECTED": return "text-destructive bg-destructive/10 border-destructive/20";
+            default: return "text-primary bg-primary/10 border-primary/20";
         }
     };
 
@@ -67,15 +67,15 @@ export function ApplicationStatusControls({ applicationId, currentStatus }: Prop
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => handleStatusChange("PENDING")} className="gap-2 cursor-pointer">
-                    <Clock size={16} className="text-blue-500" />
+                    <Clock size={16} className="text-primary" />
                     Pendiente
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleStatusChange("HIRED")} className="gap-2 cursor-pointer">
-                    <Check size={16} className="text-green-500" />
+                    <Check size={16} className="text-emerald-600" />
                     Contratado
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleStatusChange("REJECTED")} className="gap-2 cursor-pointer">
-                    <X size={16} className="text-red-500" />
+                    <X size={16} className="text-destructive" />
                     Descartado
                 </DropdownMenuItem>
             </DropdownMenuContent>

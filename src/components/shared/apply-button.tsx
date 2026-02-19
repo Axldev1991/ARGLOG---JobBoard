@@ -31,7 +31,7 @@ export function ApplyButton({ jobId, hasApplied }: { jobId: number, hasApplied: 
 
     if (hasApplied) {
         return (
-            <Button disabled variant="outline" className="w-full bg-green-50 text-green-700 border-green-200 font-semibold opacity-100 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
+            <Button disabled variant="outline" className="w-full bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-semibold opacity-100 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30">
                 <CheckCircle size={16} className="mr-2" /> Postulado
             </Button>
         );
@@ -41,7 +41,7 @@ export function ApplyButton({ jobId, hasApplied }: { jobId: number, hasApplied: 
         <Button
             onClick={handleApply}
             disabled={isPending}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all shadow-sm hover:shadow-md active:scale-95 duration-200"
+            className="w-full font-semibold transition-all shadow-sm hover:shadow-md active:scale-95 duration-200"
         >
             {isPending ? (
                 <>

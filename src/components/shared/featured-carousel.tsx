@@ -50,7 +50,7 @@ export function FeaturedCarousel({ jobs }: { jobs: any[] }) {
                     {jobs.map((job) => (
                         <div key={job.id} className="flex-[0_0_100%] md:flex-[0_0_45%] lg:flex-[0_0_32%] min-w-0">
                             <Link href={`/jobs/${job.id}`} className="block h-full">
-                                <div className="bg-card border border-border rounded-2xl p-6 h-full hover:border-primary/50 transition-all hover:shadow-[0_0_30px_rgba(var(--primary),0.1)] hover:-translate-y-1 relative group/card overflow-hidden">
+                                <div className="bg-card/40 backdrop-blur-[var(--glass-blur)] border-[var(--glass-border)] rounded-3xl p-6 h-full hover:shadow-[0_15px_30px_-10px_rgba(var(--primary),0.2)] hover:border-primary/50 transition-all hover:-translate-y-1 relative group/card overflow-hidden dark:bg-card dark:backdrop-blur-none dark:border-border dark:rounded-2xl dark:hover:border-primary/50 dark:hover:shadow-lg">
                                     {/* Gradiente sutil */}
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
 
@@ -58,7 +58,7 @@ export function FeaturedCarousel({ jobs }: { jobs: any[] }) {
 
                                         <div className="flex justify-between items-start mb-4">
                                             {/* Icono de Empresa Consistente (Sin emoji) */}
-                                            <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
+                                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20">
                                                 <Building2 size={20} />
                                             </div>
                                             <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-full border border-primary/20">
@@ -76,11 +76,11 @@ export function FeaturedCarousel({ jobs }: { jobs: any[] }) {
 
                                         <div className="mt-auto space-y-3">
                                             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                                                <span className="bg-muted px-2 py-1 rounded-md flex items-center gap-1 border border-border">
-                                                    <Briefcase size={12} className="text-muted-foreground" /> {job.modality}
+                                                <span className="bg-primary/5 px-2 py-1 rounded-md flex items-center gap-1 border border-primary/10 text-primary font-medium">
+                                                    <Briefcase size={12} /> {job.modality}
                                                 </span>
-                                                <span className="bg-muted px-2 py-1 rounded-md flex items-center gap-1 border border-border">
-                                                    <MapPin size={12} className="text-emerald-500" /> {job.location || "Remoto"}
+                                                <span className="bg-emerald-500/5 px-2 py-1 rounded-md flex items-center gap-1 border border-emerald-500/10 text-emerald-600 font-medium">
+                                                    <MapPin size={12} /> {job.location || "Remoto"}
                                                 </span>
                                             </div>
                                         </div>

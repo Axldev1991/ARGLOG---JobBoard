@@ -36,8 +36,8 @@ export function ApplicationList({ applications = [] }: { applications?: any[] })
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2 py-1 rounded-full text-xs font-bold 
-                                                ${app.status === 'PENDING' ? 'bg-blue-500/10 text-blue-500' : ''}
-                                                ${app.status === 'HIRED' ? 'bg-green-500/10 text-green-500' : ''}
+                                                ${app.status === 'PENDING' ? 'bg-primary/10 text-primary' : ''}
+                                                ${app.status === 'HIRED' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : ''}
                                                 ${app.status === 'REJECTED' ? 'bg-destructive/10 text-destructive' : ''}
                                             `}>
                                                 {app.status === 'PENDING' ? 'En Revisión' : app.status}

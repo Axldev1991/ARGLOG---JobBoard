@@ -9,7 +9,8 @@ import { Logger } from "@/lib/logger";
 export async function updateJob(formData: FormData) {
     const jobIdStr = formData.get("jobId") as string;
     const title = formData.get("title") as string;
-    const salary = formData.get("salary") as string;
+    const salaryRaw = formData.get("salary") as string;
+    const salary = salaryRaw?.trim() === "" ? "A convenir" : salaryRaw;
     const description = formData.get("description") as string;
     const category = formData.get("category") as string;
     const modality = formData.get("modality") as string;

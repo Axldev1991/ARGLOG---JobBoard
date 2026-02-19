@@ -60,7 +60,7 @@ export function CompanyView({
                             <Briefcase size={24} />
                         </div>
                         {activeTab === "jobs" && (
-                            <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full animate-in fade-in zoom-in">
+                            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full animate-in fade-in zoom-in">
                                 Activo
                             </span>
                         )}
@@ -148,9 +148,9 @@ export function CompanyView({
                         </div>
                         <div className="text-right">
                             {profile?.logo && profile?.description ? (
-                                <span className="text-xs font-medium text-green-600 bg-green-100 dark:bg-green-500/10 dark:text-green-400 px-2 py-1 rounded-full">Completo</span>
+                                <span className="text-xs font-medium text-emerald-600 bg-emerald-500/10 px-2 py-1 rounded-full">Completo</span>
                             ) : (
-                                <span className="text-xs font-medium text-amber-600 bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 px-2 py-1 rounded-full">Incompleto</span>
+                                <span className="text-xs font-medium text-amber-600 bg-amber-500/10 px-2 py-1 rounded-full">Incompleto</span>
                             )}
                         </div>
                     </div>

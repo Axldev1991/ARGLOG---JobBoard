@@ -44,7 +44,7 @@ export function CandidateView({
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-8 flex items-start gap-3">
                     <AlertCircle className="text-amber-600 dark:text-amber-500 mt-1" size={24} />
                     <div>
-                        <h3 className="font-bold text-amber-900 dark:text-amber-500">Tu perfil está incompleto</h3>
+                        <h3 className="font-bold text-amber-600 dark:text-amber-500">Tu perfil está incompleto</h3>
                         <p className="text-amber-700 dark:text-amber-400/80 text-sm">
                             Para poder postularte a las ofertas, necesitas completar tu información profesional y subir tu CV.
                         </p>
@@ -60,21 +60,21 @@ export function CandidateView({
                     className={cn(
                         "group p-6 rounded-xl border transition-all text-left w-full relative overflow-hidden",
                         activeTab === "profile"
-                            ? "bg-blue-500/10 border-blue-500 shadow-md ring-1 ring-blue-500"
-                            : "bg-card hover:shadow-lg hover:border-blue-500/50 text-card-foreground"
+                            ? "bg-primary/5 border-primary shadow-md ring-1 ring-primary"
+                            : "bg-card hover:shadow-lg hover:border-primary/50 text-card-foreground"
                     )}
                 >
                     <div className="flex items-center justify-between mb-4">
                         <div className={cn(
                             "w-12 h-12 rounded-lg flex items-center justify-center transition-colors",
                             activeTab === "profile"
-                                ? "bg-blue-600 text-white"
-                                : "bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground"
                         )}>
                             <User size={24} />
                         </div>
                         {activeTab === "profile" && (
-                            <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full animate-in fade-in zoom-in">
+                            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full animate-in fade-in zoom-in">
                                 Activo
                             </span>
                         )}
@@ -82,16 +82,16 @@ export function CandidateView({
 
                     <div className="flex justify-between items-end">
                         <div>
-                            <h3 className={cn("text-lg font-bold", activeTab === "profile" ? "text-blue-600 dark:text-blue-400" : "text-foreground")}>
+                            <h3 className={cn("text-lg font-bold", activeTab === "profile" ? "text-primary " : "text-foreground")}>
                                 Mi Perfil
                             </h3>
                             <p className="text-muted-foreground text-sm mt-1">Datos personales y profesionales.</p>
                         </div>
                         <div className="text-right">
                             {profileComplete ? (
-                                <span className="text-xs font-medium text-green-600 bg-green-100 dark:bg-green-500/10 dark:text-green-400 px-2 py-1 rounded-full">Completo</span>
+                                <span className="text-xs font-medium text-green-600 bg-emerald-500/10 px-2 py-1 rounded-full">Completo</span>
                             ) : (
-                                <span className="text-xs font-medium text-amber-600 bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 px-2 py-1 rounded-full">Incompleto</span>
+                                <span className="text-xs font-medium text-amber-600 bg-amber-500/10 px-2 py-1 rounded-full">Incompleto</span>
                             )}
                         </div>
                     </div>

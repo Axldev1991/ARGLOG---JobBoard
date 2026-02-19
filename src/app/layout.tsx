@@ -45,6 +45,7 @@ export default async function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
+          themes={["light", "dark"]}
           disableTransitionOnChange
         >
           <Navbar />

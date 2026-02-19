@@ -15,7 +15,8 @@ import { Logger } from "@/lib/logger";
 export async function createJob(formData: FormData) {
     // Extracción de datos (en app real usaríamos Zod para validar aquí)
     const title = formData.get("title") as string;
-    const salary = formData.get("salary") as string;
+    const salaryRaw = formData.get("salary") as string;
+    const salary = salaryRaw?.trim() === "" ? "A convenir" : salaryRaw;
     const description = formData.get("description") as string;
     const category = formData.get("category") as string;
     const modality = formData.get("modality") as string;

@@ -64,7 +64,7 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+                    <div className="space-y-6">
                         <div>
                             <label className="block text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                                 <LayoutGrid size={16} /> Categoría
@@ -96,8 +96,8 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
                             </label>
                             <Input
                                 name="salary"
-                                defaultValue={initialData?.salary || ""}
-                                placeholder="Ej: $1,500 - $2,500 USD"
+                                defaultValue={initialData?.salary || "A convenir"}
+                                placeholder="Ej: $1,500 - $2,500 USD o A convenir"
                                 className="bg-background border-input text-foreground placeholder:text-muted-foreground"
                             />
                         </div>
@@ -173,16 +173,13 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
 
                 <div>
                     <label className="block text-sm font-medium text-muted-foreground mb-2">Descripción Detallada</label>
-                    <div>
-                        <label className="block text-sm font-medium text-muted-foreground mb-2">Descripción Detallada</label>
-                        {/* Input oculto para que FormData lo capture al enviar */}
-                        <input type="hidden" name="description" value={description} />
+                    {/* Input oculto para que FormData lo capture al enviar */}
+                    <input type="hidden" name="description" value={description} />
 
-                        <RichTextEditor
-                            value={description}
-                            onChange={setDescription}
-                        />
-                    </div>
+                    <RichTextEditor
+                        value={description}
+                        onChange={setDescription}
+                    />
                 </div>
             </div>
 
@@ -193,11 +190,14 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
                         Cancelar
                     </Button>
                 </Link>
-                <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12 text-lg font-semibold shadow-lg shadow-primary/20">
+                <Button
+                    type="submit"
+                    className="h-14 px-10 font-black text-lg rounded-2xl transition-all active:translate-y-[2px] active:shadow-[0_2px_0_0_#1e3a8a] active:scale-[0.98] bg-gradient-to-b from-primary via-primary to-blue-800 text-white shadow-[0_6px_0_0_#1e3a8a,0_15px_30px_-10px_rgba(var(--primary),0.5),inset_0_1px_0_0_rgba(255,255,255,0.4),inset_0_-2px_0_0_rgba(0,0,0,0.2)] ring-1 ring-primary/20 hover:shadow-[0_8px_0_0_#1e3a8a,0_20px_40px_-15px_rgba(var(--primary),0.7)] hover:-translate-y-[2px] relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/20 before:to-transparent before:h-1/2 dark:bg-primary dark:from-primary dark:to-primary dark:text-blue-900 dark:shadow-none dark:ring-0 dark:before:hidden dark:active:translate-y-0 dark:hover:translate-y-0 dark:font-bold"
+                >
                     {isEditing ? (
-                        <div className="flex items-center"><Save size={20} className="mr-2" /> Guardar Cambios</div>
+                        <div className="relative z-10 flex items-center"><Save size={20} className="mr-2" /> Guardar Cambios</div>
                     ) : (
-                        <div className="flex items-center"><CheckCircle2 size={20} className="mr-2" /> Publicar Oferta</div>
+                        <div className="relative z-10 flex items-center"><CheckCircle2 size={20} className="mr-2" /> Publicar Oferta</div>
                     )}
                 </Button>
             </div>

@@ -56,10 +56,17 @@ export default async function Home(props: {
   const totalPages = Math.ceil(totalJobs / PAGE_SIZE);
 
   return (
-    <main className="bg-background min-h-screen pb-20">
+    <main className="bg-background min-h-screen pb-20 relative overflow-hidden">
+      {/* Background Decorations */}
+      <div className="absolute top-0 left-0 w-full h-[1000px] pointer-events-none opacity-40 dark:opacity-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full" />
+        <div className="absolute top-[20%] right-[-5%] w-[40%] h-[40%] bg-blue-400/10 blur-[100px] rounded-full" />
+        <div className="absolute top-[50%] left-[10%] w-[30%] h-[30%] bg-emerald-400/5 blur-[80px] rounded-full" />
+      </div>
+
       <Hero user={session} />
 
-      <div className="max-w-7xl mx-auto px-6 -mt-10 flex flex-col gap-12">
+      <div className="max-w-7xl mx-auto px-6 -mt-10 flex flex-col gap-12 relative z-10">
         {/* 1. FEATURED CAROUSEL */}
         {featuredJobs.length > 0 && (
           <section className="z-30">
@@ -77,16 +84,18 @@ export default async function Home(props: {
           <ScrollToTopOnChange />
 
           <div className="mb-10 flex items-center justify-between">
-            <div>
-              <h2 className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="relative">
+              <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary rounded-full"></div>
+              <h2 className="text-3xl font-extrabold text-foreground tracking-tight flex items-center gap-2">
                 {hasFilters ? "Resultados de búsqueda" : "Todas las Ofertas"}
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse hidden md:block" />
               </h2>
-              <p className="text-slate-400 mt-2">
+              <p className="text-muted-foreground mt-2 font-medium">
                 Explora las mejores oportunidades en el sector logístico.
               </p>
             </div>
-            <div className="text-slate-500 text-sm hidden sm:block">
-              Mostrando {displayJobs.length} de {totalJobs} resultados
+            <div className="text-muted-foreground text-sm hidden sm:block font-bold bg-muted px-4 py-2 rounded-full border border-border">
+              Mostrando <span className="text-primary">{displayJobs.length}</span> de {totalJobs} resultados
             </div>
           </div>
 
@@ -137,7 +146,7 @@ export default async function Home(props: {
                 >
                   <Button
                     variant="outline"
-                    className="border-slate-700 text-white bg-slate-800 hover:bg-slate-700 hover:text-white"
+                    className="border-border text-foreground hover:bg-primary hover:text-primary-foreground shadow-sm"
                   >
                     <ChevronLeft size={16} className="mr-1" /> Anterior
                   </Button>
@@ -146,14 +155,14 @@ export default async function Home(props: {
                 <Button
                   disabled
                   variant="outline"
-                  className="border-slate-800 text-slate-600 bg-slate-900 opacity-50"
+                  className="border-border text-muted-foreground opacity-50"
                 >
                   <ChevronLeft size={16} className="mr-1" /> Anterior
                 </Button>
               )}
 
-              <span className="text-slate-400 font-mono text-sm px-4">
-                Página {currentPage} de {totalPages}
+              <span className="text-muted-foreground font-bold text-sm bg-muted h-10 flex items-center px-6 rounded-xl border border-border">
+                Página <span className="text-primary mx-1">{currentPage}</span> de {totalPages}
               </span>
 
               {currentPage < totalPages ? (
@@ -163,7 +172,7 @@ export default async function Home(props: {
                 >
                   <Button
                     variant="outline"
-                    className="border-slate-700 text-white bg-slate-800 hover:bg-slate-700 hover:text-white"
+                    className="border-border text-foreground hover:bg-primary hover:text-primary-foreground shadow-sm"
                   >
                     Siguiente <ChevronRight size={16} className="ml-1" />
                   </Button>
@@ -172,7 +181,7 @@ export default async function Home(props: {
                 <Button
                   disabled
                   variant="outline"
-                  className="border-slate-800 text-slate-600 bg-slate-900 opacity-50"
+                  className="border-border text-muted-foreground opacity-50"
                 >
                   Siguiente <ChevronRight size={16} className="ml-1" />
                 </Button>

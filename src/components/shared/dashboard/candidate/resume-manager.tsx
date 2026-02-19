@@ -46,11 +46,11 @@ export function ResumeManager({ user }: { user: any }) {
                     <h3 className="text-lg font-bold">Curriculum Vitae</h3>
                 </div>
                 {user.resumeUrl ? (
-                    <span className="flex items-center gap-1 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-bold">
+                    <span className="flex items-center gap-1 bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full font-bold text-[10px] border border-emerald-500/20">
                         <CheckCircle size={10} /> Listo
                     </span>
                 ) : (
-                    <span className="flex items-center gap-1 bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-bold">
+                    <span className="flex items-center gap-1 bg-amber-500/10 text-amber-600 px-2 py-0.5 rounded-full font-bold text-[10px] border border-amber-500/20">
                         <AlertCircle size={10} /> Pendiente
                     </span>
                 )}
@@ -117,7 +117,7 @@ export function ResumeManager({ user }: { user: any }) {
                 </label>
 
                 {uploadError && (
-                    <p className="text-red-500 text-xs mt-3 text-center font-medium bg-red-50 p-2 rounded-lg border border-red-100">
+                    <p className="text-destructive text-xs mt-3 text-center font-medium bg-destructive/10 p-2 rounded-lg border border-destructive/20">
                         {uploadError}
                     </p>
                 )}

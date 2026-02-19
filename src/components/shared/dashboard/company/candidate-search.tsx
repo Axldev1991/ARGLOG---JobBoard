@@ -53,7 +53,7 @@ export function CandidateSearch({ allTags = [] }: { allTags: any[] }) {
                             />
                         </div>
                         <div className="flex justify-end">
-                            <Button onClick={performSearch} className="bg-blue-600 hover:bg-blue-500">
+                            <Button onClick={performSearch} className="font-bold">
                                 Buscar Ahora
                             </Button>
                         </div>
@@ -91,14 +91,14 @@ export function CandidateSearch({ allTags = [] }: { allTags: any[] }) {
                     ))
                 ) : candidates.length > 0 ? (
                     candidates.map((candidate) => (
-                        <div key={candidate.id} className="bg-card border rounded-xl p-6 group hover:border-blue-500/50 transition-all hover:shadow-md relative overflow-hidden">
+                        <div key={candidate.id} className="bg-card border rounded-xl p-6 group hover:border-primary/50 transition-all hover:shadow-md relative overflow-hidden">
                             <div className="flex gap-4 items-start relative z-10">
-                                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-2xl shrink-0 border-2 border-white shadow-sm">
+                                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl shrink-0 border-2 border-background shadow-sm">
                                     {(candidate.name?.charAt(0) || 'C')}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h4 className="font-bold text-lg truncate group-hover:text-blue-600 transition-colors">{candidate.name}</h4>
-                                    <p className="text-blue-600 dark:text-blue-400 font-medium text-sm mb-1">{candidate.headline || "Candidato en Logística"}</p>
+                                    <h4 className="font-bold text-lg truncate group-hover:text-primary transition-colors">{candidate.name}</h4>
+                                    <p className="text-primary font-medium text-sm mb-1">{candidate.headline || "Candidato en Logística"}</p>
                                     <div className="flex items-center gap-2 text-muted-foreground text-xs">
                                         <MapPin size={14} />
                                         <span>{candidate.city || "No especificada"}</span>
@@ -106,13 +106,13 @@ export function CandidateSearch({ allTags = [] }: { allTags: any[] }) {
                                 </div>
                             </div>
 
-                            <p className="mt-4 text-sm text-slate-600 dark:text-slate-400 line-clamp-2 italic">
+                            <p className="mt-4 text-sm text-muted-foreground line-clamp-2 italic">
                                 "{candidate.bio || "Sin descripción disponible."}"
                             </p>
 
                             <div className="mt-4 flex flex-wrap gap-1.5">
                                 {candidate.tags?.map((tag: any) => (
-                                    <span key={tag.id} className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-medium px-2 py-0.5 rounded-full border">
+                                    <span key={tag.id} className="bg-secondary text-secondary-foreground text-[10px] font-medium px-2 py-0.5 rounded-full border border-border">
                                         {tag.name}
                                     </span>
                                 ))}
@@ -121,17 +121,17 @@ export function CandidateSearch({ allTags = [] }: { allTags: any[] }) {
                             <div className="mt-6 pt-4 border-t flex flex-wrap gap-4 items-center justify-between">
                                 <div className="flex gap-3">
                                     {candidate.linkedin && (
-                                        <a href={candidate.linkedin} target="_blank" className="text-muted-foreground hover:text-blue-600 transition-colors">
+                                        <a href={candidate.linkedin} target="_blank" className="text-muted-foreground hover:text-primary transition-colors">
                                             <Linkedin size={18} />
                                         </a>
                                     )}
-                                    <a href={`mailto:${candidate.email}`} className="text-muted-foreground hover:text-blue-600 transition-colors">
+                                    <a href={`mailto:${candidate.email}`} className="text-muted-foreground hover:text-primary transition-colors">
                                         <Mail size={18} />
                                     </a>
                                 </div>
 
                                 {candidate.resumeUrl ? (
-                                    <Button variant="outline" size="sm" className="gap-2 h-8 text-xs border-blue-500/30 text-blue-600 hover:bg-blue-50" asChild>
+                                    <Button variant="outline" size="sm" className="gap-2 h-8 text-xs border-primary/30 text-primary hover:bg-primary/10" asChild>
                                         <a href={candidate.resumeUrl} target="_blank">
                                             <FileUser size={14} />
                                             Ver CV
@@ -146,7 +146,7 @@ export function CandidateSearch({ allTags = [] }: { allTags: any[] }) {
                 ) : (
                     <div className="col-span-full py-20 text-center bg-card border rounded-xl border-dashed">
                         <p className="text-muted-foreground">No se encontraron candidatos con esos criterios.</p>
-                        <Button variant="link" onClick={() => { setQuery(""); setSelectedTagIds([]); }} className="text-blue-600 mt-2">
+                        <Button variant="link" onClick={() => { setQuery(""); setSelectedTagIds([]); }} className="text-primary mt-2">
                             Limpiar filtros
                         </Button>
                     </div>

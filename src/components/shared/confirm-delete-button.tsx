@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Trash2, AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
     AlertDialog,
+    AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
@@ -21,6 +23,7 @@ interface ConfirmDeleteButtonProps {
     description?: React.ReactNode;
     successMessage?: string;
     trigger?: React.ReactNode;
+    icon?: React.ReactNode;
     className?: string;
 }
 
@@ -30,6 +33,7 @@ export function ConfirmDeleteButton({
     description = "Esta acción no se puede deshacer. Esto eliminará permanentemente el registro.",
     successMessage = "Eliminado correctamente",
     trigger,
+    icon,
     className
 }: ConfirmDeleteButtonProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -58,45 +62,49 @@ export function ConfirmDeleteButton({
 
     return (
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-            <AlertDialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <AlertDialogTrigger asChild>
                 {trigger ? (
                     trigger
                 ) : (
                     <Button
                         variant="ghost"
-                        size="sm"
-                        className={`h-8 w-8 p-0 text-slate-400 hover:text-red-500 hover:bg-red-50 ${className}`}
-                        title="Eliminar"
+                        className={cn(
+                            "h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10",
+                            className
+                        )}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
                     >
-                        <Trash2 size={16} />
+                        {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : icon || <Trash2 size={16} />}
                     </Button>
                 )}
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-slate-900 border border-slate-700 text-white rounded-xl shadow-2xl max-w-md" onClick={(e) => e.stopPropagation()}>
+            <AlertDialogContent className="bg-card border border-border rounded-xl shadow-2xl max-w-md" onClick={(e) => e.stopPropagation()}>
                 <AlertDialogHeader>
-                    <AlertDialogTitle className="flex items-center gap-2 text-red-400 text-xl">
+                    <AlertDialogTitle className="flex items-center gap-2 text-destructive text-xl">
                         <AlertTriangle size={24} />
                         {title}
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="text-slate-400 text-sm leading-relaxed mt-2">
+                    <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed mt-2">
                         {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="mt-6 gap-2">
+                <AlertDialogFooter className="gap-3 mt-6">
                     <AlertDialogCancel
-                        className="bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white mt-0"
                         disabled={isDeleting}
+                        className="bg-transparent border-border text-foreground hover:bg-accent hover:text-accent-foreground mt-0"
                     >
                         Cancelar
                     </AlertDialogCancel>
-                    <Button
+                    <AlertDialogAction
                         onClick={handleDelete}
                         disabled={isDeleting}
-                        className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-600 border-0"
+                        className="bg-destructive hover:bg-destructive/90 text-destructive-foreground focus:ring-destructive border-0"
                     >
                         {isDeleting ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
-                        {isDeleting ? 'Eliminando...' : 'Sí, eliminar'}
-                    </Button>
+                        {isDeleting ? "Eliminando..." : "Sí, eliminar"}
+                    </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

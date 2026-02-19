@@ -46,9 +46,9 @@ export function JobStatusControls({ jobId, currentStatus }: Props) {
     const getStatusConfig = (status: string) => {
         switch (status) {
             case "PUBLISHED":
-                return { icon: PlayCircle, color: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20", label: "Publicada" };
+                return { icon: PlayCircle, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20", label: "Publicada" };
             case "PAUSED":
-                return { icon: PauseCircle, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20", label: "Pausada" };
+                return { icon: PauseCircle, color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-500/20", label: "Pausada" };
             case "CLOSED":
                 return { icon: XCircle, color: "text-muted-foreground bg-muted border-border", label: "Cerrada" };
             default:
@@ -82,7 +82,7 @@ export function JobStatusControls({ jobId, currentStatus }: Props) {
                     disabled={currentStatus === "PUBLISHED"}
                     className="gap-2"
                 >
-                    <PlayCircle size={14} className="text-green-600" /> Publicar
+                    <PlayCircle size={14} className="text-emerald-600" /> Publicar
                     {currentStatus === "PUBLISHED" && <CheckCircle2 size={14} className="ml-auto opacity-50" />}
                 </DropdownMenuItem>
 
@@ -98,7 +98,7 @@ export function JobStatusControls({ jobId, currentStatus }: Props) {
                 <DropdownMenuItem
                     onClick={() => handleStatusChange("CLOSED")}
                     disabled={currentStatus === "CLOSED"}
-                    className="gap-2 text-slate-500"
+                    className="gap-2 text-muted-foreground"
                 >
                     <XCircle size={14} /> Cerrar
                     {currentStatus === "CLOSED" && <CheckCircle2 size={14} className="ml-auto opacity-50" />}
