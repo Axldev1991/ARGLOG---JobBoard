@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateProfile } from "@/actions/update-profile";
 
-export function ProfileForm({ user }: { user: any }) {
+import { SkillSelectorSet } from "@/components/ui/skill-selector-set";
+
+export function ProfileForm({ user, allTags = [] }: { user: any, allTags: any[] }) {
     const [isSavingProfile, setIsSavingProfile] = useState(false);
 
     const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -18,6 +20,8 @@ export function ProfileForm({ user }: { user: any }) {
         setIsSavingProfile(false);
     }
 
+    const userTagIds = user.tags?.map((t: any) => t.id) || [];
+
     return (
         <div className="bg-card p-6 rounded-xl border border-border shadow-sm text-card-foreground">
             <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
@@ -26,8 +30,11 @@ export function ProfileForm({ user }: { user: any }) {
             </div>
 
             <form onSubmit={handleProfileSubmit} className="space-y-4">
+                {/* ... (anterior campos omitidos para brevedad en el prompt del tool) ... */}
+                {/* NOTA: El tool replace_file_content requiere que TargetContent sea exacto. 
+                    Voy a incluir los campos necesarios para que el match funcione o reemplazar el bloque entero */}
 
-                {/* CAMPO: NOMBRE */}
+                {/* [BLOQUE DE CAMPOS EXISTENTES] */}
                 <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Nombre Completo</label>
                     <div className="relative">
@@ -52,8 +59,8 @@ export function ProfileForm({ user }: { user: any }) {
                             className="pl-10 bg-muted text-muted-foreground border-border cursor-not-allowed"
                         />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">El email no se puede cambiar.</p>
                 </div>
+
                 <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Titular Profesional</label>
                     <div className="relative">
@@ -65,7 +72,6 @@ export function ProfileForm({ user }: { user: any }) {
                             defaultValue={user.headline || ""}
                         />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">Breve descripción que aparecerá bajo tu nombre.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -104,6 +110,20 @@ export function ProfileForm({ user }: { user: any }) {
                             placeholder="https://linkedin.com/in/tu-usuario"
                             className="pl-10 bg-background border-input"
                             defaultValue={user.linkedin || ""}
+                        />
+                    </div>
+                </div>
+
+                {/* NUEVA SECCIÓN: TAGS (HABILIDADES) */}
+                <div className="pt-4">
+                    <label className="block text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                        <Briefcase className="text-primary" size={16} />
+                        Mis Habilidades Principales
+                    </label>
+                    <div className="bg-muted/30 p-6 rounded-2xl border border-border/50 shadow-sm">
+                        <SkillSelectorSet
+                            availableTags={allTags}
+                            initialSelectedIds={userTagIds}
                         />
                     </div>
                 </div>

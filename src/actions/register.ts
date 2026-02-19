@@ -34,13 +34,19 @@ export async function registerUser(formData: FormData) {
             return { error: "Este email ya está registrado" }
         }
 
-        // 3. Crear el usuario en la DB
+        // 3. Crear el usuario en la DB con sus tags
+        const tagsJson = formData.get("tags") as string;
+        const tagIds = JSON.parse(tagsJson || "[]") as number[];
+
         await prisma.user.create({
             data: {
                 name,
                 email,
                 password: await hash(password, 10),
-                role
+                role,
+                tags: {
+                    connect: tagIds.map(id => ({ id }))
+                }
             }
         })
 

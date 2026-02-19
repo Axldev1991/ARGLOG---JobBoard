@@ -11,10 +11,12 @@ type Tab = "profile" | "applications";
 
 export function CandidateView({
     user,
+    allTags = [],
     applications = [],
     activeTab: initialTab = "profile"
 }: {
     user: any,
+    allTags?: any[],
     applications?: any[],
     activeTab?: Tab
 }) {
@@ -138,7 +140,7 @@ export function CandidateView({
                 {activeTab === "profile" ? (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2 space-y-6">
-                            <ProfileForm user={user} />
+                            <ProfileForm user={user} allTags={allTags} />
                         </div>
                         <div className="space-y-6">
                             <ResumeManager user={user} />

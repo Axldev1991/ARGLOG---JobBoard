@@ -47,49 +47,42 @@ export function Hero({ user }: HeroProps) {
           </div>
         </div>
 
-        {/* Tarjetas Dinámicas según Rol */}
-        <div className={`grid gap-6 mt-16 mx-auto text-left ${isGuest ? 'md:grid-cols-2 max-w-4xl' : 'max-w-lg'}`}>
-
-          {/* Si soy Invitado o Candidato -> Muestro Card Candidato */}
-          {(isGuest || isCandidate) && (
+        {/* Tarjetas Informativas solo para Invitados */}
+        {isGuest && (
+          <div className="grid gap-6 mt-16 mx-auto text-left md:grid-cols-2 max-w-4xl">
+            {/* Card Candidato */}
             <RoleCard
-              title={isCandidate ? "Bienvenido, Colega" : "Soy Candidato"}
+              title="Soy Candidato"
               icon="👤"
-              description={isCandidate ? "Explora las nuevas vacantes y lleva tu carrera al siguiente nivel." : "Busco mi próximo desafío en logística, transporte o almacén."}
+              description="Busco mi próximo desafío en logística, transporte o almacén."
               borderColor="blue"
               primaryAction={{
                 label: "Ver Ofertas",
                 href: "/#ofertas"
               }}
-              secondaryAction={isCandidate ? {
-                label: "Mi Perfil",
-                href: "/dashboard" // Asumimos que el candidato también tiene un dashboard por ahora
-              } : {
+              secondaryAction={{
                 label: "Ingresar",
                 href: "/login"
               }}
             />
-          )}
 
-          {/* Si soy Invitado o Empresa -> Muestro Card Empresa */}
-          {(isGuest || isCompany) && (
+            {/* Card Empresa */}
             <RoleCard
-              title={isCompany ? "Panel de Empresa" : "Soy Empresa"}
+              title="Soy Empresa"
               icon="🏢"
-              description={isCompany ? "Gestiona tus publicaciones y encuentra el talento ideal." : "Busco talento calificado para potenciar mi operación."}
+              description="Busco talento calificado para potenciar mi operación logística."
               borderColor="blue"
               primaryAction={{
                 label: "Publicar Aviso",
                 href: "/jobs/new"
               }}
               secondaryAction={{
-                label: isCompany ? "Ir al Dashboard" : "Dashboard",
-                href: "/dashboard"
+                label: "Registrar Empresa",
+                href: "/register?role=company"
               }}
             />
-          )}
-
-        </div>
+          </div>
+        )}
 
       </div>
     </div>

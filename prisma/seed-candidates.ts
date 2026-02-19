@@ -1,11 +1,10 @@
-
 import { PrismaClient } from '@prisma/client';
+import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
     console.log('🌱 Iniciando siembra de candidatos...');
-    if (!process.env.SEED_CANDIDATE_PASSWORD) throw new Error("SEED_CANDIDATE_PASSWORD must be set in .env");
 
     // 1. Obtener todas las ofertas existentes para postularse
     const jobs = await prisma.job.findMany();
@@ -13,34 +12,48 @@ async function main() {
         console.error('❌ No hay ofertas de trabajo. Crea algunas ofertas primero.');
         return;
     }
+    const candidatePasswordPlain = process.env.SEED_CANDIDATE_PASSWORD || "axlrose91";
+    const hashedPassword = await hash(candidatePasswordPlain, 10);
 
-    // Datos fake variados
+    // Listado de tags oficiales para conectar
+    const tags = await prisma.tag.findMany();
+
+    // Datos fake variados del sector logístico
     const candidatesData = [
-        { name: "Ana García", email: "ana.garcia@example.com", headline: "Senior Frontend Developer", bio: "Apasionada por React y UX/UI." },
-        { name: "Carlos López", email: "carlos.lopez@example.com", headline: "Fullstack Engineer", bio: "Experto en Node.js y bases de datos SQL." },
-        { name: "Lucía Mendez", email: "lucia.mendez@example.com", headline: "UX Researcher", bio: "Enfocada en la experiencia de usuario y accesibilidad." },
-        { name: "Jorge Perez", email: "jorge.perez@example.com", headline: "Project Manager", bio: "Certificado PMP con 5 años de experiencia." },
-        { name: "Sofía Ruiz", email: "sofia.ruiz@example.com", headline: "QA Automation", bio: "Especialista en Cypress y Playwright." },
-        { name: "Miguel Angel", email: "miguel.angel@example.com", headline: "DevOps Engineer", bio: "Kubernetes y Docker son mi día a día." },
-        { name: "Elena Torres", email: "elena.torres@example.com", headline: "Product Designer", bio: "Diseñando productos digitales que la gente ama." },
-        { name: "David Fernandez", email: "david.fernandez@example.com", headline: "Backend Developer", bio: "Go y Python lover." },
-        { name: "Maria Rodriguez", email: "maria.rodriguez@example.com", headline: "HR Specialist", bio: "Buscando el mejor talento humano." },
-        { name: "Pedro Gomez", email: "pedro.gomez@example.com", headline: "Marketing Digital", bio: "SEO/SEM y estrategias de crecimiento." },
+        { name: "Marcos Rodríguez", email: "marcos.log@example.com", headline: "Operador de Autoelevador Senior", bio: "10 años de experiencia en centros de distribución de gran escala." },
+        { name: "Lucía Pedernera", email: "lucia.p@example.com", headline: "Analista de Inventarios", bio: "Especialista en control de stock y auditoría de almacenes." },
+        { name: "Roberto Sánchez", email: "roberto.transporte@example.com", headline: "Planificador de Tráfico", bio: "Optimización de rutas nacionales e internacionales." },
+        { name: "Estefanía Gomez", email: "estefi.comex@example.com", headline: "Especialista en Aduanas", bio: "Gestión documental para importación y exportación." },
+        { name: "Cristian Viale", email: "cristian.v@example.com", headline: "Preparador de Pedidos / Picking", bio: "Experto en manejo de WMS y radiofrecuencia." },
+        { name: "Mónica Juárez", email: "moni.calidad@example.com", headline: "Auditor de Calidad Logística", bio: "Aseguramiento de procesos en cadena de frío." },
+        { name: "Facundo Ríos", email: "facu.mecanico@example.com", headline: "Mecánico de Flota Pesada", bio: "Mantenimiento preventivo y correctivo de camiones." },
+        { name: "Gabriel Sotelo", email: "gabi.sap@example.com", headline: "Operador SAP WMS", bio: "Carga de datos y gestión de almacén vía SAP." },
+        { name: "Valeria Conti", email: "valeria.milla@example.com", headline: "Coordinadora de Última Milla", bio: "Gestión de repartos en zonas urbanas de alta densidad." },
+        { name: "Daniel Ortega", email: "dani.inversa@example.com", headline: "Responsable de Logística Inversa", bio: "Gestión eficiente de devoluciones y devoluciones." },
     ];
 
     for (const data of candidatesData) {
-        // 2. Crear o actualizar usuario (upsert para no fallar si vuelves a correr el script)
+        // Seleccionamos 2-3 tags aleatorios para este candidato
+        const randomTags = tags.sort(() => 0.5 - Math.random()).slice(0, 3);
+
         const user = await prisma.user.upsert({
             where: { email: data.email },
-            update: {},
+            update: {
+                tags: {
+                    set: randomTags.map(t => ({ id: t.id }))
+                }
+            },
             create: {
                 email: data.email,
                 name: data.name,
-                password: process.env.SEED_CANDIDATE_PASSWORD,
+                password: hashedPassword,
                 role: "candidate",
                 headline: data.headline,
                 bio: data.bio,
-                city: "Buenos Aires, AR", // Fake location
+                city: "Buenos Aires, AR",
+                tags: {
+                    connect: randomTags.map(t => ({ id: t.id }))
+                }
             },
         });
 

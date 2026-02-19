@@ -14,10 +14,18 @@ export default async function DashboardPage(props: { searchParams: Promise<{ tab
         redirect("/login");
     }
 
-    // Obtenemos el usuario FRESCO de la base de datos
+    // Obtenemos el usuario FRESCO de la base de datos, incluyendo sus tags
     const user = await prisma.user.findUnique({
         where: { id: session.id },
-        include: { companyProfile: true }
+        include: {
+            companyProfile: true,
+            tags: true
+        }
+    });
+
+    // Obtenemos todas las tags disponibles para que el candidato elija
+    const allTags = await prisma.tag.findMany({
+        orderBy: { name: 'asc' }
     });
 
     if (!user) {
@@ -41,6 +49,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ tab
         return (
             <CandidateView
                 user={user}
+                allTags={allTags}
                 applications={applications}
                 activeTab={activeTab as any}
             />
@@ -64,6 +73,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ tab
         <CompanyView
             jobs={myJobs}
             profile={user.companyProfile}
+            allTags={allTags}
             activeTab={activeTab as any}
         />
     );

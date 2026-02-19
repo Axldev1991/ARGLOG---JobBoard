@@ -5,16 +5,27 @@ const prisma = new PrismaClient()
 
 // Arrays of dummy data for generation
 const JOB_TITLES = [
-    "Frontend Developer", "Backend Engineer", "Full Stack Dev", "DevOps Specialist",
-    "UI/UX Designer", "Product Manager", "Data Scientist", "QA Automation",
-    "Technical Lead", "CTO", "Mobile Developer (iOS)", "Mobile Developer (Android)",
-    "Cloud Architect", "System Administrator", "Security Analyst"
+    "Analista de Inventarios", "Operador de Autoelevador", "Planificador de Tráfico",
+    "Responsable de Logística Inversa", "Preparador de Pedidos", "Especialista en Aduanas",
+    "Coordinador de Última Milla", "Mecánico de Flota", "Auditor de Calidad Logística",
+    "Operador SAP WMS", "Supervisor de Almacén", "Gerente de Operaciones"
 ];
 
 const CITIES = ["Buenos Aires", "Córdoba", "Rosario", "Mendoza", "La Plata", "Mar del Plata", "San Miguel de Tucumán", "Salta"];
-const MODALITIES = ["Remoto", "Híbrido", "Presencial"];
-const CATEGORIES = ["IT", "Diseño", "Marketing", "RRHH", "Finanzas"];
-const TAGS_POOL = ["React", "Node.js", "Java", "Python", "AWS", "Docker", "Figma", "Agile", "Inglés", "SQL"];
+const MODALITIES = ["Presencial", "Híbrido"];
+const CATEGORIES = ["Almacenamiento", "Transporte", "Distribución", "Commercio Exterior", "Mantenimiento"];
+const TAGS_POOL = [
+    "Analista de Inventarios / Control de Stock",
+    "Operador de Clark / Autoelevador (con carnet habilitante)",
+    "Planificador de Rutas / Tráfico",
+    "Gestión de Devoluciones / Logística Inversa",
+    "Preparador de Pedidos / Picking & Packing",
+    "Especialista en Comercio Exterior / Aduanas",
+    "Coordinador de Última Milla",
+    "Mantenimiento de Flota",
+    "Auditor de Calidad en Procesos Logísticos",
+    "Operador de Sistemas de Gestión de Almacenes (WMS / SAP)"
+];
 
 function getRandomItem(arr: any[]) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -37,16 +48,14 @@ async function main() {
         await prisma.tag.create({
             data: {
                 name,
-                type: 'Tech' // Simplification for mass seed
+                type: 'hard'
             }
         })
     }
     console.log('🏷️  Created Tags')
 
     // 3. Create Admin
-    // 3. Create Admin
-    const adminPasswordPlain = process.env.ADMIN_SEED_PASSWORD;
-    if (!adminPasswordPlain) throw new Error("ADMIN_SEED_PASSWORD must be set in .env");
+    const adminPasswordPlain = process.env.ADMIN_SEED_PASSWORD || "admin123";
     const adminPassword = await hash(adminPasswordPlain, 10)
     await prisma.user.create({
         data: {
@@ -59,8 +68,7 @@ async function main() {
     console.log('👮 Admin created')
 
     // 4. Create 10 Companies ( 1 Fixed + 9 Generic)
-    const genericPasswordPlain = process.env.SEED_CANDIDATE_PASSWORD;
-    if (!genericPasswordPlain) throw new Error("SEED_CANDIDATE_PASSWORD must be set in .env");
+    const genericPasswordPlain = process.env.SEED_CANDIDATE_PASSWORD || "axlrose91";
     const password = await hash(genericPasswordPlain, 10);
     const companyIds: number[] = [];
 
@@ -69,15 +77,15 @@ async function main() {
         data: {
             email: 'tech@corp.com',
             password: password,
-            name: 'Tech Corp (Demo)',
+            name: 'Tech Logística (Demo)',
             role: 'company',
             companyProfile: {
                 create: {
-                    legalName: 'Technology Corporation S.A.',
+                    legalName: 'Logistics Technology S.A.',
                     cuit: '30-11223344-5',
-                    industry: 'Software',
-                    description: 'Líderes en desarrollo de software de alta calidad.',
-                    website: 'https://techcorp.com'
+                    industry: 'Transporte',
+                    description: 'Líderes en soluciones logísticas integrales.',
+                    website: 'https://techlogistica.com'
                 }
             }
         }
@@ -90,14 +98,14 @@ async function main() {
             data: {
                 email: `company${i}@test.com`,
                 password: password,
-                name: `Empresa Test ${i}`,
+                name: `Empresa Logística ${i}`,
                 role: 'company',
                 companyProfile: {
                     create: {
-                        legalName: `Sociedad Anonima ${i}`,
+                        legalName: `Sociedad Anonima Logística ${i}`,
                         cuit: `30-${10000000 + i}-1`,
                         industry: getRandomItem(CATEGORIES),
-                        description: `Empresa generada automáticamente ${i} especializada en servicios digitales.`,
+                        description: `Empresa generada automáticamente ${i} especializada en distribución.`,
                         website: `https://test-company-${i}.com`
                     }
                 }
@@ -112,14 +120,18 @@ async function main() {
         data: {
             email: 'dev@talent.com',
             password: password,
-            name: 'Alex Developer (Demo)',
+            name: 'Alex Candidato (Demo)',
             role: 'candidate',
-            headline: 'Full Stack Ninja',
-            city: 'Buenos Aires'
+            headline: 'Especialista en Última Milla',
+            city: 'Buenos Aires',
+            tags: {
+                connect: TAGS_POOL.slice(0, 3).map(name => ({ name }))
+            }
         }
     });
 
     for (let i = 1; i <= 49; i++) {
+        const randomTags = TAGS_POOL.sort(() => 0.5 - Math.random()).slice(0, 3);
         await prisma.user.create({
             data: {
                 email: `candidate${i}@test.com`,
@@ -128,11 +140,14 @@ async function main() {
                 role: 'candidate',
                 headline: getRandomItem(JOB_TITLES),
                 city: getRandomItem(CITIES),
-                bio: `Bio autogenerada para el candidato ${i}. Lorem ipsum dolor sit amet.`
+                bio: `Bio autogenerada para el candidato ${i} con experiencia en operaciones logísticas.`,
+                tags: {
+                    connect: randomTags.map(name => ({ name }))
+                }
             }
         });
     }
-    console.log('👨‍💻 Created 50 Candidates')
+    console.log('👨‍💻 Created 50 Candidates with Tags')
 
     // 6. Create 50 Jobs distributed among Companies
     for (let i = 1; i <= 50; i++) {
@@ -150,9 +165,9 @@ async function main() {
 
         await prisma.job.create({
             data: {
-                title: `${title} ${mod === 'Remoto' ? '(Remote)' : ''}`,
-                description: `Buscamos un ${title} apasionado para unirse a nuestro equipo. \n\nResponsabilidades:\n- Escribir código limpio.\n- Colaborar con el equipo.\n\nRequisitos:\n- Experiencia en ${randomTags.join(', ')}.`,
-                salary: `${Math.floor(Math.random() * 4000) + 1000} USD`,
+                title: `${title}`,
+                description: `Buscamos un ${title} apasionado para unirse a nuestro equipo de operaciones. \n\nResponsabilidades:\n- Gestión de almacén.\n- Colaborar con el equipo de tráfico.\n\nRequisitos:\n- Experiencia demostrable en ${randomTags.join(', ')}.`,
+                salary: `${Math.floor(Math.random() * 800000) + 400000} ARS`,
                 category: cat,
                 modality: mod,
                 location: getRandomItem(CITIES),

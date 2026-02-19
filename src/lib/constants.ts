@@ -1,24 +1,24 @@
 export const JOB_CATEGORIES = [
-    "Logística",
-    "Administración",
+    "Almacenamiento",
     "Transporte",
-    "Compras",
-    "Comercio Exterior"
+    "Distribución",
+    "Comercio Exterior",
+    "Mantenimiento",
+    "Administración"
 ] as const;
 
 export const JOB_MODALITIES = [
     "Presencial",
-    "Híbrido",
-    "Remoto"
+    "Híbrido"
 ] as const;
 
 export const QUICK_FILTER_TAGS = [
-    "Clark",
-    "Excel",
-    "Liderazgo",
-    "SAP",
-    "Inglés",
-    "Zona Norte"
+    "Autoelevador",
+    "Gestión de Stock",
+    "WMS / SAP",
+    "Comercio Exterior",
+    "Logística Inversa",
+    "Planificación"
 ] as const;
 
 export const COMPANY_LOGOS = [

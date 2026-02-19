@@ -25,6 +25,7 @@ model User {
   applications   Application[]
   companyProfile CompanyProfile?
   jobs           Job[]
+  tags           Tag[]           @relation("UserToTag")
 }
 
 model Job {
@@ -45,10 +46,11 @@ model Job {
 }
 
 model Tag {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  type String
-  jobs Job[]  @relation("JobToTag")
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  type  String
+  jobs  Job[]  @relation("JobToTag")
+  users User[] @relation("UserToTag")
 }
 
 model Application {

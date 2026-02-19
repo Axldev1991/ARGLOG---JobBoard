@@ -18,6 +18,9 @@ export async function updateProfile(formData: FormData) {
     const linkedin = formData.get("linkedin") as string;
     const city = formData.get("city") as string;
 
+    const tagsJson = formData.get("tags") as string;
+    const tagIds = JSON.parse(tagsJson || "[]") as number[];
+
     try {
         await prisma.user.update({
             where: { id: session.id },
@@ -27,7 +30,10 @@ export async function updateProfile(formData: FormData) {
                 bio,
                 phone,
                 linkedin,
-                city
+                city,
+                tags: {
+                    set: tagIds.map(id => ({ id }))
+                }
             }
         });
 

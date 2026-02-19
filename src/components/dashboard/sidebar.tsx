@@ -41,9 +41,11 @@ export function Sidebar({ role }: SidebarProps) {
         candidate: [
             { label: "Mi Perfil", icon: User, tab: "profile", color: "text-blue-500" },
             { label: "Postulaciones", icon: Briefcase, tab: "applications", color: "text-emerald-500" },
+            { label: "Ver Ofertas", icon: Search, href: "/", color: "text-orange-500" },
         ],
         company: [
             { label: "Mis Ofertas", icon: Briefcase, tab: "jobs", color: "text-primary" },
+            { label: "Buscar Candidatos", icon: Users, tab: "candidates", color: "text-purple-500" },
             { label: "Perfil Empresa", icon: Building2, tab: "profile", color: "text-indigo-500" },
         ]
     };
@@ -73,11 +75,14 @@ export function Sidebar({ role }: SidebarProps) {
                     {items.map((item) => {
                         const isActive = item.view
                             ? activeView === item.view
-                            : (activeTab === item.tab || (!activeTab && item.tab === navigationByRole[role][0].tab));
+                            : (activeTab === item.tab || (!activeTab && item.tab === navigationByRole[role][0].tab && !item.href));
 
-                        const href = role === 'admin'
-                            ? `/admin/dashboard?view=${item.view}`
-                            : `/dashboard?tab=${item.tab}`;
+                        let href = item.href;
+                        if (!href) {
+                            href = role === 'admin'
+                                ? `/admin/dashboard?view=${item.view}`
+                                : `/dashboard?tab=${item.tab}`;
+                        }
 
                         return (
                             <Link

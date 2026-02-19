@@ -6,23 +6,16 @@ const prisma = new PrismaClient();
 async function main() {
     console.log("🌱 Sembrando tags...");
 
+    // 0. Limpiamos las tags anteriores para empezar de cero según pedido del cliente
+    await prisma.tag.deleteMany({});
+    console.log("🗑️  Tags anteriores eliminadas.");
+
     // 1. Recorremos la lista que importamos de data.ts
     for (const tag of MIS_TAGS) {
-
-        // 2. Preguntamos a la base de datos: "¿Conoces este nombre?"
-        const existe = await prisma.tag.findUnique({
-            where: { name: tag.name }
+        await prisma.tag.create({
+            data: tag
         });
-
-        // 3. Si la respuesta es NO (es null), entonces lo creamos
-        if (!existe) {
-            await prisma.tag.create({
-                data: tag
-            });
-            console.log("✅ Se creó: " + tag.name);
-        } else {
-            console.log("⚠️ Ya existe: " + tag.name);
-        }
+        console.log("✅ Se creó: " + tag.name);
     }
 
     console.log("🏁 Listo! Base de datos sembrada.");
