@@ -76,7 +76,7 @@ export function EditCandidateForm({ candidate }: { candidate: CandidateProps }) 
                         </div>
                         <div className="space-y-1 md:col-span-2">
                             <label className="text-sm font-medium">Titular Profesional (Headline)</label>
-                            <Input name="headline" defaultValue={candidate.headline || ""} placeholder="Ej: Senior Frontend Developer" />
+                            <Input name="headline" defaultValue={candidate.headline || ""} placeholder="Ej: Gerente de Operaciones Logísticas" />
                         </div>
                     </div>
                 </div>

@@ -43,9 +43,10 @@ export default async function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
-          themes={["light", "dark"]}
+          defaultTheme="light"
+          forcedTheme="light"
+          enableSystem={false}
+          themes={["light"]}
           disableTransitionOnChange
         >
           <Navbar />

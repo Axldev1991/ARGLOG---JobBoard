@@ -56,7 +56,7 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
                         <Input
                             name="title"
                             defaultValue={initialData?.title}
-                            placeholder="Ej: Senior Frontend Developer"
+                            placeholder="Ej: Gerente de Logística, Operario de Depósito"
                             className="bg-background border-input text-foreground placeholder:text-muted-foreground focus:ring-primary h-12 text-lg"
                             required
                         />

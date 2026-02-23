@@ -8,6 +8,7 @@ import { updateCompanyProfile } from "@/actions/company/update-profile";
 import { toast } from "sonner";
 import { Loader2, Upload, Building2, Globe, FileText, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { UpdatePasswordModal } from "@/components/shared/update-password-form";
 
 interface CompanyProfileFormProps {
     profile: any; // Tipado laxo por ahora, idealmente CompanyProfile type
@@ -101,7 +102,7 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                             defaultValue={profile?.legalName || ""}
                             required
                             className="mt-1.5 bg-background border-input"
-                            placeholder="Ej: Tech Solutions Inc."
+                            placeholder="Ej: Logística Sur S.R.L."
                         />
                     </div>
                     <div>
@@ -155,7 +156,8 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                     <p className="text-xs text-muted-foreground mt-1 text-right">Esta info aparecerá en tus ofertas.</p>
                 </div>
 
-                <div className="pt-4 border-t border-border flex justify-end">
+                <div className="pt-4 border-t border-border flex items-center justify-between">
+                    <UpdatePasswordModal />
                     <Button type="submit" disabled={isSaving} className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[140px]">
                         {isSaving ? (
                             <>

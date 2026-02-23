@@ -140,25 +140,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                                     </DropdownMenuItem>
                                 )}
 
-                                <DropdownMenuSeparator />
-                                <DropdownMenuLabel>Tema</DropdownMenuLabel>
-                                <DropdownMenuItem onClick={() => setTheme("light")} className="cursor-pointer">
-                                    <Sun className="mr-2 h-4 w-4" />
-                                    <span>Claro</span>
-                                    {theme === 'light' && <span className="ml-auto text-xs">✓</span>}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setTheme("dark")} className="cursor-pointer">
-                                    <Moon className="mr-2 h-4 w-4" />
-                                    <span>Oscuro</span>
-                                    {theme === 'dark' && <span className="ml-auto text-xs">✓</span>}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setTheme("system")} className="cursor-pointer">
-                                    <Laptop className="mr-2 h-4 w-4" />
-                                    <span>Sistema</span>
-                                    {theme === 'system' && <span className="ml-auto text-xs">✓</span>}
-                                </DropdownMenuItem>
 
-                                <DropdownMenuSeparator />
                                 <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer" onSelect={async () => await logout()}>
                                     <LogOut className="mr-2 h-4 w-4" />
                                     <span>Cerrar Sesión</span>
@@ -167,22 +149,6 @@ export function NavbarClient({ user }: NavbarClientProps) {
                         </DropdownMenu>
                     ) : (
                         <div className="hidden md:flex gap-2">
-                            {/* Theme Toggle for Non-Logged Users */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="mr-2">
-                                        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                                        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                                        <span className="sr-only">Toggle theme</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => setTheme("light")}>Claro</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setTheme("dark")}>Oscuro</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setTheme("system")}>Sistema</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-
                             <Link href="/login">
                                 <Button variant="ghost" size="sm">Ingresar</Button>
                             </Link>

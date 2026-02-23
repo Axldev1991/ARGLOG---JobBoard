@@ -5,6 +5,7 @@ import { User, Mail, Briefcase, MapPin, Phone, Linkedin, Loader2 } from "lucide-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateProfile } from "@/actions/update-profile";
+import { UpdatePasswordModal } from "@/components/shared/update-password-form";
 
 import { SkillSelectorSet } from "@/components/ui/skill-selector-set";
 
@@ -48,16 +49,21 @@ export function ProfileForm({ user, allTags = [] }: { user: any, allTags: any[] 
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Email</label>
-                    <div className="relative">
-                        <Mail className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
-                        <Input
-                            name="email"
-                            value={user.email}
-                            disabled
-                            className="pl-10 bg-muted text-muted-foreground border-border cursor-not-allowed"
-                        />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+                        <div className="relative">
+                            <Mail className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
+                            <Input
+                                name="email"
+                                value={user.email}
+                                disabled
+                                className="pl-10 bg-muted text-muted-foreground border-border cursor-not-allowed"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex items-end">
+                        <UpdatePasswordModal />
                     </div>
                 </div>
 
@@ -67,7 +73,7 @@ export function ProfileForm({ user, allTags = [] }: { user: any, allTags: any[] 
                         <Briefcase className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
                         <Input
                             name="headline"
-                            placeholder="Ej: Senior React Developer | UX Specialist"
+                            placeholder="Ej: Supervisor de Almacén | Especialista en Logística"
                             className="pl-10 bg-background border-input"
                             defaultValue={user.headline || ""}
                         />

@@ -48,3 +48,9 @@ private_docs/
 # Playwright
 /test-results/
 /playwright-report/
+
+# Agent Rules
+.agent/
+.agents/
+_agent/
+_agents/
