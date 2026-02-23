@@ -25,7 +25,8 @@ export async function createCompany(formData: FormData) {
         website: z.string().url("Debe ser una URL válida (https://...)").optional().or(z.literal("")),
         legalName: z.string().min(2, "Razón social requerida"),
         cuit: z.string().regex(/^\d{11}$/, "CUIT debe tener 11 números sin guiones"),
-        industry: z.string().min(2, "Industria requerida")
+        industry: z.string().min(2, "Industria requerida"),
+        password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres")
     });
 
     // Parseamos los datos del FormData
@@ -35,7 +36,8 @@ export async function createCompany(formData: FormData) {
         website: formData.get("website"),
         legalName: formData.get("legalName"),
         cuit: formData.get("cuit"),
-        industry: formData.get("industry")
+        industry: formData.get("industry"),
+        password: formData.get("password")
     };
 
     // Validamos
@@ -45,13 +47,10 @@ export async function createCompany(formData: FormData) {
         return { error: validation.error.issues[0].message };
     }
 
-    const { name, email, website, legalName, cuit, industry } = validation.data;
-
-    // Generamos contraseña temporal aleatoria
-    const tempPassword = "Arlog" + Math.floor(Math.random() * 10000);
+    const { name, email, website, legalName, cuit, industry, password } = validation.data;
 
     try {
-        const hashedPassword = await hash(tempPassword, 10);
+        const hashedPassword = await hash(password, 10);
 
         // Nested Write: Creamos Usuario + Perfil en un solo paso atómico
         await prisma.user.create({
@@ -86,9 +85,9 @@ export async function createCompany(formData: FormData) {
                     <p><strong>Razón Social:</strong> ${legalName} (CUIT: ${cuit})</p>
                     
                     <div style="background: #f4f4f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                        <p style="margin:0 0 10px 0;"><strong>Tus credenciales temporales:</strong></p>
+                        <p style="margin:0 0 10px 0;"><strong>Tus credenciales de acceso:</strong></p>
                         <p style="margin:5px 0;">📧 Email: <strong>${email}</strong></p>
-                        <p style="margin:0;">🔑 Contraseña: <strong>${tempPassword}</strong></p>
+                        <p style="margin:0;">🔑 Contraseña: <strong>${password}</strong></p>
                     </div>
                     
                     <p style="font-size: 14px; color: #666;">

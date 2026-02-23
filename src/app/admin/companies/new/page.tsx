@@ -61,7 +61,7 @@ export default function NewCompanyPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-1">
                                 <label className="text-sm font-medium">Nombre Comercial</label>
-                                <Input name="name" placeholder="Ej: TechCorp" required />
+                                <Input name="name" placeholder="Ej: TransLogística SRL" required />
                                 <p className="text-xs text-slate-400">Visible en las ofertas</p>
                             </div>
                             <div className="space-y-1">
@@ -77,7 +77,7 @@ export default function NewCompanyPage() {
 
                         <div className="space-y-1">
                             <label className="text-sm font-medium">Razón Social</label>
-                            <Input name="legalName" placeholder="Ej: Technology Corporation S.A." required />
+                            <Input name="legalName" placeholder="Ej: Logística y Transporte S.A." required />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -87,7 +87,7 @@ export default function NewCompanyPage() {
                             </div>
                             <div className="space-y-1">
                                 <label className="text-sm font-medium">Rubro / Industria</label>
-                                <Input name="industry" placeholder="Ej: Logística, Software..." required />
+                                <Input name="industry" placeholder="Ej: Transporte de Cargas, Almacenaje..." required />
                             </div>
                         </div>
                     </div>
@@ -98,12 +98,18 @@ export default function NewCompanyPage() {
 
                         <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg flex gap-3 text-sm text-amber-800">
                             <span>⚠️</span>
-                            <p>Se enviará un email a esta dirección con una <strong>contraseña temporal</strong> generada automáticamente.</p>
+                            <p>Se enviará un email a esta dirección informando la <strong>contraseña elegida</strong>.</p>
                         </div>
 
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium">Email del Responsable</label>
-                            <Input type="email" name="email" placeholder="rrhh@empresa.com" required />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <label className="text-sm font-medium">Email del Responsable</label>
+                                <Input type="email" name="email" placeholder="rrhh@empresa.com" required />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-sm font-medium">Contraseña Inicial</label>
+                                <Input type="password" name="password" placeholder="Mínimo 6 caracteres" required minLength={6} />
+                            </div>
                         </div>
                     </div>
 
