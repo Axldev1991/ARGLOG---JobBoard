@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function isProfileComplete(user: any): boolean {
+export function isProfileComplete(user: Record<string, any>): boolean {
   if (!user) return false;
 
   // Validamos campos básicos dependiendo del rol (o general)

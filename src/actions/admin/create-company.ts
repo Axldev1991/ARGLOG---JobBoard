@@ -99,7 +99,8 @@ export async function createCompany(formData: FormData) {
 
         return { success: true };
 
-    } catch (error: any) {
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido";
         // 🔍 LOGGING: Guardamos el error con contexto para debug via CLI
         await Logger.error(
             "Falló al crear empresa (createCompany)",
@@ -108,6 +109,6 @@ export async function createCompany(formData: FormData) {
             { intent: { email, legalName } }
         );
 
-        return { error: `Error registrado en logs: ${error.message}` };
+        return { error: `Error registrado en logs: ${errorMessage}` };
     }
 }

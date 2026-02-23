@@ -11,7 +11,7 @@ export async function getSession() {
 
     try {
         return JSON.parse(sessionString);
-    } catch (error) {
+    } catch {
         return null;
     }
 }

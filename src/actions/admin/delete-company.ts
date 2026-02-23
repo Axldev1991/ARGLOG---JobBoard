@@ -30,8 +30,8 @@ export async function deleteCompany(companyId: number) {
         revalidatePath("/admin/dashboard");
         return { success: true };
 
-    } catch (error: any) {
-        await Logger.error("Falló deleteCompany", "SERVER_ACTION", error, { companyId });
-        return { error: `No se pudo eliminar: ${error.message}` };
+    } catch (error) {
+        console.error("[deleteCompany] Error:", error);
+        return { error: "No se pudo eliminar la empresa" };
     }
 }

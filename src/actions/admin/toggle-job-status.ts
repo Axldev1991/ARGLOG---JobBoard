@@ -27,8 +27,9 @@ export async function toggleJobStatus(jobId: number, currentStatus: string) {
         revalidatePath("/"); // Update public board
         return { success: true };
 
-    } catch (error: any) {
+    } catch (error) {
         console.error("[toggleJobStatus] Error:", error);
-        return { error: `Error updating status: ${error.message}` };
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+        return { error: `Error actualizando estado: ${errorMessage}` };
     }
 }

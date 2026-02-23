@@ -26,11 +26,8 @@ export async function createTag(formData: FormData) {
 
         revalidatePath("/admin/dashboard");
         return { success: true };
-    } catch (error: any) {
-        // Handle unique constraint violation
-        if (error.code === 'P2002') {
-            return { error: "Este tag ya existe." };
-        }
-        return { error: "Error al crear el tag" };
+    } catch (error) {
+        console.error("[createTag] Error:", error);
+        return { error: "No se pudo crear el tag" };
     }
 }

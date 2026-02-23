@@ -21,8 +21,8 @@ export async function deleteJob(jobId: number) {
         revalidatePath("/");
         return { success: true };
 
-    } catch (error: any) {
+    } catch (error) {
         console.error("[deleteJob] Error:", error);
-        return { error: `Could not delete job: ${error.message}` };
+        return { error: "No se pudo eliminar la oferta" };
     }
 }

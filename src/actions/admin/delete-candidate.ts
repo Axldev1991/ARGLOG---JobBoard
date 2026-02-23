@@ -36,8 +36,9 @@ export async function deleteCandidate(candidateId: number) {
         revalidatePath("/admin/dashboard");
         return { success: true };
 
-    } catch (error: any) {
+    } catch (error) {
         console.error("[deleteCandidate] Error:", error);
-        return { error: `No se pudo eliminar: ${error.message}` };
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+        return { error: `No se pudo eliminar el candidato: ${errorMessage}` };
     }
 }

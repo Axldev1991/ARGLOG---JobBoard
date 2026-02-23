@@ -8,6 +8,13 @@ const eslintConfig = defineConfig([
   ...nextTs,
   security.configs.recommended,
   // Override default ignores of eslint-config-next.
+  {
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
   globalIgnores([
     // Default ignores of eslint-config-next:
     ".next/**",

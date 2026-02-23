@@ -3,8 +3,6 @@ import type { NextRequest } from "next/server";
 
 
 export async function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
-
     // 1. Build response to modify headers
     const response = NextResponse.next();
 

@@ -44,8 +44,9 @@ export async function updateCompany(companyId: number, formData: FormData) {
         revalidatePath("/admin/dashboard");
         return { success: true };
 
-    } catch (error: any) {
+    } catch (error) {
         console.error("[updateCompany] Error:", error);
-        return { error: `Error técnico: ${error.message}` };
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+        return { error: `Error técnico: ${errorMessage}` };
     }
 }
