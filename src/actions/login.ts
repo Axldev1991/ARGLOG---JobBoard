@@ -16,20 +16,37 @@ import { cookies } from "next/headers"
 import { Logger } from "@/lib/logger"
 
 export async function loginUser(formData: FormData) {
-    const email = formData.get("email") as string
+    const identifier = formData.get("email") as string
     const password = formData.get("password") as string
 
 
-    if (!email || !password) {
+    if (!identifier || !password) {
         return { error: "Todos los campos son obligatorios" }
     }
 
     try {
-        const usuarioEncontrado = await prisma.user.findUnique({
-            where: { email }
-        })
+        let usuarioEncontrado;
 
-        // Usamos el mismo error para ambos casos por seguridad
+        // 🧠 Clasificación Inteligente del Identificador
+        if (identifier.includes("@")) {
+            // Caso 1: Es un Email
+            usuarioEncontrado = await prisma.user.findUnique({
+                where: { email: identifier }
+            })
+        } else {
+            // Caso 2: Es un CUIT (Normalización de números)
+            const cleanCuit = identifier.replace(/[^0-9]/g, "");
+            
+            if (cleanCuit.length === 11) {
+                const companyProfile = await prisma.companyProfile.findUnique({
+                    where: { cuit: cleanCuit },
+                    include: { user: true }
+                });
+                usuarioEncontrado = companyProfile?.user;
+            }
+        }
+
+        // Usamos el mismo error para evitar revelación de información
         if (!usuarioEncontrado) {
             return { error: "Credenciales incorrectas" }
         }
@@ -51,7 +68,7 @@ export async function loginUser(formData: FormData) {
         // redirect("/") <-- Lo quitamos para manejarlo en el cliente
         return { success: true }
     } catch (error) {
-        await Logger.error("Error en Login", "SERVER_ACTION", error, { email });
+        await Logger.error("Error en Login", "SERVER_ACTION", error, { identifier });
         return { error: "Error interno del servidor" }
     }
 }

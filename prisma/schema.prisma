@@ -72,7 +72,7 @@ model CompanyProfile {
   description String?
   userId      Int     @unique
   legalName   String
-  cuit        String
+  cuit        String  @unique
   industry    String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

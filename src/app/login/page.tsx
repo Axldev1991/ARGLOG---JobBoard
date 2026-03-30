@@ -46,11 +46,11 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Email</label>
+                        <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Email o CUIT</label>
                         <Input
-                            type="email"
+                            type="text"
                             name="email"
-                            placeholder="ejemplo@correo.com"
+                            placeholder="Usuario o 20-12345678-9"
                             required
                             className="bg-background border-input focus:ring-primary transition-colors"
                         />
