@@ -39,6 +39,12 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                 toast.error(res.error);
             } else {
                 toast.success(res.message);
+                // Update preview with saved logo if a new one was uploaded
+                const logoFile = formData.get("logo") as File | null;
+                if (logoFile && logoFile.size > 0) {
+                    // After save, we need to refetch - for now keep the blob URL
+                    // The revalidatePath will refresh on next page load
+                }
             }
         } catch (error) {
             toast.error("Error inesperado al guardar.");
