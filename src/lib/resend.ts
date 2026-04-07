@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { env } from './env';
 
-// Inicializamos el cliente con la key del entorno
-export const resend = new Resend(process.env.RESEND_API_KEY);
+// Inicializamos el cliente con la key validada
+export const resend = new Resend(env.RESEND_API_KEY);
