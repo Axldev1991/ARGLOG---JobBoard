@@ -1,3 +1,5 @@
+"use client"
+
 import { Tags } from "lucide-react";
 import { TagActions } from "@/components/admin/tag-actions";
 import { AdminSearch } from "@/components/admin/admin-search";
