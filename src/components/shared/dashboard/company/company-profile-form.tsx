@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,11 @@ interface CompanyProfileFormProps {
 export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
     const [isSaving, setIsSaving] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(profile?.logo || null);
+
+    // Update preview when profile changes (after revalidation)
+    useEffect(() => {
+        setPreviewUrl(profile?.logo || null);
+    }, [profile?.logo]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
