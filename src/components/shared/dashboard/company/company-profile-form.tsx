@@ -8,6 +8,7 @@ import { updateCompanyProfile } from "@/actions/company/update-profile";
 import { toast } from "sonner";
 import { Loader2, Upload, Building2, Globe, FileText, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { UpdatePasswordModal } from "@/components/shared/update-password-form";
 
 interface CompanyProfileFormProps {
@@ -15,12 +16,19 @@ interface CompanyProfileFormProps {
 }
 
 export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
+    const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
+    // Initialize with profile.logo or null - will be updated by useEffect
     const [previewUrl, setPreviewUrl] = useState<string | null>(profile?.logo || null);
+    // Track if we have a blob URL from file selection
+    const [hasBlobUrl, setHasBlobUrl] = useState(false);
 
     // Update preview when profile changes (after revalidation)
     useEffect(() => {
-        setPreviewUrl(profile?.logo || null);
+        // When profile.logo changes (after save), update preview
+        if (profile?.logo) {
+            setPreviewUrl(profile.logo);
+        }
     }, [profile?.logo]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,10 +41,14 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
             }
             const objectUrl = URL.createObjectURL(file);
             setPreviewUrl(objectUrl);
+            setHasBlobUrl(true);
         }
     };
 
     const handleSubmit = async (formData: FormData) => {
+        // Store the file in case we need to show it after save
+        const logoFile = formData.get("logo") as File | null;
+        
         setIsSaving(true);
         try {
             const res = await updateCompanyProfile(formData);
@@ -44,12 +56,8 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                 toast.error(res.error);
             } else {
                 toast.success(res.message);
-                // Update preview with saved logo if a new one was uploaded
-                const logoFile = formData.get("logo") as File | null;
-                if (logoFile && logoFile.size > 0) {
-                    // After save, we need to refetch - for now keep the blob URL
-                    // The revalidatePath will refresh on next page load
-                }
+                // Refresh server data to get the new logo URL
+                router.refresh();
             }
         } catch (error) {
             toast.error("Error inesperado al guardar.");
