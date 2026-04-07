@@ -18,37 +18,37 @@ interface CompanyProfileFormProps {
 export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
     const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
-    // Initialize with profile.logo or null - will be updated by useEffect
-    const [previewUrl, setPreviewUrl] = useState<string | null>(profile?.logo || null);
-    // Track if we have a blob URL from file selection
-    const [hasBlobUrl, setHasBlobUrl] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [pendingLogo, setPendingLogo] = useState<string | null>(null);
 
-    // Update preview when profile changes (after revalidation)
+    // Initialize preview from profile, but prioritize pending logo
     useEffect(() => {
-        console.log("[CLIENT DEBUG] profile.logo changed:", profile?.logo);
-        // When profile.logo changes (after save), update preview
-        if (profile?.logo) {
+        if (pendingLogo) {
+            // We have a pending upload, keep showing it
+            setPreviewUrl(pendingLogo);
+        } else if (profile?.logo) {
+            // Use the saved logo from profile
             setPreviewUrl(profile.logo);
+        } else {
+            setPreviewUrl(null);
         }
-    }, [profile?.logo]);
+    }, [profile?.logo, pendingLogo]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 2 * 1024 * 1024) {
                 toast.error("El logo no debe superar los 2MB");
-                e.target.value = ""; // Reset
+                e.target.value = "";
                 return;
             }
             const objectUrl = URL.createObjectURL(file);
-            console.log("[CLIENT DEBUG] File selected, blob URL:", objectUrl);
+            setPendingLogo(objectUrl);
             setPreviewUrl(objectUrl);
-            setHasBlobUrl(true);
         }
     };
 
     const handleSubmit = async (formData: FormData) => {
-        // Store the file in case we need to show it after save
         const logoFile = formData.get("logo") as File | null;
         
         setIsSaving(true);
@@ -58,8 +58,8 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                 toast.error(res.error);
             } else {
                 toast.success(res.message);
-                // Refresh server data to get the new logo URL
-                router.refresh();
+                // Keep showing the pending logo - it will be replaced on next page load
+                // The user can navigate away and back to see the saved logo
             }
         } catch (error) {
             toast.error("Error inesperado al guardar.");
