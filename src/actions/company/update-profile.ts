@@ -104,9 +104,11 @@ export async function updateCompanyProfile(formData: FormData) {
             });
 
             logoUrl = uploadResult.secure_url;
+            console.log("[DEBUG] Logo uploaded successfully:", logoUrl);
         }
 
         // 3. Update DB
+        console.log("[DEBUG] About to update DB with logo:", logoUrl);
         await prisma.companyProfile.update({
             where: { id: user.companyProfile.id },
             data: {
@@ -117,6 +119,12 @@ export async function updateCompanyProfile(formData: FormData) {
                 logo: logoUrl
             }
         });
+        
+        // Verify the update
+        const updatedProfile = await prisma.companyProfile.findUnique({
+            where: { id: user.companyProfile.id }
+        });
+        console.log("[DEBUG] Profile after update:", updatedProfile);
 
         revalidatePath("/dashboard");
         return { success: true, message: "Perfil actualizado correctamente." };
