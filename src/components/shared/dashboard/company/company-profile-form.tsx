@@ -25,6 +25,7 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
 
     // Update preview when profile changes (after revalidation)
     useEffect(() => {
+        console.log("[CLIENT DEBUG] profile.logo changed:", profile?.logo);
         // When profile.logo changes (after save), update preview
         if (profile?.logo) {
             setPreviewUrl(profile.logo);
@@ -40,6 +41,7 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                 return;
             }
             const objectUrl = URL.createObjectURL(file);
+            console.log("[CLIENT DEBUG] File selected, blob URL:", objectUrl);
             setPreviewUrl(objectUrl);
             setHasBlobUrl(true);
         }
