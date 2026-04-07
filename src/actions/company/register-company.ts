@@ -5,13 +5,14 @@ import { hash } from "bcryptjs"
 import { z } from "zod"
 import { Logger } from "@/lib/logger"
 import { Resend } from "resend"
+import { env } from "@/lib/env"
 
 // Schema de validación para registro de empresa
 const RegisterCompanySchema = z.object({
     legalName: z.string().min(2, "La razón social debe tener al menos 2 caracteres"),
     email: z.string().email("Email inválido"),
     password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-    industry: z.string().min(1, "La industria es obligatoria"),
+    industry: z.string().optional().default("Logística"),
     cuit: z.string().min(8, "CUIT inválido").max(15, "CUIT inválido"),
 })
 
@@ -21,7 +22,7 @@ export async function registerCompany(formData: FormData) {
         const legalName = formData.get("legalName") as string
         const email = formData.get("email") as string
         const password = formData.get("password") as string
-        const industry = formData.get("industry") as string
+        const industry = (formData.get("industry") as string) || "Logística"
         const cuit = formData.get("cuit") as string
 
         // 2. Validar con Zod
@@ -81,11 +82,11 @@ export async function registerCompany(formData: FormData) {
 
         // 6. Enviar email al admin
         try {
-            const resend = new Resend(process.env.RESEND_API_KEY)
+            const resend = new Resend(env.RESEND_API_KEY)
             
             await resend.emails.send({
                 from: "ArLog Jobs <onboarding@resend.dev>",
-                to: process.env.ADMIN_EMAIL || "admin@arlog.org",
+                to: "admin@arlog.org",
                 subject: "Nueva solicitud de registro - Empresa",
                 html: `
                     <h1>Nueva solicitud de registro</h1>

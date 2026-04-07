@@ -160,25 +160,6 @@ export function RegisterForm({ allTags }: { allTags: any[] }) {
                         <Input type="password" name="password" placeholder="••••••••" required minLength={6} className="bg-background border-input focus:ring-primary" />
                     </div>
 
-                    <div className="space-y-1">
-                        <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Industria</label>
-                        <select
-                            name="industry"
-                            required
-                            className="w-full h-10 px-3 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                        >
-                            <option value="">Seleccionar industria...</option>
-                            <option value="Tecnología">Tecnología & Software</option>
-                            <option value="Finanzas">Finanzas & Fintech</option>
-                            <option value="Salud">Salud & Biotech</option>
-                            <option value="E-commerce">Retail & E-commerce</option>
-                            <option value="Educación">Educación</option>
-                            <option value="Servicios">Servicios Profesionales</option>
-                            <option value="Logística">Logística & Transporte</option>
-                            <option value="Otros">Otros</option>
-                        </select>
-                    </div>
-
                     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 text-sm text-yellow-700">
                         <p className="font-semibold">Solicitud en revisión</p>
                         <p className="mt-1">Tu solicitud será revisada por un administrador. Recibirás un email cuando sea aprobada.</p>
