@@ -57,6 +57,15 @@ export async function loginUser(formData: FormData) {
             return { error: "Credenciales incorrectas" }
         }
 
+        // Verificar status para empresas
+        if (usuarioEncontrado.role === "company" && usuarioEncontrado.status === "PENDING") {
+            return { error: "Tu cuenta está en revisión. Un administrador debe aprobar tu solicitud." }
+        }
+
+        if (usuarioEncontrado.role === "company" && usuarioEncontrado.status === "REJECTED") {
+            return { error: "Tu solicitud de registro fue rechazada. Contacta al administrador." }
+        }
+
         // TODO: Aquí deberías setear la cookie de sesión (ej. con jose o NextAuth)
         // cookies().set("session", token)
         (await cookies()).set("user_session", JSON.stringify({

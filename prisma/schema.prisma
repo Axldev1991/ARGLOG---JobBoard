@@ -14,6 +14,7 @@ model User {
   password       String
   name           String
   role           String          @default("candidate")
+  status         String          @default("ACTIVE") // "ACTIVE" | "PENDING" | "REJECTED"
   createdAt      DateTime        @default(now())
   resumeUrl      String?
   bio            String?

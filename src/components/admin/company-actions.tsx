@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
     companyId: number;
-    companyName: string;
+    companyName?: string;
 }
 
 export function CompanyActions({ companyId, companyName }: Props) {
@@ -21,7 +21,7 @@ export function CompanyActions({ companyId, companyName }: Props) {
             </Link>
 
             <ConfirmDeleteButton
-                title={`¿Eliminar empresa ${companyName}?`}
+                title={companyName ? `¿Eliminar empresa ${companyName}?` : "¿Eliminar empresa?"}
                 description="Esto eliminará la empresa y todos sus datos relacionados."
                 onDelete={async () => {
                     const res = await deleteCompany(companyId);
