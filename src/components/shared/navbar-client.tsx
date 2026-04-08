@@ -40,8 +40,6 @@ export function NavbarClient({ user }: NavbarClientProps) {
     // Navigation Items
     const navItems = [
         { label: "Inicio", href: "/" },
-        { label: "Ofertas", href: "/#ofertas" }, // Using anchor for now or /jobs if separate page exists
-        // { label: "Empresas", href: "/companies" }, // Not implemented yet public view
     ];
 
     const dashboardLink = (isAdmin || isDev) ? "/admin/dashboard" : "/dashboard";
@@ -91,15 +89,6 @@ export function NavbarClient({ user }: NavbarClientProps) {
                 {/* RIGHT SIDE ACTIONS */}
                 <div className="flex items-center gap-4">
 
-                    {/* POST JOB BUTTON (Desktop) - Hidden for Candidates */}
-                    {canPostJob && (
-                        <Link href="/jobs/new" className="hidden md:block">
-                            <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm font-semibold">
-                                <PlusCircle size={16} className="mr-2" />
-                                Publicar Oferta
-                            </Button>
-                        </Link>
-                    )}
 
                     {/* USER MENU (Dropdown) OR LOGIN */}
                     {user ? (
@@ -248,17 +237,6 @@ export function NavbarClient({ user }: NavbarClientProps) {
                                         </>
                                     )}
 
-                                    {/* Mobile Post Button - Also hidden for candidates */}
-                                    {canPostJob && (
-                                        <div className="pt-2">
-                                            <Link href="/jobs/new" onClick={() => setIsOpen(false)}>
-                                                <Button className="w-full" variant="secondary">
-                                                    <PlusCircle className="mr-2 h-4 w-4" />
-                                                    Publicar Oferta
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    )}
                                 </div>
                             </nav>
                         </SheetContent>

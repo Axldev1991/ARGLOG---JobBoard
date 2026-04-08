@@ -66,12 +66,12 @@ export function Hero({ user }: HeroProps) {
               description="Busco mi próximo desafío en logística, transporte o almacén."
               borderColor="blue"
               primaryAction={{
-                label: "Ver Ofertas",
-                href: "/#ofertas"
-              }}
-              secondaryAction={{
                 label: "Ingresar",
                 href: "/login"
+              }}
+              secondaryAction={{
+                label: "Registrarse",
+                href: "/register/candidate"
               }}
             />
 
@@ -82,12 +82,12 @@ export function Hero({ user }: HeroProps) {
               description="Busco talento calificado para potenciar mi operación logística."
               borderColor="blue"
               primaryAction={{
-                label: "Publicar Aviso",
-                href: "/jobs/new"
+                label: "Ingresar",
+                href: "/login"
               }}
               secondaryAction={{
-                label: "Registrar Empresa",
-                href: "/register?role=company"
+                label: "Registrarse",
+                href: "/register/company"
               }}
             />
           </div>
