@@ -1,13 +1,14 @@
-
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import "./lenis.css";
 import { Navbar } from "@/components/shared/navbar";
 import { DevTools } from "@/components/shared/dev-tools";
 import { Toaster } from "sonner";
 import { isMaintenanceMode } from "@/lib/system";
 import MaintenanceScreen from "@/components/shared/maintenance-screen";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SmoothScroll } from "@/components/providers/smooth-scroll";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -49,10 +50,12 @@ export default async function RootLayout({
           themes={["light"]}
           disableTransitionOnChange
         >
-          <Navbar />
-          {children}
-          <DevTools />
-          <Toaster position="top-center" richColors />
+          <SmoothScroll>
+            <Navbar />
+            {children}
+            <DevTools />
+            <Toaster position="top-center" richColors />
+          </SmoothScroll>
         </ThemeProvider>
       </body>
     </html>
