@@ -6,15 +6,13 @@ test.describe('Authentication Flow', () => {
     const uniqueEmail = `test.candidate.${Date.now()}@example.com`;
 
     test('should register a new candidate successfully', async ({ page }) => {
-        await page.goto('/');
+        await page.goto('/register');
 
-        // Navegar a Registro
-        await page.getByRole('button', { name: 'Registrarse' }).click();
-
-        // Seleccionar Rol (Asumiendo que hay pestañas o botones, ajustado del recording)
-        // El recording no mostró selección de rol explicita en los clicks, 
-        // pero si es el default o parte del flujo, lo mantenemos.
-        // Si hay que elegir "Soy Candidato", agregaremos el selector si aparece.
+        // Seleccionar Rol (Candidato)
+        await page.getByRole('link', { name: 'Soy Talento Comenzar Registro' }).click();
+        
+        // Verificar que estamos en la sub-ruta
+        await expect(page).toHaveURL(/\/register\/candidate/);
 
         // Llenar formulario
         await page.getByRole('textbox', { name: 'Ej: Juan Pérez' }).fill('Test Automation User');
@@ -22,55 +20,46 @@ test.describe('Authentication Flow', () => {
         await page.getByRole('textbox', { name: '••••••••' }).fill('password123!');
 
         // Submit
-        await page.getByRole('button', { name: 'Registrarme' }).click();
+        await page.getByRole('button', { name: 'Registrarme Ahora' }).click();
 
         // Verificación: El sistema redirige al login después de registrarse
         await expect(page).toHaveURL(/.*login/);
-
-        // Opcional: Verificar que podemos loguearnos con la cuenta recién creada
-        // Esto haría el test más robusto
     });
 
     test('should login with existing credentials', async ({ page }) => {
         // Usamos las credenciales conocidas
         const knownEmail = 'candidato999@test.com';
-        const knownPass = 'password123!'; // Corregido: minúscula según grabación
+        const knownPass = 'password123!'; 
 
-        await page.goto('/');
-        // Scope to navigation bar to be safe
-        await page.getByRole('navigation').getByRole('button', { name: 'Ingresar' }).click();
+        await page.goto('/login');
 
         await page.getByRole('textbox', { name: 'ejemplo@correo.com' }).fill(knownEmail);
         await page.getByRole('textbox', { name: '••••••••' }).fill(knownPass);
 
-        await page.getByRole('main').getByRole('button', { name: 'Ingresar' }).click();
+        await page.getByRole('button', { name: 'Ingresar' }).click();
 
         // Assert Dashboard
         await expect(page).toHaveURL(/\/dashboard/);
     });
 
     test('should validate form inputs', async ({ page }) => {
-        await page.goto('/');
-        await page.getByRole('button', { name: 'Registrarse' }).click();
+        await page.goto('/register/candidate');
 
         // 1. Submit vacío
-        await page.getByRole('button', { name: 'Registrarme' }).click();
+        await page.getByRole('button', { name: 'Registrarme Ahora' }).click();
 
-        // Validar que NO navegamos (seguimos en /register)
-        await expect(page).toHaveURL(/\/register/);
+        // Validar que NO navegamos (seguimos en /candidate)
+        await expect(page).toHaveURL(/\/register\/candidate/);
 
         // 2. Email inválido
         await page.getByRole('textbox', { name: 'nombre@ejemplo.com' }).fill('correo-invalido');
-        await page.getByRole('button', { name: 'Registrarme' }).click();
+        await page.getByRole('button', { name: 'Registrarme Ahora' }).click();
 
-        // Validar HTML5 validation (el navegador impide el submit)
+        // Validar HTML5 validation
         const emailInput = page.getByRole('textbox', { name: 'nombre@ejemplo.com' });
-
-        // Verificar que el input es inválido (pseudo-clase CSS :invalid)
         await expect(emailInput).toHaveJSProperty('validity.valid', false);
 
-        // Asegurar que seguimos en la misma página
-        await expect(page).toHaveURL(/\/register/);
+        await expect(page).toHaveURL(/\/register\/candidate/);
     });
 
 });

@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateCompanyProfile } from "@/actions/company/update-profile";
 import { toast } from "sonner";
-import { Loader2, Upload, Building2, Globe, FileText, Image as ImageIcon } from "lucide-react";
-import Image from "next/image";
+import { Loader2, Building2, Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { UpdatePasswordModal } from "@/components/shared/update-password-form";
+import { LogoUpload } from "./logo-upload";
 
 interface CompanyProfileFormProps {
     profile: any; // Tipado laxo por ahora, idealmente CompanyProfile type
@@ -18,39 +18,8 @@ interface CompanyProfileFormProps {
 export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
     const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [pendingLogo, setPendingLogo] = useState<string | null>(null);
-
-    // Initialize preview from profile, but prioritize pending logo
-    useEffect(() => {
-        if (pendingLogo) {
-            // We have a pending upload, keep showing it
-            setPreviewUrl(pendingLogo);
-        } else if (profile?.logo) {
-            // Use the saved logo from profile
-            setPreviewUrl(profile.logo);
-        } else {
-            setPreviewUrl(null);
-        }
-    }, [profile?.logo, pendingLogo]);
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (file.size > 2 * 1024 * 1024) {
-                toast.error("El logo no debe superar los 2MB");
-                e.target.value = "";
-                return;
-            }
-            const objectUrl = URL.createObjectURL(file);
-            setPendingLogo(objectUrl);
-            setPreviewUrl(objectUrl);
-        }
-    };
 
     const handleSubmit = async (formData: FormData) => {
-        const logoFile = formData.get("logo") as File | null;
-        
         setIsSaving(true);
         try {
             const res = await updateCompanyProfile(formData);
@@ -58,8 +27,6 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                 toast.error(res.error);
             } else {
                 toast.success(res.message);
-                // Keep showing the pending logo - it will be replaced on next page load
-                // The user can navigate away and back to see the saved logo
             }
         } catch (error) {
             toast.error("Error inesperado al guardar.");
@@ -69,50 +36,16 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
     };
 
     return (
-        <form action={handleSubmit} className="bg-card rounded-xl border border-border shadow-sm p-8 w-full">
-            <h2 className="text-xl font-bold text-card-foreground mb-6 flex items-center gap-2">
-                <Building2 className="text-primary" />
-                Información de la Empresa
+        <form action={handleSubmit} className="bg-card rounded-3xl border border-border shadow-sm p-8 md:p-10 w-full overflow-hidden">
+            <h2 className="text-2xl font-bold text-card-foreground mb-10 flex items-center gap-3 border-b border-border pb-6">
+                <Building2 className="text-primary" size={28} />
+                Identidad de Empresa
             </h2>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
 
-                {/* LOGO */}
-                {/* LOGO */}
-                <div>
-                    <Label className="mb-2 block text-muted-foreground">Logo de la Empresa</Label>
-                    <div className="flex items-center gap-6">
-                        <div className="w-24 h-24 rounded-lg bg-muted/50 border-2 border-dashed border-border flex items-center justify-center overflow-hidden relative group">
-                            {previewUrl ? (
-                                <Image
-                                    src={previewUrl}
-                                    alt="Preview"
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <ImageIcon className="text-muted-foreground" size={32} />
-                            )}
-                        </div>
-                        <div className="flex-1">
-                            <Label htmlFor="logo-upload" className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-md text-sm font-medium text-foreground hover:bg-muted/50 transition-colors shadow-sm">
-                                <Upload size={16} />
-                                {previewUrl ? "Cambiar Logo" : "Subir Logo"}
-                            </Label>
-                            <Input
-                                id="logo-upload"
-                                name="logo"
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleFileChange}
-                            />
-                            <p className="text-xs text-muted-foreground mt-2">
-                                Recomendado: 200x200px (JPG, PNG). Máx 2MB.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                {/* LOGO UPGRADE */}
+                <LogoUpload profile={profile} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>

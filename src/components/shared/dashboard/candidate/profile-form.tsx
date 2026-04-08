@@ -8,6 +8,9 @@ import { updateProfile } from "@/actions/update-profile";
 import { UpdatePasswordModal } from "@/components/shared/update-password-form";
 
 import { SkillSelectorSet } from "@/components/ui/skill-selector-set";
+import { toast } from "sonner";
+
+import { AvatarUpload } from "./avatar-upload";
 
 export function ProfileForm({ user, allTags = [] }: { user: any, allTags: any[] }) {
     const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -17,14 +20,22 @@ export function ProfileForm({ user, allTags = [] }: { user: any, allTags: any[] 
         setIsSavingProfile(true);
         const formData = new FormData(e.currentTarget);
 
-        await updateProfile(formData);
+
+        const result = await updateProfile(formData);
+        if (result?.success) {
+            toast.success("¡Perfil actualizado con éxito!");
+        } else {
+            toast.error(result?.error || "Hubo un error al actualizar el perfil.");
+        }
         setIsSavingProfile(false);
     }
 
     const userTagIds = user.tags?.map((t: any) => t.id) || [];
 
     return (
-        <div className="bg-card p-6 rounded-xl border border-border shadow-sm text-card-foreground">
+        <div className="bg-card p-6 md:p-8 rounded-3xl border border-border shadow-sm text-card-foreground">
+            <AvatarUpload user={user} />
+
             <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
                 <User className="text-primary" size={20} />
                 <h3 className="text-lg font-bold">Información Profesional</h3>

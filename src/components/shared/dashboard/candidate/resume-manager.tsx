@@ -5,6 +5,7 @@ import { FileText, CheckCircle, AlertCircle, Loader2, UploadCloud, Trash2 } from
 import { Button } from "@/components/ui/button";
 import { uploadCV } from "@/actions/upload-cv";
 import { deleteCV } from "@/actions/delete-cv";
+import { toast } from "sonner";
 
 export function ResumeManager({ user }: { user: any }) {
     const [isUploading, setIsUploading] = useState(false);
@@ -28,8 +29,12 @@ export function ResumeManager({ user }: { user: any }) {
 
         try {
             const result = await uploadCV(formData);
-            if (!result?.success) {
-                setUploadError(result?.error || "Error desconocido");
+            if (result?.success) {
+                toast.success("¡CV subido con éxito!");
+            } else {
+                const errorMsg = result?.error || "Error desconocido";
+                setUploadError(errorMsg);
+                toast.error(errorMsg);
             }
         } catch (err) {
             setUploadError("Error de conexión al subir el archivo.");
@@ -74,7 +79,14 @@ export function ResumeManager({ user }: { user: any }) {
                     </a>
 
                     {/* Botón Borrar */}
-                    <form action={async () => { await deleteCV(); }}>
+                    <form action={async () => { 
+                        const result = await deleteCV(); 
+                        if (result?.success) {
+                            toast.success("CV eliminado correctamente");
+                        } else {
+                            toast.error(result?.error || "Error al eliminar el CV");
+                        }
+                    }}>
                         <Button
                             type="submit"
                             variant="outline"

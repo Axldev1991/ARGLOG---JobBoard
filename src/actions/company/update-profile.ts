@@ -54,61 +54,7 @@ export async function updateCompanyProfile(formData: FormData) {
             return { error: "Perfil de empresa no encontrado." };
         }
 
-        let logoUrl = user.companyProfile.logo;
-
-        // 2. Procesar Logo (Si hay uno nuevo)
-        if (logoFile && logoFile.size > 0) {
-            // Validación de tipo
-            if (!logoFile.type.startsWith("image/")) {
-                return { error: "El archivo debe ser una imagen." };
-            }
-            // Validación de tamaño (2MB limit)
-            if (logoFile.size > 2 * 1024 * 1024) {
-                return { error: "El logo no debe pesar más de 2MB." };
-            }
-
-            // 2.1 Cleanup: Delete previous logo from Cloudinary if exists
-            if (user.companyProfile.logo) {
-                const oldPublicId = extractPublicId(user.companyProfile.logo);
-                if (oldPublicId) {
-                    try {
-                        await cloudinary.uploader.destroy(oldPublicId);
-                    } catch (deleteError) {
-                        // Log warning but continue - old logo is not critical
-                        await Logger.error(
-                            "Failed to delete old logo from Cloudinary",
-                            "SERVER_ACTION",
-                            deleteError,
-                            { publicId: oldPublicId, userId: session.id }
-                        );
-                    }
-                }
-            }
-
-            // 2.2 Upload new logo
-            const arrayBuffer = await logoFile.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            const uploadResult = await new Promise<any>((resolve, reject) => {
-                cloudinary.uploader.upload_stream(
-                    {
-                        folder: "job-board/logos",
-                        resource_type: "image",
-                        transformation: [{ width: 200, height: 200, crop: "fill" }]
-                    },
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                ).end(buffer);
-            });
-
-            logoUrl = uploadResult.secure_url;
-            console.log("[DEBUG] Logo uploaded successfully:", logoUrl);
-        }
-
         // 3. Update DB
-        console.log("[DEBUG] About to update DB with logo:", logoUrl);
         await prisma.companyProfile.update({
             where: { id: user.companyProfile.id },
             data: {
@@ -116,7 +62,6 @@ export async function updateCompanyProfile(formData: FormData) {
                 website: validationResult.data.website || null,
                 description: validationResult.data.description || null,
                 industry: validationResult.data.industry,
-                logo: logoUrl
             }
         });
         

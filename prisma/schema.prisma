@@ -17,6 +17,8 @@ model User {
   status         String          @default("ACTIVE") // "ACTIVE" | "PENDING" | "REJECTED"
   createdAt      DateTime        @default(now())
   resumeUrl      String?
+  avatarUrl      String?
+  avatarPublicId String?
   bio            String?
   city           String?
   headline       String?
@@ -69,6 +71,7 @@ model Application {
 model CompanyProfile {
   id          Int     @id @default(autoincrement())
   logo        String?
+  logoPublicId String?
   website     String?
   description String?
   userId      Int     @unique

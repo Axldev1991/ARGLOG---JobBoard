@@ -1,28 +1,22 @@
-import { prisma } from "@/lib/db";
+import { RegisterSelection } from "./components/register-selection";
 import Link from "next/link";
-import { RegisterForm } from "./register-form";
 
-export default async function RegisterPage() {
-    // Obtenemos las tags disponibles desde el servidor
-    const allTags = await prisma.tag.findMany({
-        orderBy: { name: 'asc' }
-    });
-
+export default function RegisterPage() {
     return (
         <main className="flex min-h-screen items-center justify-center bg-muted/50 p-6">
-            <div className="border border-border p-8 rounded-2xl shadow-xl w-full max-w-lg bg-card text-card-foreground">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-foreground tracking-tight">
+            <div className="w-full">
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
                         Únete a ArLog
                     </h1>
-                    <p className="text-muted-foreground mt-2 text-sm">
-                        Crea tu perfil profesional y encuentra tu próximo desafío.
+                    <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                        La red de talento logístico más grande del país te espera. ¿Cómo querés empezar?
                     </p>
                 </div>
 
-                <RegisterForm allTags={allTags} />
+                <RegisterSelection />
 
-                <div className="mt-8 text-center text-sm border-t border-border pt-6">
+                <div className="mt-12 text-center text-sm">
                     <p className="text-muted-foreground">
                         ¿Ya tienes cuenta?{" "}
                         <Link href="/login" className="text-primary hover:text-primary/80 hover:underline font-bold transition-colors">
