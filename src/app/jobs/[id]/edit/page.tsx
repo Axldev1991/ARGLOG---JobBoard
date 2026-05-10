@@ -28,7 +28,7 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
         <main className="p-10 max-w-xl mx-auto">
             <h1 className="text-2xl font-bold mb-6">Editar Oferta</h1>
 
-            <form action={updateJob} className="flex flex-col gap-4">
+            <form action={async (formData) => { await updateJob(formData); }} className="flex flex-col gap-4">
                 {/* ID oculto para saber qué actualizamos */}
                 <input type="hidden" name="jobId" value={job.id} />
 
