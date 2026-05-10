@@ -9,7 +9,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useState } from "react";
 
 interface JobFormProps {
-    action: (formData: FormData) => Promise<void>;
+    action: (formData: FormData) => Promise<any>;
     initialData?: {
         id?: number;
         title: string;
