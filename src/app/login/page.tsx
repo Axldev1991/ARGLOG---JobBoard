@@ -49,7 +49,7 @@ export default function LoginPage() {
                         <label className="text-xs font-semibold uppercase text-muted-foreground ml-1">Email o CUIT</label>
                         <Input
                             type="text"
-                            name="email"
+                            name="identifier"
                             placeholder="Usuario o 20-12345678-9"
                             required
                             className="bg-background border-input focus:ring-primary transition-colors"
