@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { signJWT, SessionPayload } from "@/lib/auth";
 
 export async function impersonateRole(newRole: string, currentPath: string = "/dashboard") {
     const session = await getSession();
@@ -21,13 +22,20 @@ export async function impersonateRole(newRole: string, currentPath: string = "/d
 
     console.log(`🕵️ DEV MODE: Cambiando rol de sesión a [${newRole}] manteniendo ruta [${currentPath}]`);
 
-    // 🍪 Manipulación de Cookie
-    // Sobrescribimos la cookie con los datos reales PERO con el rol falso
-    (await cookies()).set("user_session", JSON.stringify({
+    // 🍪 Generar JWT válido con el nuevo rol
+    const token = await signJWT({
         id: realUser.id,
         name: realUser.name,
-        role: newRole // <--- AQUÍ ESTÁ EL TRUCO
-    }));
+        role: newRole as SessionPayload["role"]
+    });
+
+    // Sobrescribimos la cookie con el token firmado
+    (await cookies()).set("user_session", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 2 // 2 horas
+    });
 
     // Redirigimos a la ruta donde estaba el usuario
     redirect(currentPath);

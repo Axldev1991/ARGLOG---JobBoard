@@ -9,6 +9,8 @@ import { isMaintenanceMode } from "@/lib/system";
 import MaintenanceScreen from "@/components/shared/maintenance-screen";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SmoothScroll } from "@/components/providers/smooth-scroll";
+import { getSession } from "@/lib/session";
+import { prisma } from "@/lib/db";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -26,6 +28,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const isMaintenance = await isMaintenanceMode();
+  const session = await getSession();
+
+  // Solo mostramos DevTools si el usuario existe y su rol real en DB es 'dev'
+  // Esto permite que el martillo siga visible incluso si está impersonando a otro rol
+  let isDev = false;
+  if (session) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.id },
+      select: { role: true }
+    });
+    isDev = user?.role === 'dev';
+  }
 
   if (isMaintenance) {
     return (
@@ -53,7 +67,7 @@ export default async function RootLayout({
           <SmoothScroll>
             <Navbar />
             {children}
-            <DevTools />
+            {isDev && <DevTools />}
             <Toaster position="top-center" richColors />
           </SmoothScroll>
         </ThemeProvider>
