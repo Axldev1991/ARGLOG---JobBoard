@@ -56,11 +56,11 @@ export function LogoUpload({ profile }: { profile: CompanyProfile | null | undef
 
             const result = await uploadLogo(formData);
             if (result.success) {
-                toast.success("¡Logo corporativo actualizado!");
+                toast.success(result.message || "¡Logo corporativo actualizado!");
                 setShowModal(false);
                 setImage(null);
             } else {
-                toast.error(result.error || "Hubo un problema al subir el logo");
+                toast.error(result.message || "Hubo un problema al subir el logo");
             }
         } catch (e) {
             console.error(e);

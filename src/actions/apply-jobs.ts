@@ -7,15 +7,19 @@ import { revalidatePath } from "next/cache";
 import { Logger } from "@/lib/logger";
 import { ApplyJobSchema } from "@/lib/schemas";
 import { sendEmail } from "@/lib/email";
+import { ActionResponse } from "@/lib/actions"
 
-export async function applyToJob(jobId: number) {
+/**
+ * Server action for a candidate to apply to a job posting.
+ */
+export async function applyToJob(jobId: number): Promise<ActionResponse> {
     // 1. Auth Check (Iron Dome RBAC)
     const session = await requireRole(['candidate', 'admin']);
 
     // 🧠 VALIDACIÓN DE DATOS (ZOD)
     const validated = ApplyJobSchema.safeParse({ jobId });
     if (!validated.success) {
-        return { error: "ID de oferta inválido" };
+        return { success: false, message: "ID de oferta inválido" };
     }
 
     // 2. Obtener usuario de la DB (para tener datos frescos y verificar perfil)
@@ -23,11 +27,11 @@ export async function applyToJob(jobId: number) {
         where: { id: session.id }
     });
 
-    if (!user) return { error: "Usuario no encontrado" };
+    if (!user) return { success: false, message: "Usuario no encontrado" };
 
     // 3. EL GATEKEEPER 👮: Verificar perfil completo
     if (!isProfileComplete(user)) {
-        return { error: "Tu perfil está incompleto. Sube tu CV y completa tu info en el Dashboard." };
+        return { success: false, message: "Tu perfil está incompleto. Sube tu CV y completa tu info en el Dashboard." };
     }
 
     try {
@@ -42,7 +46,7 @@ export async function applyToJob(jobId: number) {
         });
 
         if (existingApplication) {
-            return { error: "Ya te has postulado a esta oferta anteriormente." };
+            return { success: false, message: "Ya te has postulado a esta oferta anteriormente." };
         }
 
         const job = await prisma.job.findUnique({
@@ -51,15 +55,15 @@ export async function applyToJob(jobId: number) {
         });
 
         if (!job) {
-            return { error: "La oferta no existe." };
+            return { success: false, message: "La oferta no existe." };
         }
 
         if (job.status !== 'PUBLISHED') {
-            return { error: "Esta oferta ya no está recibiendo postulaciones." };
+            return { success: false, message: "Esta oferta ya no está recibiendo postulaciones." };
         }
 
         if (job.expiresAt && new Date(job.expiresAt) < new Date()) {
-            return { error: "Esta oferta ha expirado y ya no recibe postulaciones." };
+            return { success: false, message: "Esta oferta ha expirado y ya no recibe postulaciones." };
         }
 
         // 5. CREAR POSTULACIÓN ✨
@@ -107,10 +111,10 @@ export async function applyToJob(jobId: number) {
         revalidatePath("/");
         revalidatePath("/dashboard");
 
-        return { success: true };
+        return { success: true, message: "¡Postulación enviada con éxito!" };
 
     } catch (error) {
         await Logger.error("Falló applyToJob", "SERVER_ACTION", error, { jobId, userId: user?.id });
-        return { error: "Ocurrió un error inesperado. Inténtalo de nuevo." };
+        return { success: false, message: "Ocurrió un error inesperado. Inténtalo de nuevo." };
     }
 }

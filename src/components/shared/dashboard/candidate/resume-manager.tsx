@@ -33,10 +33,10 @@ export function ResumeManager({ user }: { user: User }) {
 
         try {
             const result = await uploadCV(formData);
-            if (result?.success) {
-                toast.success("¡CV subido con éxito!");
+            if (result.success) {
+                toast.success(result.message || "¡CV subido con éxito!");
             } else {
-                const errorMsg = result?.error || "Error desconocido";
+                const errorMsg = result.message || "Error desconocido";
                 setUploadError(errorMsg);
                 toast.error(errorMsg);
             }
@@ -85,10 +85,10 @@ export function ResumeManager({ user }: { user: User }) {
                     {/* Botón Borrar */}
                     <form action={async () => { 
                         const result = await deleteCV(); 
-                        if (result?.success) {
-                            toast.success("CV eliminado correctamente");
+                        if (result.success) {
+                            toast.success(result.message || "CV eliminado correctamente");
                         } else {
-                            toast.error(result?.error || "Error al eliminar el CV");
+                            toast.error(result.message || "Error al eliminar el CV");
                         }
                     }}>
                         <Button

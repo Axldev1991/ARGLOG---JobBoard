@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { User, Mail, Briefcase, MapPin, Phone, Linkedin, Loader2 } from "lucide-react";
+import { useActionState, useEffect } from "react";
+import { User as UserIcon, Mail, Briefcase, MapPin, Phone, Linkedin } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { updateProfile } from "@/actions/update-profile";
 import { UpdatePasswordModal } from "@/components/shared/update-password-form";
-
 import { SkillSelectorSet } from "@/components/ui/skill-selector-set";
 import { toast } from "sonner";
-
 import { AvatarUpload } from "./avatar-upload";
+import { EMPTY_ACTION_STATE } from "@/lib/actions";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { FormError } from "@/components/ui/form-error";
 
 interface Tag {
     id: number;
@@ -30,22 +30,15 @@ interface User {
 }
 
 export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[] }) {
-    const [isSavingProfile, setIsSavingProfile] = useState(false);
+    const [state, formAction] = useActionState(updateProfile, EMPTY_ACTION_STATE);
 
-    const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsSavingProfile(true);
-        const formData = new FormData(e.currentTarget);
-
-
-        const result = await updateProfile(formData);
-        if (result?.success) {
-            toast.success("¡Perfil actualizado con éxito!");
-        } else {
-            toast.error(result?.error || "Hubo un error al actualizar el perfil.");
+    useEffect(() => {
+        if (state.success) {
+            toast.success(state.message || "¡Perfil actualizado con éxito!");
+        } else if (state.message && !state.success) {
+            toast.error(state.message);
         }
-        setIsSavingProfile(false);
-    }
+    }, [state]);
 
     const userTagIds = user.tags?.map((t: any) => t.id) || [];
 
@@ -54,20 +47,15 @@ export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[]
             <AvatarUpload user={user} />
 
             <div className="flex items-center gap-2 mb-6 border-b border-border pb-4">
-                <User className="text-primary" size={20} />
+                <UserIcon className="text-primary" size={20} />
                 <h3 className="text-lg font-bold">Información Profesional</h3>
             </div>
 
-            <form onSubmit={handleProfileSubmit} className="space-y-4">
-                {/* ... (anterior campos omitidos para brevedad en el prompt del tool) ... */}
-                {/* NOTA: El tool replace_file_content requiere que TargetContent sea exacto. 
-                    Voy a incluir los campos necesarios para que el match funcione o reemplazar el bloque entero */}
-
-                {/* [BLOQUE DE CAMPOS EXISTENTES] */}
+            <form action={formAction} className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-foreground mb-1">Nombre Completo</label>
                     <div className="relative">
-                        <User className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
+                        <UserIcon className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
                         <Input
                             name="name"
                             defaultValue={user.name || ""}
@@ -75,6 +63,7 @@ export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[]
                             placeholder="Tu nombre completo"
                         />
                     </div>
+                    <FormError errors={state.errors?.name} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -106,6 +95,7 @@ export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[]
                             defaultValue={user.headline || ""}
                         />
                     </div>
+                    <FormError errors={state.errors?.headline} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -120,6 +110,7 @@ export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[]
                                 defaultValue={user.city || ""}
                             />
                         </div>
+                        <FormError errors={state.errors?.city} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">Teléfono</label>
@@ -132,6 +123,7 @@ export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[]
                                 defaultValue={user.phone || ""}
                             />
                         </div>
+                        <FormError errors={state.errors?.phone} />
                     </div>
                 </div>
 
@@ -146,6 +138,7 @@ export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[]
                             defaultValue={user.linkedin || ""}
                         />
                     </div>
+                    <FormError errors={state.errors?.linkedin} />
                 </div>
 
                 {/* NUEVA SECCIÓN: TAGS (HABILIDADES) */}
@@ -160,6 +153,7 @@ export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[]
                             initialSelectedIds={userTagIds}
                         />
                     </div>
+                    <FormError errors={state.errors?.tagIds} />
                 </div>
 
                 <div>
@@ -171,18 +165,13 @@ export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[]
                         placeholder="Cuéntanos sobre tu experiencia, habilidades y lo que buscas en tu próximo desafío..."
                         defaultValue={user.bio || ""}
                     ></textarea>
+                    <FormError errors={state.errors?.bio} />
                 </div>
 
                 <div className="flex justify-end pt-2">
-                    <Button disabled={isSavingProfile} className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[150px]">
-                        {isSavingProfile ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Guardando...
-                            </>
-                        ) : (
-                            "Guardar Cambios"
-                        )}
-                    </Button>
+                    <SubmitButton className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[150px]">
+                        Guardar Cambios
+                    </SubmitButton>
                 </div>
             </form>
         </div>

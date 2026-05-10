@@ -5,10 +5,14 @@ import { getSession } from "@/lib/session";
 import cloudinary from "@/lib/cloudinary";
 import { revalidatePath } from "next/cache";
 import { Logger } from "@/lib/logger";
+import { ActionResponse } from "@/lib/actions"
 
-export async function deleteCV(_formData?: FormData) {
+/**
+ * Server action to delete a user's CV.
+ */
+export async function deleteCV(_formData?: FormData): Promise<ActionResponse> {
     const session = await getSession();
-    if (!session) return { error: "No autorizado" };
+    if (!session) return { success: false, message: "No autorizado" };
 
     try {
         // 1. Obtener el Public ID de la base de datos
@@ -38,9 +42,10 @@ export async function deleteCV(_formData?: FormData) {
         });
 
         revalidatePath("/dashboard");
-        return { success: true };
+        return { success: true, message: "CV eliminado correctamente" };
+
     } catch (error) {
         await Logger.error("Error deleting CV", "SERVER_ACTION", error, { userId: session.id });
-        return { error: "Error desconocido al eliminar el archivo" };
+        return { success: false, message: "Error desconocido al eliminar el archivo" };
     }
 }

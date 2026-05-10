@@ -5,36 +5,38 @@ import { requireRole } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { Logger } from "@/lib/logger";
 import { CompanyProfileSchema } from "@/lib/schemas";
+import { formatZodErrors, ActionResponse } from "@/lib/actions"
 
-export async function updateCompanyProfile(formData: FormData) {
+/**
+ * Server action to update a company profile.
+ */
+export async function updateCompanyProfile(prevState: any, formData: FormData): Promise<ActionResponse> {
     // 1. Auth Check (Iron Dome)
     const session = await requireRole(['company', 'admin']);
 
-    // 🧠 VALIDACIÓN DE DATOS (ZOD)
-    const rawData = {
-        legalName: formData.get("legalName"),
-        website: formData.get("website"),
-        description: formData.get("description"),
-        industry: formData.get("industry"),
-    };
-
-    const validated = CompanyProfileSchema.safeParse(rawData);
-
-    if (!validated.success) {
-        return { error: "Datos de perfil inválidos", details: validated.error.flatten() };
-    }
-
-    const { legalName, website, description, industry } = validated.data;
-
     try {
-        // 1. Obtener User + Profile para verificar existencia
+        // 🧠 VALIDACIÓN DE DATOS (ZOD)
+        const rawData = Object.fromEntries(formData.entries());
+        const validated = CompanyProfileSchema.safeParse(rawData);
+
+        if (!validated.success) {
+            return { 
+                success: false, 
+                message: "Datos de perfil inválidos", 
+                errors: formatZodErrors(validated.error) 
+            };
+        }
+
+        const { legalName, website, description, industry } = validated.data;
+
+        // 2. Obtener User + Profile para verificar existencia
         const user = await prisma.user.findUnique({
             where: { id: session.id },
             include: { companyProfile: true }
         });
 
         if (!user || !user.companyProfile) {
-            return { error: "Perfil de empresa no encontrado." };
+            return { success: false, message: "Perfil de empresa no encontrado." };
         }
 
         // 3. Update DB
@@ -48,17 +50,11 @@ export async function updateCompanyProfile(formData: FormData) {
             }
         });
         
-        // Verify the update
-        const updatedProfile = await prisma.companyProfile.findUnique({
-            where: { id: user.companyProfile.id }
-        });
-        console.log("[DEBUG] Profile after update:", updatedProfile);
-
         revalidatePath("/dashboard");
         return { success: true, message: "Perfil actualizado correctamente." };
 
     } catch (error) {
         await Logger.error("Error updating company profile", "SERVER_ACTION", error, { userId: session.id });
-        return { error: "Ocurrió un error al actualizar el perfil." };
+        return { success: false, message: "Ocurrió un error al actualizar el perfil." };
     }
 }

@@ -5,17 +5,19 @@ import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { Logger } from "@/lib/logger";
+import { ActionResponse } from "@/lib/actions"
 
 /**
  * 🏢 SERVER ACTION: UPLOAD LOGO
  * Sube el logo de la empresa (recortado) a Cloudinary y actualiza el CompanyProfile.
  */
-export async function uploadLogo(formData: FormData) {
+export async function uploadLogo(formData: FormData): Promise<ActionResponse<{ url: string }>> {
     const session = await getSession();
-    if (!session) return { error: "No autorizado" };
+    if (!session) return { success: false, message: "No autorizado" };
 
     const file = formData.get("logo") as File;
-    if (!file) return { error: "No se encontró el archivo" };
+    if (!file) return { success: false, message: "No se encontró el archivo" };
 
     try {
         // Obtenemos el perfil de la empresa del usuario actual
@@ -25,7 +27,7 @@ export async function uploadLogo(formData: FormData) {
         });
 
         if (!user || !user.companyProfile) {
-            return { error: "Perfil de empresa no encontrado" };
+            return { success: false, message: "Perfil de empresa no encontrado" };
         }
 
         const arrayBuffer = await file.arrayBuffer();
@@ -39,7 +41,6 @@ export async function uploadLogo(formData: FormData) {
                     overwrite: true,
                     resource_type: "image",
                     access_mode: 'public',
-                    // Optimizaciones para logos (400x400 para alta densidad, recorte central)
                     transformation: [
                         { width: 400, height: 400, crop: "fill" },
                         { quality: "auto", fetch_format: "auto" }
@@ -76,7 +77,7 @@ export async function uploadLogo(formData: FormData) {
             const currentSession = JSON.parse(currentSessionString);
             const newSession = {
                 ...currentSession,
-                image: updatedProfile.logo // El Navbar usa .image de la sesión
+                image: updatedProfile.logo 
             };
             cookieStore.set("user_session", JSON.stringify(newSession), {
                 httpOnly: true,
@@ -87,9 +88,10 @@ export async function uploadLogo(formData: FormData) {
         }
 
         revalidatePath("/dashboard");
-        return { success: true, url: uploadResult.secure_url };
+        return { success: true, message: "Logo corporativo actualizado", data: { url: uploadResult.secure_url } };
+        
     } catch (error) {
-        console.error("Upload Logo Error:", error);
-        return { error: "Error al subir el logo corporativo" };
+        await Logger.error("Upload Logo Error", "SERVER_ACTION", error, { userId: session.id });
+        return { success: false, message: "Error al subir el logo corporativo" };
     }
 }

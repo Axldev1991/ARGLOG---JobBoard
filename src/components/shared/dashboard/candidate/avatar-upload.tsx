@@ -57,11 +57,11 @@ export function AvatarUpload({ user }: { user: User }) {
 
             const result = await uploadAvatar(formData);
             if (result.success) {
-                toast.success("¡Foto de perfil actualizada!");
+                toast.success(result.message || "¡Foto de perfil actualizada!");
                 setShowModal(false);
                 setImage(null);
             } else {
-                toast.error(result.error || "Hubo un problema al subir la imagen");
+                toast.error(result.message || "Hubo un problema al subir la imagen");
             }
         } catch (e) {
             console.error(e);

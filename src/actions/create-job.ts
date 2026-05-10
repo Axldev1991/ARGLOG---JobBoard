@@ -1,55 +1,62 @@
 "use server"
 
 import { prisma } from "@/lib/db";
-import { redirect } from "next/navigation";
-import { Logger } from "@/lib/logger";
-import { requireRole } from "@/lib/auth";
+import { getSession } from "@/lib/session";
 import { JobSchema } from "@/lib/schemas";
+import { revalidatePath } from "next/cache";
+import { formatZodErrors, ActionResponse } from "@/lib/actions";
 
-export async function createJob(formData: FormData) {
-    // 🧠 1. VERIFICACIÓN DE ROL (RBAC)
-    const user = await requireRole(["admin", "company"]);
+export async function createJob(prevState: any, formData: FormData): Promise<ActionResponse> {
+    const session = await getSession();
 
-    // 🧠 2. VALIDACIÓN DE DATOS (ZOD)
-    const rawData = {
-        title: formData.get("title"),
-        salary: formData.get("salary"),
-        description: formData.get("description"),
-        category: formData.get("category"),
-        modality: formData.get("modality"),
-        location: formData.get("location"),
-        expiresAt: formData.get("expiresAt"),
-        tagIds: JSON.parse((formData.get("tags") as string) || "[]"),
-    };
-
-    const validated = JobSchema.safeParse(rawData);
-
-    if (!validated.success) {
-        return { error: "Datos del empleo inválidos", details: validated.error.flatten() };
+    if (!session || session.role !== "company") {
+        return { success: false, message: "No autorizado" };
     }
-
-    const { title, salary, description, category, modality, location, expiresAt, tagIds } = validated.data;
 
     try {
-        await prisma.job.create({
-            data: {
-                title,
-                description,
-                salary,
-                category,
-                modality,
-                location,
-                expiresAt,
-                authorId: user.id,
-                tags: {
-                    connect: tagIds.map((id: number) => ({ id: id }))
-                }
-            }
-        })
-    } catch (error) {
-        await Logger.error("Falló createJob", "SERVER_ACTION", error, { userId: user.id, title });
-        throw error;
-    }
+        const rawData = Object.fromEntries(formData.entries());
+        
+        // El JobForm envía los tags como JSON stringificado en un input oculto
+        const tagsJson = formData.get("tags") as string;
+        const tagIds = tagsJson ? JSON.parse(tagsJson) : [];
 
-    redirect("/dashboard")
+        const validated = JobSchema.safeParse({
+            ...rawData,
+            tagIds,
+        });
+
+        if (!validated.success) {
+            return { 
+                success: false, 
+                message: "Por favor, revisa los errores en el formulario", 
+                errors: formatZodErrors(validated.error) 
+            };
+        }
+
+        // Extraemos tagIds para manejar la conexión de Prisma por separado
+        const { tagIds: validatedTagIds, ...jobData } = validated.data;
+
+        const job = await prisma.job.create({
+            data: {
+                ...jobData,
+                authorId: session.id,
+                status: "PUBLISHED",
+                tags: {
+                    connect: validatedTagIds.map((id: number) => ({ id })),
+                },
+            },
+        });
+        
+        revalidatePath("/");
+        revalidatePath("/dashboard/company");
+
+        return { 
+            success: true, 
+            message: "Oferta creada con éxito",
+            data: { id: job.id } 
+        };
+    } catch (error) {
+        console.error("Error al crear oferta:", error);
+        return { success: false, message: "Ocurrió un error inesperado al procesar la solicitud" };
+    }
 }

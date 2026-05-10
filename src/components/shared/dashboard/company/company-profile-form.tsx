@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useActionState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateCompanyProfile } from "@/actions/company/update-profile";
 import { toast } from "sonner";
-import { Loader2, Building2, Globe } from "lucide-react";
+import { Building2, Globe } from "lucide-react";
 import { UpdatePasswordModal } from "@/components/shared/update-password-form";
 import { LogoUpload } from "./logo-upload";
+import { EMPTY_ACTION_STATE } from "@/lib/actions";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { FormError } from "@/components/ui/form-error";
 
 interface CompanyProfile {
     id: number;
@@ -26,26 +28,18 @@ interface CompanyProfileFormProps {
 }
 
 export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
-    const [isSaving, setIsSaving] = useState(false);
+    const [state, formAction] = useActionState(updateCompanyProfile, EMPTY_ACTION_STATE);
 
-    const handleSubmit = async (formData: FormData) => {
-        setIsSaving(true);
-        try {
-            const res = await updateCompanyProfile(formData);
-            if (res.error) {
-                toast.error(res.error);
-            } else {
-                toast.success(res.message);
-            }
-        } catch (_error) {
-            toast.error("Error inesperado al guardar.");
-        } finally {
-            setIsSaving(false);
+    useEffect(() => {
+        if (state.success) {
+            toast.success(state.message);
+        } else if (state.message && !state.success) {
+            toast.error(state.message);
         }
-    };
+    }, [state]);
 
     return (
-        <form action={handleSubmit} className="bg-card rounded-3xl border border-border shadow-sm p-8 md:p-10 w-full overflow-hidden">
+        <form action={formAction} className="bg-card rounded-3xl border border-border shadow-sm p-8 md:p-10 w-full overflow-hidden">
             <h2 className="text-2xl font-bold text-card-foreground mb-10 flex items-center gap-3 border-b border-border pb-6">
                 <Building2 className="text-primary" size={28} />
                 Identidad de Empresa
@@ -63,10 +57,10 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                             id="legalName"
                             name="legalName"
                             defaultValue={profile?.legalName || ""}
-                            required
                             className="mt-1.5 bg-background border-input"
                             placeholder="Ej: Logística Sur S.R.L."
                         />
+                        <FormError errors={state.errors?.legalName} />
                     </div>
                     <div>
                         <Label htmlFor="industry" className="text-foreground">Industria / Sector</Label>
@@ -74,7 +68,7 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                             <select
                                 id="industry"
                                 name="industry"
-                                defaultValue={profile?.industry || "Tecnología"}
+                                defaultValue={profile?.industry || "Logística"}
                                 className="w-full h-10 pl-3 pr-10 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent appearance-none text-foreground"
                             >
                                 <option value="Tecnología">Tecnología & Software</option>
@@ -87,6 +81,7 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                                 <option value="Otros">Otros</option>
                             </select>
                         </div>
+                        <FormError errors={state.errors?.industry} />
                     </div>
                 </div>
 
@@ -102,6 +97,7 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                             placeholder="https://tuempresa.com"
                         />
                     </div>
+                    <FormError errors={state.errors?.website} />
                 </div>
 
                 <div>
@@ -117,20 +113,14 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
                         />
                     </div>
                     <p className="text-xs text-muted-foreground mt-1 text-right">Esta info aparecerá en tus ofertas.</p>
+                    <FormError errors={state.errors?.description} />
                 </div>
 
                 <div className="pt-4 border-t border-border flex items-center justify-between">
                     <UpdatePasswordModal />
-                    <Button type="submit" disabled={isSaving} className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[140px]">
-                        {isSaving ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Guardando...
-                            </>
-                        ) : (
-                            "Guardar Cambios"
-                        )}
-                    </Button>
+                    <SubmitButton type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[140px]">
+                        Guardar Cambios
+                    </SubmitButton>
                 </div>
 
             </div>

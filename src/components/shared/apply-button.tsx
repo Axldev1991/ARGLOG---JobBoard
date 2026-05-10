@@ -18,10 +18,10 @@ export function ApplyButton({ jobId, hasApplied }: { jobId: number, hasApplied: 
             try {
                 const result = await applyToJob(jobId);
 
-                if (result.error) {
-                    toast.error(result.error);
-                } else if (result.success) {
-                    toast.success("Postulación enviada correctamente");
+                if (result.success) {
+                    toast.success(result.message || "Postulación enviada correctamente");
+                } else {
+                    toast.error(result.message || "Error al postularse");
                 }
             } catch (err) {
                 toast.error("Ocurrió un error al intentar postularse.");

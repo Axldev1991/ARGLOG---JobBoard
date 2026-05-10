@@ -5,23 +5,23 @@ import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { Logger } from "@/lib/logger";
+import { ActionResponse } from "@/lib/actions"
 
 /**
  * 🎨 SERVER ACTION: UPLOAD AVATAR
  * Sube la imagen de perfil recortada a Cloudinary y actualiza el usuario.
  */
-export async function uploadAvatar(formData: FormData) {
+export async function uploadAvatar(formData: FormData): Promise<ActionResponse<{ url: string }>> {
     const session = await getSession();
-    if (!session) return { error: "No autorizado" };
+    if (!session) return { success: false, message: "No autorizado" };
 
     const file = formData.get("avatar") as File;
-    if (!file) return { error: "No se encontró el archivo" };
+    if (!file) return { success: false, message: "No se encontró el archivo" };
 
     try {
-        console.log("📸 Iniciando subida de avatar para usuario:", session.id);
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
-        console.log("📦 Buffer generado, tamaño:", buffer.length);
 
         const uploadResult = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
@@ -31,21 +31,15 @@ export async function uploadAvatar(formData: FormData) {
                     overwrite: true,
                     resource_type: "image",
                     access_mode: 'public',
-                    // Aplicamos optimización base en Cloudinary
                     transformation: [
                         { width: 400, height: 400, crop: "fill", gravity: "face" },
                         { quality: "auto", fetch_format: "auto" }
                     ]
                 },
                 (error, result) => {
-                    if (error) {
-                        console.error("❌ Cloudinary Error:", error);
-                        reject(error);
-                    } else {
-                        if (!result) return reject(new Error("Cloudinary upload failed: No result"));
-                        console.log("✅ Cloudinary Success:", result.secure_url);
-                        resolve(result as { secure_url: string; public_id: string });
-                    }
+                    if (error) reject(error);
+                    else if (!result) reject(new Error("Cloudinary upload failed: No result"));
+                    else resolve(result as { secure_url: string; public_id: string });
                 }
             );
             uploadStream.end(buffer);
@@ -59,7 +53,6 @@ export async function uploadAvatar(formData: FormData) {
                 avatarPublicId: uploadResult.public_id
             }
         });
-        console.log("🗄️ Base de datos actualizada para el usuario:", session.id);
 
         // ACTUALIZAR SESIÓN (COOKIE) para que se refleje en el Navbar al instante
         const cookieStore = await cookies();
@@ -80,9 +73,10 @@ export async function uploadAvatar(formData: FormData) {
         }
 
         revalidatePath("/dashboard");
-        return { success: true, url: uploadResult.secure_url };
+        return { success: true, message: "Imagen de perfil actualizada", data: { url: uploadResult.secure_url } };
+        
     } catch (error) {
-        console.error("Upload Avatar Error:", error);
-        return { error: "Error al subir la imagen" };
+        await Logger.error("Upload Avatar Error", "SERVER_ACTION", error, { userId: session.id });
+        return { success: false, message: "Error al subir la imagen" };
     }
 }

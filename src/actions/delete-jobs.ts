@@ -5,8 +5,12 @@ import { requireRole } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { Logger } from "@/lib/logger";
 import { ApplyJobSchema } from "@/lib/schemas";
+import { ActionResponse } from "@/lib/actions";
 
-export async function deleteJob(formData: FormData) {
+/**
+ * Server action to delete a job posting.
+ */
+export async function deleteJob(formData: FormData): Promise<ActionResponse> {
     // 1. Auth Check (Iron Dome)
     const session = await requireRole(['company', 'admin']);
 
