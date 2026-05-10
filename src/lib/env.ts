@@ -11,6 +11,7 @@ const envSchema = z.object({
 
   // Servicio de Emails (Resend)
   RESEND_API_KEY: z.string().min(1, { message: "RESEND_API_KEY es obligatoria" }),
+  RESEND_FROM: z.string().default("ArLog Jobs <noreply@arlogjobs.org>"),
 
   // Almacenamiento de Imágenes (Cloudinary)
   CLOUDINARY_CLOUD_NAME: z.string().min(1, { message: "CLOUDINARY_CLOUD_NAME es obligatoria" }),

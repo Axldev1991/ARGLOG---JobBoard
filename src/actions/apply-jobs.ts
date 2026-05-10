@@ -4,9 +4,9 @@ import { prisma } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import { isProfileComplete } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
-import { resend } from "@/lib/resend";
 import { Logger } from "@/lib/logger";
 import { ApplyJobSchema } from "@/lib/schemas";
+import { sendEmail } from "@/lib/email";
 
 export async function applyToJob(jobId: number) {
     // 1. Auth Check (Iron Dome RBAC)
@@ -70,17 +70,37 @@ export async function applyToJob(jobId: number) {
             }
         });
 
-        // ENVIAR EMAIL 🚀
+        // ENVIAR EMAILS 🚀 (Iron Dome)
         if (job && job.author.email) {
             try {
-                await resend.emails.send({
-                    from: 'onboarding@resend.dev',
+                // 1. Notificar a la Empresa
+                await sendEmail({
                     to: job.author.email,
                     subject: `Nueva postulación: ${job.title}`,
-                    html: `<p>El usuario ${user.name} se postuló a ${job.title}</p>`
+                    html: `
+                        <h1>¡Tienes una nueva postulación!</h1>
+                        <p>El candidato <strong>${user.name}</strong> se ha postulado para la posición de <strong>${job.title}</strong>.</p>
+                        <p>Puedes revisar su perfil y CV ingresando al panel de ArLog Jobs.</p>
+                        <a href="https://www.arlogjobs.org/dashboard" class="button">Ir al Dashboard</a>
+                    `
                 });
+
+                // 2. Confirmar al Candidato
+                if (user.email) {
+                    await sendEmail({
+                        to: user.email,
+                        subject: `Postulación enviada: ${job.title}`,
+                        html: `
+                            <h1>¡Hola ${user.name}!</h1>
+                            <p>Tu postulación para <strong>${job.title}</strong> ha sido enviada correctamente a la empresa.</p>
+                            <p>Te avisaremos por este medio si hay novedades sobre tu proceso.</p>
+                            <p>¡Muchos éxitos!</p>
+                            <a href="https://www.arlogjobs.org/dashboard" class="button">Ver mis postulaciones</a>
+                        `
+                    });
+                }
             } catch (e) {
-                console.error("Error enviando email de postulación", e);
+                await Logger.error("Error enviando notificaciones de postulación", "SERVER_ACTION", e, { jobId, userId: user.id });
             }
         }
 

@@ -2,10 +2,10 @@
 
 import { prisma } from "@/lib/db"
 import { hash } from "bcryptjs"
-import { resend } from "@/lib/resend"
 import { requireAdminAction } from "@/lib/auth-guard"
 import { z } from "zod"
 import { Logger } from "@/lib/logger"
+import { sendEmail } from "@/lib/email"
 
 /**
  * Server Action para dar de alta una nueva empresa (B2B).
@@ -71,31 +71,32 @@ export async function createCompany(formData: FormData) {
             }
         });
 
-        // Notificación por Email
-        // Nota: En modo DEV de Resend, solo funciona si el destinatario es tu propio email verificado.
-        await resend.emails.send({
-            from: 'onboarding@resend.dev',
-            to: email,
-            subject: '👑 Bienvenido a ArLog - Accesos de Empresa',
-            html: `
-                <div style="font-family: sans-serif; color: #333;">
+        // Notificación por Email (Iron Dome)
+        try {
+            await sendEmail({
+                to: email,
+                subject: '👑 Bienvenido a ArLog - Accesos de Empresa',
+                html: `
                     <h1>¡Bienvenido ${name}!</h1>
                     <p>El equipo de ArLog ha dado de alta tu perfil corporativo.</p>
-                    <hr style="border: 0; border-top: 1px solid #eaeaea;" />
+                    <hr />
                     <p><strong>Razón Social:</strong> ${legalName} (CUIT: ${cuit})</p>
                     
-                    <div style="background: #f4f4f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1);">
                         <p style="margin:0 0 10px 0;"><strong>Tus credenciales de acceso:</strong></p>
                         <p style="margin:5px 0;">📧 Email: <strong>${email}</strong></p>
                         <p style="margin:0;">🔑 Contraseña: <strong>${password}</strong></p>
                     </div>
                     
-                    <p style="font-size: 14px; color: #666;">
+                    <p style="font-size: 14px; color: #a1a1aa;">
                         Por favor ingresa y cambia tu contraseña desde tu perfil.
                     </p>
-                </div>
-            `
-        });
+                    <a href="https://www.arlogjobs.org/login" class="button">Iniciar Sesión</a>
+                `
+            });
+        } catch (emailError) {
+            await Logger.error("Failed to send welcome email to company", "SERVER_ACTION", emailError, { email });
+        }
 
         return { success: true };
 

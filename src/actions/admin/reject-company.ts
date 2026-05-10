@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db"
 import { getSession } from "@/lib/session"
 import { Logger } from "@/lib/logger"
-import { Resend } from "resend"
+import { sendEmail } from "@/lib/email"
 
 export async function rejectCompany(userId: number, reason?: string) {
     try {
@@ -38,30 +38,22 @@ export async function rejectCompany(userId: number, reason?: string) {
             data: { status: "REJECTED" }
         })
 
-        // 4. Enviar email de rechazo
+        // 4. Enviar email de rechazo (Iron Dome)
         try {
-            const resend = new Resend(process.env.RESEND_API_KEY)
+            const reasonText = reason ? `<p><strong>Motivo:</strong> ${reason}</p>` : "";
             
-            const reasonText = reason ? `<p><strong>Motivo:</strong> ${reason}</p>` : ""
-            
-            await resend.emails.send({
-                from: "ArLog Jobs <onboarding@resend.dev>",
+            await sendEmail({
                 to: user.email,
                 subject: "Tu registro en ArLog Jobs ha sido rechazado",
                 html: `
                     <h1>Registro rechazado</h1>
                     <p>Lamentamos informarte que tu solicitud de registro en ArLog Jobs ha sido <strong>rechazada</strong>.</p>
                     ${reasonText}
-                    <p>Si tienes alguna consulta, puedes contactarnos.</p>
+                    <p>Si tienes alguna consulta, puedes contactarnos respondiendo a este correo.</p>
                 `
             })
         } catch (emailError) {
-            await Logger.error(
-                "Failed to send rejection email",
-                "SERVER_ACTION",
-                emailError,
-                { userId }
-            )
+            await Logger.error("Failed to send rejection email", "SERVER_ACTION", emailError, { userId });
         }
 
         await Logger.warn(

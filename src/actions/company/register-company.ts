@@ -3,9 +3,9 @@
 import { prisma } from "@/lib/db"
 import { hash } from "bcryptjs"
 import { Logger } from "@/lib/logger"
-import { Resend } from "resend"
 import { env } from "@/lib/env"
 import { RegisterCompanySchema } from "@/lib/schemas"
+import { sendEmail } from "@/lib/email"
 
 export async function registerCompany(formData: FormData) {
     // 🧠 VALIDACIÓN DE DATOS (ZOD)
@@ -68,17 +68,15 @@ export async function registerCompany(formData: FormData) {
             }
         })
 
-        // 6. Enviar email al admin
+        // 6. Enviar email al admin (Iron Dome)
         try {
-            const resend = new Resend(env.RESEND_API_KEY)
-            
-            await resend.emails.send({
-                from: "ArLog Jobs <onboarding@resend.dev>",
+            await sendEmail({
                 to: "admin@arlog.org",
                 subject: "Nueva solicitud de registro - Empresa",
                 html: `
                     <h1>Nueva solicitud de registro</h1>
                     <p>Una empresa ha solicitado unirse a ArLog Jobs.</p>
+                    <hr />
                     <h2>Datos de la empresa:</h2>
                     <ul>
                         <li><strong>Razón Social:</strong> ${legalName}</li>
@@ -86,17 +84,13 @@ export async function registerCompany(formData: FormData) {
                         <li><strong>Email:</strong> ${email}</li>
                         <li><strong>Industria:</strong> ${industry}</li>
                     </ul>
+                    <hr />
                     <p>Para aprobar o rechazar esta solicitud, ingresa al panel de administración.</p>
+                    <a href="https://www.arlogjobs.org/admin" class="button">Ir al Panel Admin</a>
                 `
             })
         } catch (emailError) {
-            // Log error pero no fallar el registro
-            await Logger.error(
-                "Failed to send admin notification email",
-                "SERVER_ACTION",
-                emailError,
-                { userId: newUser.id }
-            )
+            await Logger.error("Failed to send admin notification email", "SERVER_ACTION", emailError);
         }
 
         await Logger.warn(
