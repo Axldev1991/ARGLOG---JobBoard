@@ -76,7 +76,7 @@ export function AvatarUpload({ user }: { user: User }) {
             <div className="relative group">
                 <div className="h-32 w-32 rounded-full ring-4 ring-primary/20 p-1 bg-background shadow-xl transition-all group-hover:ring-primary/40">
                     <Avatar className="h-full w-full border border-border shadow-inner">
-                        <AvatarImage src={user.avatarUrl} alt={user.name} className="object-cover" />
+                        <AvatarImage src={user.avatarUrl || undefined} alt={user.name || "Usuario"} className="object-cover" />
                         <AvatarFallback className="bg-primary/10 text-primary text-4xl font-bold">
                             {user.name?.charAt(0).toUpperCase()}
                         </AvatarFallback>

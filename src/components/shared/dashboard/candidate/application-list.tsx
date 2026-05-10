@@ -4,11 +4,11 @@ import { withdrawApplication } from "@/actions/withdraw-application";
 import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
 
 interface Application {
-    id: string;
+    id: number;
     status: string;
     createdAt: Date | string;
     job: {
-        id: string;
+        id: number;
         title: string;
     };
 }

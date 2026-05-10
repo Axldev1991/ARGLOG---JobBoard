@@ -17,7 +17,7 @@ interface Props {
  * Includes a status toggle switch (Published/Rejected) and a delete button.
  * Uses optimistic UI updates for instant feedback on status toggle.
  */
-export function JobActions({ jobId, jobTitle, _status }: Props) {
+export function JobActions({ jobId, jobTitle }: Props) {
     return (
         <div className="flex justify-end items-center gap-2">
             <Link href={`/admin/jobs/${jobId}/edit`}>

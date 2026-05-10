@@ -9,7 +9,7 @@ interface Props {
     resumeUrl?: string | null;
 }
 
-export function CandidateActions({ candidateId, candidateName, _resumeUrl }: Props) {
+export function CandidateActions({ candidateId, candidateName }: Props) {
     return (
         <ConfirmDeleteButton
             onDelete={async () => {

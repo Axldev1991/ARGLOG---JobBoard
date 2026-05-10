@@ -47,7 +47,8 @@ export async function uploadLogo(formData: FormData) {
                 },
                 (error, result) => {
                     if (error) reject(error);
-                    else resolve(result);
+                    else if (!result) reject(new Error("Cloudinary upload failed: No result"));
+                    else resolve(result as { secure_url: string; public_id: string });
                 }
             );
             uploadStream.end(buffer);

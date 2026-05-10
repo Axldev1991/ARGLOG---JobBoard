@@ -37,7 +37,7 @@ export function JobForm({ action, initialData, availableTags, isEditing = false 
     const [description, setDescription] = useState(initialData?.description || "");
 
     return (
-        <form action={action} className="space-y-8 relative z-10 w-full">
+        <form action={async (fd) => { await action(fd); }} className="space-y-8 relative z-10 w-full">
 
             {/* Si estamos editando, necesitamos enviar el ID oculto */}
             {isEditing && initialData?.id && (

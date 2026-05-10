@@ -81,7 +81,7 @@ class LoggerService {
                     metadata: {
                         ...metadata,
                         error: Object.keys(errorData).length > 0 ? errorData : undefined,
-                    },
+                    } as any,
                 },
             });
         } catch (loggingError) {

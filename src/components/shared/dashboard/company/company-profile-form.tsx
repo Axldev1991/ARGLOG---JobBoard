@@ -11,15 +11,18 @@ import { UpdatePasswordModal } from "@/components/shared/update-password-form";
 import { LogoUpload } from "./logo-upload";
 
 interface CompanyProfile {
+    id: number;
     legalName: string;
+    cuit: string;
     industry: string;
-    website: string | null;
-    description: string | null;
-    logo: string | null;
+    description?: string | null;
+    website?: string | null;
+    logo?: string | null;
+    logoPublicId?: string | null;
 }
 
 interface CompanyProfileFormProps {
-    profile: CompanyProfile | null;
+    profile: CompanyProfile | null | undefined;
 }
 
 export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {

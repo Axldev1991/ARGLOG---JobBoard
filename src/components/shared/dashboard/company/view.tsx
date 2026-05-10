@@ -22,11 +22,19 @@ interface Job {
 
 interface CompanyProfile {
     id: number;
-    name: string;
-    logo?: string | null;
+    legalName: string;
+    cuit: string;
+    industry: string;
     description?: string | null;
     website?: string | null;
-    location?: string | null;
+    logo?: string | null;
+    logoPublicId?: string | null;
+}
+
+interface Tag {
+    id: number;
+    name: string;
+    type: string;
 }
 
 export function CompanyView({
@@ -36,8 +44,8 @@ export function CompanyView({
     activeTab: initialTab = "jobs"
 }: {
     jobs: Job[],
-    profile?: CompanyProfile,
-    allTags?: any[],
+    profile?: CompanyProfile | null,
+    allTags?: Tag[],
     activeTab?: Tab
 }) {
     const router = useRouter();

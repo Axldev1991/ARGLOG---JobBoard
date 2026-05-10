@@ -42,8 +42,9 @@ export async function uploadAvatar(formData: FormData) {
                         console.error("❌ Cloudinary Error:", error);
                         reject(error);
                     } else {
-                        console.log("✅ Cloudinary Success:", result?.secure_url);
-                        resolve(result);
+                        if (!result) return reject(new Error("Cloudinary upload failed: No result"));
+                        console.log("✅ Cloudinary Success:", result.secure_url);
+                        resolve(result as { secure_url: string; public_id: string });
                     }
                 }
             );

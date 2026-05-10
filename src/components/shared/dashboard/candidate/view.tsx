@@ -13,14 +13,13 @@ interface User {
     id: number;
     name: string;
     email: string;
-    candidateProfile: {
-        headline: string | null;
-        city: string | null;
-        bio: string | null;
-        linkedin: string | null;
-        resumeUrl: string | null;
-        tags: { id: number; name: string }[];
-    } | null;
+    headline?: string | null;
+    city?: string | null;
+    bio?: string | null;
+    linkedin?: string | null;
+    resumeUrl?: string | null;
+    avatarUrl?: string | null;
+    tags: { id: number; name: string; type: string }[];
 }
 
 export function CandidateView({

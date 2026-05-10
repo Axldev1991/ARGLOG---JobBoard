@@ -8,7 +8,10 @@ interface Job {
     id: number;
     title: string;
     category: string;
+    modality: string;
+    status: string;
     createdAt: string | Date;
+    expiresAt?: string | Date | null;
     applications?: any[];
 }
 

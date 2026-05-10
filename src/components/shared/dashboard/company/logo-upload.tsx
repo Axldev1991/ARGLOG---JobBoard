@@ -18,7 +18,7 @@ interface CompanyProfile {
     legalName?: string;
 }
 
-export function LogoUpload({ profile }: { profile: CompanyProfile }) {
+export function LogoUpload({ profile }: { profile: CompanyProfile | null | undefined }) {
     const [image, setImage] = useState<string | null>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
@@ -76,7 +76,7 @@ export function LogoUpload({ profile }: { profile: CompanyProfile }) {
                 <div className="h-40 w-40 rounded-3xl ring-4 ring-primary/10 p-1.5 bg-background shadow-xl transition-all group-hover:ring-primary/30 overflow-hidden">
                     <div className="h-full w-full rounded-2xl overflow-hidden bg-muted/30 flex items-center justify-center border border-border border-dashed">
                         {profile?.logo ? (
-                            <img src={profile.logo} alt={profile.legalName} className="h-full w-full object-contain p-2" />
+                            <img src={profile.logo} alt={profile?.legalName || "Logo"} className="h-full w-full object-contain p-2" />
                         ) : (
                             <Building2 className="text-muted-foreground/40" size={56} />
                         )}
