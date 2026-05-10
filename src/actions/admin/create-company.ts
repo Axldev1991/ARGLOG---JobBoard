@@ -75,7 +75,7 @@ export async function createCompany(formData: FormData) {
         try {
             await sendEmail({
                 to: email,
-                subject: '👑 Bienvenido a ArLog - Accesos de Empresa',
+                subject: 'Bienvenido a ArLog - Accesos de Empresa',
                 html: `
                     <h1>¡Bienvenido ${name}!</h1>
                     <p>El equipo de ArLog ha dado de alta tu perfil corporativo.</p>

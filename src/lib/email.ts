@@ -24,84 +24,91 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
         <title>${subject}</title>
         <style>
             body {
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                background-color: #0a0a0a;
-                color: #ffffff;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                background-color: #f9fafb;
+                color: #111827;
                 margin: 0;
                 padding: 0;
-                -webkit-font-smoothing: antialiased;
+            }
+            .wrapper {
+                background-color: #f9fafb;
+                padding: 48px 20px;
             }
             .container {
                 max-width: 600px;
                 margin: 0 auto;
-                padding: 40px 20px;
+                background-color: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             }
             .header {
-                text-align: center;
-                margin-bottom: 40px;
-            }
-            .logo {
-                height: 40px;
-                width: auto;
+                padding: 32px 40px;
+                border-bottom: 1px solid #f3f4f6;
+                background-color: #ffffff;
             }
             .content {
-                background-color: #141414;
-                border: 1px solid #262626;
-                border-radius: 12px;
-                padding: 32px;
+                padding: 40px;
                 line-height: 1.6;
                 font-size: 16px;
-                color: #e5e5e5;
+                color: #374151;
             }
             .footer {
+                padding: 32px 40px;
+                background-color: #f9fafb;
+                border-top: 1px solid #f3f4f6;
                 text-align: center;
-                margin-top: 40px;
-                font-size: 12px;
-                color: #737373;
+                font-size: 13px;
+                color: #6b7280;
             }
             .footer a {
-                color: #a3a3a3;
-                text-decoration: none;
-                margin: 0 10px;
+                color: #4b5563;
+                text-decoration: underline;
+                margin: 0 8px;
             }
             h1, h2, h3 {
-                color: #ffffff;
+                color: #111827;
                 margin-top: 0;
+                font-weight: 600;
             }
             .button {
                 display: inline-block;
-                background-color: #ffffff;
-                color: #000000;
+                background-color: #111827;
+                color: #ffffff !important;
                 padding: 12px 24px;
                 border-radius: 6px;
                 text-decoration: none;
-                font-weight: 600;
-                margin-top: 20px;
+                font-weight: 500;
+                margin-top: 24px;
             }
-            hr {
-                border: 0;
-                border-top: 1px solid #262626;
-                margin: 24px 0;
+            .secondary-text {
+                color: #6b7280;
+                font-size: 14px;
             }
         </style>
     </head>
     <body>
-        <div class="container">
-            <div class="header">
-                <!-- Nota: En producción, reemplazar con la URL absoluta del logo alojado -->
-                <h2 style="margin: 0; letter-spacing: -0.025em; font-weight: 800;">ARLOG <span style="color: #737373;">JOBS</span></h2>
-            </div>
-            
-            <div class="content">
-                ${html}
-            </div>
-            
-            <div class="footer">
-                <p>&copy; ${new Date().getFullYear()} ArLog Jobs. Todos los derechos reservados.</p>
-                <p>
-                    <a href="https://www.arlogjobs.org/">Sitio Web</a>
-                    <a href="https://www.arlogjobs.org/contacto">Soporte</a>
-                </p>
+        <div class="wrapper">
+            <div class="container">
+                <div class="header">
+                    <div style="font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: #111827;">
+                        ARLOG <span style="color: #6b7280; font-weight: 400;">JOBS</span>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    ${html}
+                </div>
+                
+                <div class="footer">
+                    <p style="margin-bottom: 8px;">&copy; ${new Date().getFullYear()} ArLog Jobs. Plataforma Profesional Logística.</p>
+                    <p>
+                        <a href="https://www.arlogjobs.org/">Sitio Web</a>
+                        <span style="color: #d1d5db;">&bull;</span>
+                        <a href="https://www.arlogjobs.org/contacto">Soporte</a>
+                    </p>
+                </div>
             </div>
         </div>
     </body>
