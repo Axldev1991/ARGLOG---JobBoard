@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { ProfileSchema } from "@/lib/schemas";
 
 export async function updateProfile(formData: FormData) {
     const session = await getSession();
@@ -11,15 +11,24 @@ export async function updateProfile(formData: FormData) {
         return { error: "No autorizado" };
     }
 
-    const name = formData.get("name") as string;
-    const headline = formData.get("headline") as string;
-    const bio = formData.get("bio") as string;
-    const phone = formData.get("phone") as string;
-    const linkedin = formData.get("linkedin") as string;
-    const city = formData.get("city") as string;
+    // 🧠 VALIDACIÓN DE DATOS (ZOD)
+    const rawData = {
+        name: formData.get("name"),
+        headline: formData.get("headline"),
+        bio: formData.get("bio"),
+        phone: formData.get("phone"),
+        linkedin: formData.get("linkedin"),
+        city: formData.get("city"),
+        tagIds: JSON.parse((formData.get("tags") as string) || "[]"),
+    };
 
-    const tagsJson = formData.get("tags") as string;
-    const tagIds = JSON.parse(tagsJson || "[]") as number[];
+    const validated = ProfileSchema.safeParse(rawData);
+
+    if (!validated.success) {
+        return { error: "Datos del perfil inválidos", details: validated.error.flatten() };
+    }
+
+    const { name, headline, bio, phone, linkedin, city, tagIds } = validated.data;
 
     try {
         await prisma.user.update({

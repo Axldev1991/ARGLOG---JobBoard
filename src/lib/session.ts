@@ -1,17 +1,14 @@
 
 import { cookies } from "next/headers";
+import { verifyJWT } from "@/lib/auth";
 
 export async function getSession() {
     const cookieStore = await cookies();
-    const sessionString = cookieStore.get("user_session")?.value;
+    const token = cookieStore.get("user_session")?.value;
 
-    if (!sessionString) {
+    if (!token) {
         return null;
     }
 
-    try {
-        return JSON.parse(sessionString);
-    } catch {
-        return null;
-    }
+    return await verifyJWT(token);
 }

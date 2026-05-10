@@ -1,31 +1,33 @@
 "use server"
 
-// --------------------------------------------------------------------------
-// 🧠 SERVER ACTION: REGISTRO DE USUARIO
-// --------------------------------------------------------------------------
-// 1. Recibe formData del cliente.
-// 2. Valida inputs básicos.
-// 3. Hashea la contraseña con `bcryptjs` (Standard de seguridad).
-// 4. Crea usuario en PostgreSQL via Prisma.
-// --------------------------------------------------------------------------
-
 import { prisma } from "@/lib/db"
 import { hash } from "bcryptjs"
+import { RegisterSchema } from "@/lib/schemas"
+import { Logger } from "@/lib/logger"
 
+/**
+ * Server action to register a new user.
+ */
 export async function registerUser(formData: FormData) {
+    // 🧠 VALIDACIÓN DE DATOS (ZOD)
+    const rawData = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+        role: formData.get("role"),
+        tagIds: JSON.parse((formData.get("tags") as string) || "[]"),
+    };
+
+    const validated = RegisterSchema.safeParse(rawData);
+
+    if (!validated.success) {
+        return { error: "Datos de registro inválidos", details: validated.error.flatten() };
+    }
+
+    const { name, email, password, role, tagIds } = validated.data;
+
     try {
-        // 1. Convertir FormData a Objeto simple
-        const name = formData.get("name") as string
-        const email = formData.get("email") as string
-        const password = formData.get("password") as string
-        const role = formData.get("role") as string
-
-        // 2. Validar que no falte nada (Basic)
-        if (!name || !email || !password || !role) {
-            return { error: "Todos los campos son obligatorios" }
-        }
-
-        // 2.1 Verificar si ya existe
+        // 1. Verificar si ya existe
         const existingUser = await prisma.user.findUnique({
             where: { email }
         });
@@ -34,10 +36,7 @@ export async function registerUser(formData: FormData) {
             return { error: "Este email ya está registrado" }
         }
 
-        // 3. Crear el usuario en la DB con sus tags
-        const tagsJson = formData.get("tags") as string;
-        const tagIds = JSON.parse(tagsJson || "[]") as number[];
-
+        // 2. Crear el usuario en la DB con sus tags
         await prisma.user.create({
             data: {
                 name,
@@ -50,11 +49,10 @@ export async function registerUser(formData: FormData) {
             }
         })
 
-        // 4. Retornar éxito en lugar de redirigir
         return { success: true }
 
     } catch (error) {
-        console.error("Error creating user:", error);
+        await Logger.error("Error creating user", "SERVER_ACTION", error, { email });
         return { error: "Error al crear usuario" }
     }
 }

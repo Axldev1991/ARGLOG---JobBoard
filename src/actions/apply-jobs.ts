@@ -1,39 +1,37 @@
 "use server"
 
 import { prisma } from "@/lib/db";
-import { getSession } from "@/lib/session";
+import { requireRole } from "@/lib/auth";
 import { isProfileComplete } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { resend } from "@/lib/resend";
 import { Logger } from "@/lib/logger";
+import { ApplyJobSchema } from "@/lib/schemas";
 
 export async function applyToJob(jobId: number) {
-    const session = await getSession();
+    // 1. Auth Check (Iron Dome RBAC)
+    const session = await requireRole(['candidate', 'admin']);
 
-    if (!session) {
-        return { error: "Debes iniciar sesión para postularte." };
+    // 🧠 VALIDACIÓN DE DATOS (ZOD)
+    const validated = ApplyJobSchema.safeParse({ jobId });
+    if (!validated.success) {
+        return { error: "ID de oferta inválido" };
     }
 
-    // 1. Obtener usuario de la DB (para tener datos frescos)
+    // 2. Obtener usuario de la DB (para tener datos frescos y verificar perfil)
     const user = await prisma.user.findUnique({
         where: { id: session.id }
     });
 
-    // Verificamos el rol de la SESIÓN (que puede estar impersonada)
-    // TODO: REMOVE FOR PRODUCTION (Strict DB check is safer)
-    const activeRole = session.role;
+    if (!user) return { error: "Usuario no encontrado" };
 
-    if (!user || (activeRole !== 'candidate' && activeRole !== 'admin')) {
-        return { error: `Solo los candidatos pueden postularse (Tu rol actual: ${activeRole})` };
-    }
-
-    // 2. EL GATEKEEPER 👮: Verificar perfil completo
+    // 3. EL GATEKEEPER 👮: Verificar perfil completo
     if (!isProfileComplete(user)) {
         return { error: "Tu perfil está incompleto. Sube tu CV y completa tu info en el Dashboard." };
     }
 
     try {
-        // 3. ¿Ya se postuló antes?
+        // 4. ¿Ya se postuló antes?
         const existingApplication = await prisma.application.findUnique({
             where: {
                 userId_jobId: {
@@ -56,17 +54,15 @@ export async function applyToJob(jobId: number) {
             return { error: "La oferta no existe." };
         }
 
-        // 🛡️ VALIDACIÓN EXTRA: ¿Está publicada?
         if (job.status !== 'PUBLISHED') {
             return { error: "Esta oferta ya no está recibiendo postulaciones." };
         }
 
-        // 🛡️ VALIDACIÓN EXTRA: ¿Expiró?
         if (job.expiresAt && new Date(job.expiresAt) < new Date()) {
             return { error: "Esta oferta ha expirado y ya no recibe postulaciones." };
         }
 
-        // 4. CREAR POSTULACIÓN ✨
+        // 5. CREAR POSTULACIÓN ✨
         await prisma.application.create({
             data: {
                 userId: user.id,
@@ -76,15 +72,18 @@ export async function applyToJob(jobId: number) {
 
         // ENVIAR EMAIL 🚀
         if (job && job.author.email) {
-            await resend.emails.send({
-                from: 'onboarding@resend.dev',
-                to: job.author.email,
-                subject: `Nueva postulación: ${job.title}`,
-                html: `<p>El usuario ${user.name} se postuló a ${job.title}</p>`
-            });
+            try {
+                await resend.emails.send({
+                    from: 'onboarding@resend.dev',
+                    to: job.author.email,
+                    subject: `Nueva postulación: ${job.title}`,
+                    html: `<p>El usuario ${user.name} se postuló a ${job.title}</p>`
+                });
+            } catch (e) {
+                console.error("Error enviando email de postulación", e);
+            }
         }
 
-        // Refrescar para que se vea el botón de "Ya te postulaste" (lo haremos luego)
         revalidatePath("/");
         revalidatePath("/dashboard");
 

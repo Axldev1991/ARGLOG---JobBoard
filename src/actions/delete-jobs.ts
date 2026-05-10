@@ -1,26 +1,27 @@
 "use server"
 
 import { prisma } from "@/lib/db";
-import { getSession } from "@/lib/session";
+import { requireRole } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { Logger } from "@/lib/logger";
+import { ApplyJobSchema } from "@/lib/schemas";
 
 export async function deleteJob(formData: FormData) {
-    const jobIdStr = formData.get("jobId") as string;
+    // 1. Auth Check (Iron Dome)
+    const session = await requireRole(['company', 'admin']);
 
-    if (!jobIdStr) {
-        return { success: false, message: "ID de oferta no válido" };
+    // 🧠 VALIDACIÓN DE DATOS (ZOD)
+    const validated = ApplyJobSchema.safeParse({ 
+        jobId: formData.get("jobId") 
+    });
+
+    if (!validated.success) {
+        return { success: false, message: "ID de oferta inválido" };
     }
 
-    const jobId = parseInt(jobIdStr);
+    const { jobId } = validated.data;
 
     try {
-        // 1. Auth & Session
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: "No autorizado" };
-        }
-
         // 2. Ownership Check (Iron Dome)
         const job = await prisma.job.findUnique({
             where: { id: jobId }
@@ -31,7 +32,7 @@ export async function deleteJob(formData: FormData) {
         }
 
         const isOwner = job.authorId === session.id;
-        const isAdmin = session.role === 'admin' || session.role === 'dev';
+        const isAdmin = session.role === 'admin';
 
         if (!isOwner && !isAdmin) {
             await Logger.warn("Intento de borrado de oferta ajena", "SERVER_ACTION", {

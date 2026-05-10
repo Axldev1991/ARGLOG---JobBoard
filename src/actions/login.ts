@@ -11,18 +11,20 @@
 
 import { prisma } from "@/lib/db"
 import { compare } from "bcryptjs"
-import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import { Logger } from "@/lib/logger"
+import { signJWT } from "@/lib/auth"
+import { LoginSchema } from "@/lib/schemas"
 
 export async function loginUser(formData: FormData) {
-    const identifier = formData.get("email") as string
-    const password = formData.get("password") as string
+    const rawData = Object.fromEntries(formData.entries());
+    const validated = LoginSchema.safeParse(rawData);
 
-
-    if (!identifier || !password) {
-        return { error: "Todos los campos son obligatorios" }
+    if (!validated.success) {
+        return { error: "Datos de login inválidos" }
     }
+
+    const { identifier, password } = validated.data;
 
     try {
         let usuarioEncontrado;
@@ -66,15 +68,20 @@ export async function loginUser(formData: FormData) {
             return { error: "Tu solicitud de registro fue rechazada. Contacta al administrador." }
         }
 
-        // TODO: Aquí deberías setear la cookie de sesión (ej. con jose o NextAuth)
-        // cookies().set("session", token)
-        (await cookies()).set("user_session", JSON.stringify({
+        // 🧠 SETEO DE SESIÓN BLINDADA (JWT)
+        const token = await signJWT({
             id: usuarioEncontrado.id,
             name: usuarioEncontrado.name,
-            role: usuarioEncontrado.role
-        }));
+            role: usuarioEncontrado.role as any
+        });
 
-        // redirect("/") <-- Lo quitamos para manejarlo en el cliente
+        (await cookies()).set("user_session", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/"
+        });
+
         return { success: true }
     } catch (error) {
         await Logger.error("Error en Login", "SERVER_ACTION", error, { identifier });

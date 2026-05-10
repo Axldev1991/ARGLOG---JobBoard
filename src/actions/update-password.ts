@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db"
 import { getSession } from "@/lib/session"
 import { compare, hash } from "bcryptjs"
 import { Logger } from "@/lib/logger"
+import { UpdatePasswordSchema } from "@/lib/schemas"
 
 /**
  * Server action to update a user's password securely.
@@ -15,21 +16,20 @@ export async function updatePassword(formData: FormData) {
         return { error: "No autenticado" };
     }
 
-    const currentPassword = formData.get("currentPassword") as string;
-    const newPassword = formData.get("newPassword") as string;
-    const confirmPassword = formData.get("confirmPassword") as string;
+    // 🧠 VALIDACIÓN DE DATOS (ZOD)
+    const rawData = {
+        currentPassword: formData.get("currentPassword"),
+        newPassword: formData.get("newPassword"),
+        confirmPassword: formData.get("confirmPassword"),
+    };
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-        return { error: "Todos los campos son obligatorios" };
+    const validated = UpdatePasswordSchema.safeParse(rawData);
+
+    if (!validated.success) {
+        return { error: "Datos de contraseña inválidos", details: validated.error.flatten() };
     }
 
-    if (newPassword !== confirmPassword) {
-        return { error: "Las contraseñas nuevas no coinciden" };
-    }
-
-    if (newPassword.length < 6) {
-        return { error: "La nueva contraseña debe tener al menos 6 caracteres" };
-    }
+    const { currentPassword, newPassword } = validated.data;
 
     try {
         const user = await prisma.user.findUnique({

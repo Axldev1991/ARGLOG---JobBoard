@@ -1,47 +1,35 @@
 "use server"
 
 import { prisma } from "@/lib/db";
-import { getSession } from "@/lib/session";
+import { requireRole } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { Logger } from "@/lib/logger";
 import cloudinary from "@/lib/cloudinary";
 import { extractPublicId } from "@/lib/cloudinary-utils";
-import { z } from "zod";
-
-// Zod schema for company profile validation
-const CompanyProfileSchema = z.object({
-    legalName: z.string().min(2, "El nombre legal debe tener al menos 2 caracteres"),
-    website: z.string().url("La URL del sitio web debe ser válida").optional().or(z.literal("")),
-    description: z.string().max(1000, "La descripción no puede superar 1000 caracteres").optional(),
-    industry: z.string().min(1, "La industria es obligatoria"),
-});
+import { CompanyProfileSchema } from "@/lib/schemas";
 
 export async function updateCompanyProfile(formData: FormData) {
-    const session = await getSession();
+    // 1. Auth Check (Iron Dome)
+    const session = await requireRole(['company', 'admin']);
 
-    if (!session) {
-        return { error: "No autorizado" };
+    // 🧠 VALIDACIÓN DE DATOS (ZOD)
+    const rawData = {
+        legalName: formData.get("legalName"),
+        website: formData.get("website"),
+        description: formData.get("description"),
+        industry: formData.get("industry"),
+    };
+
+    const validated = CompanyProfileSchema.safeParse(rawData);
+
+    if (!validated.success) {
+        return { error: "Datos de perfil inválidos", details: validated.error.flatten() };
     }
 
-    // Extract fields from FormData
-    const legalName = formData.get("legalName") as string;
-    const website = formData.get("website") as string;
-    const description = formData.get("description") as string;
-    const industry = formData.get("industry") as string;
+    const { legalName, website, description, industry } = validated.data;
     const logoFile = formData.get("logo") as File | null;
 
-    // Validate with Zod
-    const validationResult = CompanyProfileSchema.safeParse({
-        legalName,
-        website,
-        description,
-        industry,
-    });
-
-    if (!validationResult.success) {
-        const issues = validationResult.error.issues.map(issue => issue.message);
-        return { error: issues.join(", ") };
-    }
+    try {
 
     try {
         // 1. Obtener User + Profile para verificar existencia
@@ -58,10 +46,10 @@ export async function updateCompanyProfile(formData: FormData) {
         await prisma.companyProfile.update({
             where: { id: user.companyProfile.id },
             data: {
-                legalName: validationResult.data.legalName,
-                website: validationResult.data.website || null,
-                description: validationResult.data.description || null,
-                industry: validationResult.data.industry,
+                legalName,
+                website: website || null,
+                description: description || null,
+                industry,
             }
         });
         

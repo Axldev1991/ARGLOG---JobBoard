@@ -2,42 +2,30 @@
 
 import { prisma } from "@/lib/db"
 import { hash } from "bcryptjs"
-import { z } from "zod"
 import { Logger } from "@/lib/logger"
 import { Resend } from "resend"
 import { env } from "@/lib/env"
-
-// Schema de validación para registro de empresa
-const RegisterCompanySchema = z.object({
-    legalName: z.string().min(2, "La razón social debe tener al menos 2 caracteres"),
-    email: z.string().email("Email inválido"),
-    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-    industry: z.string().optional().default("Logística"),
-    cuit: z.string().min(8, "CUIT inválido").max(15, "CUIT inválido"),
-})
+import { RegisterCompanySchema } from "@/lib/schemas"
 
 export async function registerCompany(formData: FormData) {
+    // 🧠 VALIDACIÓN DE DATOS (ZOD)
+    const rawData = {
+        legalName: formData.get("legalName"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+        industry: formData.get("industry") || "Logística",
+        cuit: formData.get("cuit"),
+    };
+
+    const validated = RegisterCompanySchema.safeParse(rawData);
+
+    if (!validated.success) {
+        return { error: "Datos de registro inválidos", details: validated.error.flatten() };
+    }
+
+    const { legalName, email, password, industry, cuit } = validated.data;
+
     try {
-        // 1. Extraer datos del formData
-        const legalName = formData.get("legalName") as string
-        const email = formData.get("email") as string
-        const password = formData.get("password") as string
-        const industry = (formData.get("industry") as string) || "Logística"
-        const cuit = formData.get("cuit") as string
-
-        // 2. Validar con Zod
-        const validationResult = RegisterCompanySchema.safeParse({
-            legalName,
-            email,
-            password,
-            industry,
-            cuit,
-        })
-
-        if (!validationResult.success) {
-            const errors = validationResult.error.issues.map(i => i.message).join(", ")
-            return { error: errors }
-        }
 
         // 3. Verificar que el email no exista
         const existingEmail = await prisma.user.findUnique({
