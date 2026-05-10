@@ -59,7 +59,7 @@ export const RegisterSchema = z.object({
     password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
     name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
     role: z.enum(["candidate", "company"], {
-        invalid_type_error: "Selecciona un rol válido",
+        message: "Selecciona un rol válido",
     }),
     tagIds: z.array(z.number()).default([]),
 });
