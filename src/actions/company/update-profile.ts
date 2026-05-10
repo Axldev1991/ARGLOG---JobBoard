@@ -30,8 +30,6 @@ export async function updateCompanyProfile(formData: FormData) {
     const logoFile = formData.get("logo") as File | null;
 
     try {
-
-    try {
         // 1. Obtener User + Profile para verificar existencia
         const user = await prisma.user.findUnique({
             where: { id: session.id },
