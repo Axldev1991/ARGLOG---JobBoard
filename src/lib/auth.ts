@@ -7,7 +7,7 @@ const SECRET = new TextEncoder().encode(
 );
 
 export interface SessionPayload {
-    id: string;
+    id: number;
     role: "candidate" | "company" | "admin" | "dev";
     name: string;
 }
