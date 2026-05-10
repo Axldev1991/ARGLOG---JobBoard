@@ -3,7 +3,6 @@
 import { prisma } from "@/lib/db"
 import { hash } from "bcryptjs"
 import { Logger } from "@/lib/logger"
-import { env } from "@/lib/env"
 import { RegisterCompanySchema } from "@/lib/schemas"
 import { sendEmail } from "@/lib/email"
 

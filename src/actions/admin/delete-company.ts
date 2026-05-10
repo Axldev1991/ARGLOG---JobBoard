@@ -4,7 +4,6 @@ import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { requireAdminAction } from "@/lib/auth-guard"
 import { isProtectedUser } from "@/lib/protected-users"
-import { Logger } from "@/lib/logger"
 
 /**
  * Server Action para eliminar permanentemente una empresa.

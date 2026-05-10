@@ -4,11 +4,11 @@ type LogLevel = "ERROR" | "WARN" | "INFO";
 type LogSource = "SERVER_ACTION" | "MIDDLEWARE" | "API" | "CRON" | "UNKNOWN";
 
 interface LogMetadata {
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 /**
- * Sistema de Logging Centralizado (In-House)
+ * Sistema de Logging Centralized (In-House)
  * Guarda errores en la base de datos para depuración post-mortem.
  */
 class LoggerService {
@@ -57,7 +57,7 @@ class LoggerService {
         }
 
         // 2. Preparar payload de error
-        let errorData: any = {};
+        let errorData: Record<string, unknown> = {};
         if (error instanceof Error) {
             errorData = {
                 name: error.name,
@@ -65,8 +65,8 @@ class LoggerService {
                 stack: error.stack,
                 cause: error.cause,
             };
-        } else if (typeof error === "object") {
-            errorData = error;
+        } else if (error && typeof error === "object") {
+            errorData = error as Record<string, unknown>;
         } else if (typeof error === "string") {
             errorData = { message: error };
         }

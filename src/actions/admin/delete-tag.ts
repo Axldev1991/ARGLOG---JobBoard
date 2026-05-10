@@ -18,7 +18,7 @@ export async function deleteTag(tagId: number) {
 
         revalidatePath("/admin/dashboard");
         return { success: true };
-    } catch (error) {
+    } catch {
         return { error: "No se pudo eliminar el tag" };
     }
 }

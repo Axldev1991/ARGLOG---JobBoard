@@ -4,8 +4,6 @@ import { prisma } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { Logger } from "@/lib/logger";
-import cloudinary from "@/lib/cloudinary";
-import { extractPublicId } from "@/lib/cloudinary-utils";
 import { CompanyProfileSchema } from "@/lib/schemas";
 
 export async function updateCompanyProfile(formData: FormData) {
@@ -27,7 +25,6 @@ export async function updateCompanyProfile(formData: FormData) {
     }
 
     const { legalName, website, description, industry } = validated.data;
-    const logoFile = formData.get("logo") as File | null;
 
     try {
         // 1. Obtener User + Profile para verificar existencia
