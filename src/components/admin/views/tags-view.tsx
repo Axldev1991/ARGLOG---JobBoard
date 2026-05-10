@@ -5,8 +5,17 @@ import { TagActions } from "@/components/admin/tag-actions";
 import { AdminSearch } from "@/components/admin/admin-search";
 import { CreateTagForm } from "@/components/admin/create-tag-form";
 
+interface Tag {
+    id: number;
+    name: string;
+    type: string;
+    _count: {
+        jobs: number;
+    };
+}
+
 interface Props {
-    tags: any[];
+    tags: Tag[];
 }
 
 /**

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import { AlertCircle, User, FileText, Briefcase } from "lucide-react";
+import { AlertCircle, User, Briefcase } from "lucide-react";
 import { isProfileComplete, cn } from "@/lib/utils";
 import { ProfileForm } from "./profile-form";
 import { ResumeManager } from "./resume-manager";
@@ -9,14 +9,28 @@ import { ApplicationList } from "./application-list";
 
 type Tab = "profile" | "applications";
 
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    candidateProfile: {
+        headline: string | null;
+        city: string | null;
+        bio: string | null;
+        linkedin: string | null;
+        resumeUrl: string | null;
+        tags: { id: number; name: string }[];
+    } | null;
+}
+
 export function CandidateView({
     user,
     allTags = [],
     applications = [],
     activeTab: initialTab = "profile"
 }: {
-    user: any,
-    allTags?: any[],
+    user: User,
+    allTags?: { id: number; name: string; type: string }[],
     applications?: any[],
     activeTab?: Tab
 }) {

@@ -4,7 +4,26 @@ import { ArrowLeft, User, FileText, Linkedin, Mail, Phone, Calendar } from "luci
 import { Button } from "@/components/ui/button";
 import { ApplicationStatusControls } from "./application-status-controls";
 
-export function JobCandidates({ job, applications }: { job: any, applications: any[] }) {
+interface Job {
+    title: string;
+}
+
+interface Application {
+    id: number;
+    status: string;
+    createdAt: Date;
+    user: {
+        name: string;
+        email: string;
+        phone: string | null;
+        headline: string | null;
+        bio: string | null;
+        resumeUrl: string | null;
+        linkedin: string | null;
+    };
+}
+
+export function JobCandidates({ job, applications }: { job: Job, applications: Application[] }) {
 
     return (
         <div className="max-w-6xl mx-auto py-8 px-6 text-foreground">

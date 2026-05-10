@@ -60,7 +60,7 @@ export async function uploadCV(formData: FormData) {
                         reject(error);
                     } else {
                         if (!result) return reject(new Error("No result from Cloudinary"));
-                        resolve(result as any);
+                        resolve(result as { secure_url: string; public_id: string });
                     }
                 }
             );
@@ -68,7 +68,7 @@ export async function uploadCV(formData: FormData) {
         });
 
         // 5. Guardar URL + Public ID en DB
-        const finalUser = await prisma.user.update({
+        await prisma.user.update({
             where: { id: user.id },
             data: {
                 resumeUrl: uploadResult.secure_url,

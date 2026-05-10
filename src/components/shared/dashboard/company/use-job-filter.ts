@@ -4,7 +4,15 @@ import { useState, useMemo } from "react";
 export type SortKey = 'date' | 'title' | 'applicants';
 export type SortDirection = 'asc' | 'desc';
 
-export function useJobFilter(jobs: any[]) {
+interface Job {
+    id: number;
+    title: string;
+    category: string;
+    createdAt: string | Date;
+    applications?: any[];
+}
+
+export function useJobFilter(jobs: Job[]) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortKey, setSortKey] = useState<SortKey>('date');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');

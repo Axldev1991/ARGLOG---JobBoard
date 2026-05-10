@@ -15,8 +15,19 @@ import {
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 
+import { LucideIcon } from "lucide-react";
+
 interface SidebarProps {
-    role: string;
+    role: "admin" | "candidate" | "company" | "dev" | string;
+}
+
+interface NavItem {
+    label: string;
+    icon: LucideIcon;
+    view?: string;
+    tab?: string;
+    href?: string;
+    color: string;
 }
 
 export function Sidebar({ role }: SidebarProps) {
@@ -31,7 +42,7 @@ export function Sidebar({ role }: SidebarProps) {
     }, [isCollapsed]);
 
     // Definición de ítems de navegación por rol
-    const navigationByRole: Record<string, any[]> = {
+    const navigationByRole: Record<string, NavItem[]> = {
         admin: [
             { label: "Empresas", icon: Building2, view: "companies", color: "text-blue-500" },
             { label: "Candidatos", icon: Users, view: "candidates", color: "text-purple-500" },

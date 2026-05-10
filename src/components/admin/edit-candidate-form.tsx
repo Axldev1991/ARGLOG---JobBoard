@@ -40,7 +40,7 @@ export function EditCandidateForm({ candidate }: { candidate: CandidateProps }) 
                 router.refresh();
                 setTimeout(() => router.push("/admin/dashboard"), 1000);
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Ocurrió un error inesperado", { id: toastId });
         } finally {
             setIsLoading(false);

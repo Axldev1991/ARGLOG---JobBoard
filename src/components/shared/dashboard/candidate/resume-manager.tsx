@@ -7,7 +7,11 @@ import { uploadCV } from "@/actions/upload-cv";
 import { deleteCV } from "@/actions/delete-cv";
 import { toast } from "sonner";
 
-export function ResumeManager({ user }: { user: any }) {
+interface User {
+    resumeUrl?: string | null;
+}
+
+export function ResumeManager({ user }: { user: User }) {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
 

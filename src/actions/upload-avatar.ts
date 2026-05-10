@@ -23,7 +23,7 @@ export async function uploadAvatar(formData: FormData) {
         const buffer = Buffer.from(arrayBuffer);
         console.log("📦 Buffer generado, tamaño:", buffer.length);
 
-        const uploadResult = await new Promise<any>((resolve, reject) => {
+        const uploadResult = await new Promise<{ secure_url: string; public_id: string }>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
                     folder: "avatars",

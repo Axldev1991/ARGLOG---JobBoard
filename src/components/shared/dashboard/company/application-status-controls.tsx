@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { Check, X, Clock, Loader2 } from "lucide-react";
 import { updateApplicationStatus } from "@/actions/update-application-status";
 import { Button } from "@/components/ui/button";

@@ -9,14 +9,34 @@ import { cn } from "@/lib/utils";
 
 type Tab = "jobs" | "profile" | "candidates";
 
+interface Job {
+    id: number;
+    title: string;
+    category: string;
+    modality: string;
+    status: string;
+    createdAt: string | Date;
+    expiresAt?: string | Date | null;
+    applications?: any[];
+}
+
+interface CompanyProfile {
+    id: number;
+    name: string;
+    logo?: string | null;
+    description?: string | null;
+    website?: string | null;
+    location?: string | null;
+}
+
 export function CompanyView({
     jobs = [],
     profile,
     allTags = [],
     activeTab: initialTab = "jobs"
 }: {
-    jobs: any[],
-    profile?: any,
+    jobs: Job[],
+    profile?: CompanyProfile,
     allTags?: any[],
     activeTab?: Tab
 }) {

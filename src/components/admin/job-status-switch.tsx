@@ -4,7 +4,6 @@ import { toggleJobStatus } from "@/actions/admin/toggle-job-status";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
 
 interface Props {
     jobId: number;

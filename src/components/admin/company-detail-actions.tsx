@@ -29,7 +29,7 @@ export function CompanyDetailActions({ companyId, companyName }: Props) {
                 toast.success(`Empresa "${companyName}" eliminada.`);
                 router.push("/admin/dashboard?view=companies"); // Redirect to list
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Error al eliminar la empresa.");
             setIsDeleting(false);
         } finally {

@@ -29,7 +29,7 @@ export function CandidateDetailActions({ candidateId, candidateName }: Props) {
                 toast.success(`Candidato "${candidateName}" eliminado.`);
                 router.push("/admin/dashboard?view=candidates");
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Error al eliminar el candidato.");
             setIsDeleting(false);
         } finally {

@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useTheme } from "next-themes";
-import { Menu, LogOut, LayoutDashboard, User as UserIcon, Building2, Briefcase, PlusCircle, Sun, Moon, Laptop } from "lucide-react";
+import { Menu, LogOut, LayoutDashboard, User as UserIcon } from "lucide-react";
 import { logout } from "@/actions/logout";
 import Image from "next/image";
 
@@ -25,7 +24,6 @@ interface NavbarClientProps {
 export function NavbarClient({ user }: NavbarClientProps) {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-    const { setTheme, theme } = useTheme();
 
     // Helpers
     const isActive = (path: string) => pathname === path;

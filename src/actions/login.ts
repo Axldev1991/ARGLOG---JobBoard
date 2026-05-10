@@ -72,7 +72,7 @@ export async function loginUser(formData: FormData) {
         const token = await signJWT({
             id: usuarioEncontrado.id,
             name: usuarioEncontrado.name,
-            role: usuarioEncontrado.role as any
+            role: usuarioEncontrado.role as "candidate" | "company" | "admin" | "dev"
         });
 
         (await cookies()).set("user_session", token, {

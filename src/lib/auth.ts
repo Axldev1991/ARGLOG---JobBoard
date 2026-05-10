@@ -28,14 +28,14 @@ export async function verifyJWT(token: string) {
             algorithms: ["HS256"],
         });
         return payload as unknown as SessionPayload;
-    } catch (error) {
+    } catch (_error) {
         return null;
     }
 }
 
 // 🧠 UTILIDAD RBAC (Role Based Access Control)
 // Esta función envuelve la lógica de autorización
-export async function requireRole(allowedRoles: string[]) {
+export async function requireRole(allowedRoles: SessionPayload["role"][]) {
     const cookieStore = await cookies();
     const token = cookieStore.get("user_session")?.value;
 

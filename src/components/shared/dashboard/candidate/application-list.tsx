@@ -3,7 +3,17 @@ import { Briefcase } from "lucide-react";
 import { withdrawApplication } from "@/actions/withdraw-application";
 import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
 
-export function ApplicationList({ applications = [] }: { applications?: any[] }) {
+interface Application {
+    id: string;
+    status: string;
+    createdAt: Date | string;
+    job: {
+        id: string;
+        title: string;
+    };
+}
+
+export function ApplicationList({ applications = [] }: { applications?: Application[] }) {
 
     return (
         <div className="lg:col-span-3 mt-8">

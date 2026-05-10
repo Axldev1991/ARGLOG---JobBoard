@@ -3,7 +3,7 @@
 import { updateCompany } from "@/actions/admin/update-company";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, ArrowLeft, Save } from "lucide-react";
+import { Building2, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -41,7 +41,7 @@ export function EditCompanyForm({ company }: { company: CompanyProps }) {
                 router.refresh(); // Refrescar datos en pantalla
                 setTimeout(() => router.push("/admin/dashboard"), 1000);
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Ocurrió un error inesperado", { id: toastId });
         } finally {
             setIsLoading(false);

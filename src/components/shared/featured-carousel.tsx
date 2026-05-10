@@ -6,7 +6,17 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { useCallback } from 'react';
 
-export function FeaturedCarousel({ jobs }: { jobs: any[] }) {
+interface Job {
+    id: string;
+    title: string;
+    author?: {
+        name: string;
+    } | null;
+    modality: string;
+    location: string | null;
+}
+
+export function FeaturedCarousel({ jobs }: { jobs: Job[] }) {
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
 
     const scrollPrev = useCallback(() => {

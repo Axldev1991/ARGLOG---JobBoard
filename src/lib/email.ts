@@ -1,6 +1,5 @@
 import { resend } from "@/lib/resend";
 import { env } from "./env";
-import { Logger } from "./logger";
 
 interface SendEmailOptions {
     to: string;
@@ -124,8 +123,8 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
         });
 
         return { success: true, id: result.data?.id };
-    } catch (error) {
-        console.error("Error enviando email via Resend Service:", error);
-        return { success: false, error };
+    } catch (_error) {
+        console.error("Error enviando email via Resend Service:", _error);
+        return { success: false, error: _error };
     }
 }

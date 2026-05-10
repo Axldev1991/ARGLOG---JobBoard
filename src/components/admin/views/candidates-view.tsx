@@ -6,8 +6,17 @@ import { Button } from "@/components/ui/button";
 import { CandidateActions } from "@/components/admin/candidate-actions";
 import { AdminSearch } from "@/components/admin/admin-search";
 
+interface Candidate {
+    id: number;
+    name: string;
+    email: string;
+    headline: string | null;
+    city: string | null;
+    resumeUrl: string | null;
+}
+
 interface Props {
-    candidates: any[];
+    candidates: Candidate[];
 }
 
 /**

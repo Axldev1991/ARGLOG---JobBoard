@@ -14,7 +14,12 @@ import { Button } from "@/components/ui/button";
  * Proporciona una interfaz tipo WhatsApp para seleccionar, recortar y subir
  * la foto de perfil del candidato.
  */
-export function AvatarUpload({ user }: { user: any }) {
+interface User {
+    avatarUrl?: string | null;
+    name?: string | null;
+}
+
+export function AvatarUpload({ user }: { user: User }) {
     const [image, setImage] = useState<string | null>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);

@@ -13,11 +13,16 @@ import { Button } from "@/components/ui/button";
  * Proporciona una interfaz de selección y recorte para el logo de la empresa.
  * Optimizado para formatos corporativos (rectangular/cuadrado).
  */
-export function LogoUpload({ profile }: { profile: any }) {
+interface CompanyProfile {
+    logo?: string | null;
+    legalName?: string;
+}
+
+export function LogoUpload({ profile }: { profile: CompanyProfile }) {
     const [image, setImage] = useState<string | null>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);

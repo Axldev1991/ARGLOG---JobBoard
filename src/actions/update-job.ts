@@ -75,9 +75,10 @@ export async function updateJob(formData: FormData) {
         revalidatePath(`/jobs/${jobId}`);
         return { success: true };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         await Logger.error("Error editando oferta", "SERVER_ACTION", error, { jobId, title });
-        if (error.message === "NEXT_REDIRECT") throw error;
-        return { error: error.message || "Error al actualizar la oferta" };
+        const message = error instanceof Error ? error.message : "Error al actualizar la oferta";
+        if (message === "NEXT_REDIRECT") throw error;
+        return { error: message };
     }
 }

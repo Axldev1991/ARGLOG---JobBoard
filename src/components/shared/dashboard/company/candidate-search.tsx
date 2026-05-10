@@ -3,14 +3,32 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, Linkedin, Phone, Mail, FileUser } from "lucide-react";
+import { Search, MapPin, Linkedin, Mail, FileUser } from "lucide-react";
 import { searchCandidates } from "@/actions/company/search-candidates";
 import { TagSelector } from "@/components/ui/tag-selector";
 
-export function CandidateSearch({ allTags = [] }: { allTags: any[] }) {
+interface Candidate {
+    id: number;
+    name: string;
+    email: string;
+    headline: string | null;
+    city: string | null;
+    bio: string | null;
+    linkedin: string | null;
+    resumeUrl: string | null;
+    tags: { id: number; name: string }[];
+}
+
+interface Tag {
+    id: number;
+    name: string;
+    type: string;
+}
+
+export function CandidateSearch({ allTags = [] }: { allTags: Tag[] }) {
     const [query, setQuery] = useState("");
     const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
-    const [candidates, setCandidates] = useState<any[]>([]);
+    const [candidates, setCandidates] = useState<Candidate[]>([]);
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
 
@@ -111,7 +129,7 @@ export function CandidateSearch({ allTags = [] }: { allTags: any[] }) {
                             </p>
 
                             <div className="mt-4 flex flex-wrap gap-1.5">
-                                {candidate.tags?.map((tag: any) => (
+                                {candidate.tags?.map((tag) => (
                                     <span key={tag.id} className="bg-secondary text-secondary-foreground text-[10px] font-medium px-2 py-0.5 rounded-full border border-border">
                                         {tag.name}
                                     </span>

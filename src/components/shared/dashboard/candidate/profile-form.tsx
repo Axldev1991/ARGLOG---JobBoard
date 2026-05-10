@@ -12,7 +12,24 @@ import { toast } from "sonner";
 
 import { AvatarUpload } from "./avatar-upload";
 
-export function ProfileForm({ user, allTags = [] }: { user: any, allTags: any[] }) {
+interface Tag {
+    id: number;
+    name: string;
+    type: string;
+}
+
+interface User {
+    name?: string | null;
+    email: string;
+    headline?: string | null;
+    city?: string | null;
+    phone?: string | null;
+    linkedin?: string | null;
+    bio?: string | null;
+    tags?: { id: number; name: string }[];
+}
+
+export function ProfileForm({ user, allTags = [] }: { user: User, allTags: Tag[] }) {
     const [isSavingProfile, setIsSavingProfile] = useState(false);
 
     const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

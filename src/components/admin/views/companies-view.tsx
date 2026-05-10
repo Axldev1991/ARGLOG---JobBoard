@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link";
-import { Building2, Check, X, Pencil, Trash2 } from "lucide-react";
+import { Building2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CompanyActions } from "@/components/admin/company-actions";
 import { AdminSearch } from "@/components/admin/admin-search";
@@ -8,8 +8,21 @@ import { approveCompany } from "@/actions/admin/approve-company";
 import { rejectCompany } from "@/actions/admin/reject-company";
 import { toast } from "sonner";
 
+interface Company {
+    id: number;
+    name: string;
+    email: string;
+    status: string;
+    createdAt: Date;
+    companyProfile: {
+        legalName: string;
+        cuit: string;
+        industry: string;
+    } | null;
+}
+
 interface Props {
-    companies: any[];
+    companies: Company[];
 }
 
 export function CompaniesView({ companies }: Props) {

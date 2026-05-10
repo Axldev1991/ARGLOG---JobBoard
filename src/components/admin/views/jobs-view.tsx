@@ -6,8 +6,21 @@ import { JobActions } from "@/components/admin/job-actions";
 import { JobStatusSwitch } from "@/components/admin/job-status-switch";
 import { AdminSearch } from "@/components/admin/admin-search";
 
+interface Job {
+    id: number;
+    title: string;
+    status: string;
+    createdAt: Date;
+    author: {
+        name: string;
+        companyProfile: {
+            legalName: string;
+        } | null;
+    };
+}
+
 interface Props {
-    jobs: any[]; // Ideally typed with Prisma.JobGetPayload
+    jobs: Job[];
 }
 
 /**

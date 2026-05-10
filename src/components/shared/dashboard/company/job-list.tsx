@@ -9,7 +9,18 @@ import { ConfirmDeleteButton } from "@/components/shared/confirm-delete-button";
 import { deleteJob } from "@/actions/delete-jobs";
 import { JobStatusControls } from "./job-status-controls";
 
-export function JobList({ jobs = [] }: { jobs: any[] }) {
+interface Job {
+    id: number;
+    title: string;
+    category: string;
+    modality: string;
+    status: string;
+    createdAt: string | Date;
+    expiresAt?: string | Date | null;
+    applications?: any[];
+}
+
+export function JobList({ jobs = [] }: { jobs: Job[] }) {
     const {
         processedJobs,
         searchTerm,
@@ -237,7 +248,7 @@ function TableHeader({ sortKey, onToggle }: { sortKey: SortKey, onToggle: (k: So
     );
 }
 
-function JobRow({ job }: { job: any }) {
+function JobRow({ job }: { job: Job }) {
     const applicationCount = job.applications?.length || 0;
 
     return (

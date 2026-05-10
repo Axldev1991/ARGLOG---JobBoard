@@ -51,7 +51,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ tab
                 user={user}
                 allTags={allTags}
                 applications={applications}
-                activeTab={activeTab as any}
+                activeTab={activeTab as string}
             />
         );
     }
@@ -74,7 +74,7 @@ export default async function DashboardPage(props: { searchParams: Promise<{ tab
             jobs={myJobs}
             profile={user.companyProfile}
             allTags={allTags}
-            activeTab={activeTab as any}
+            activeTab={activeTab as string}
         />
     );
 }

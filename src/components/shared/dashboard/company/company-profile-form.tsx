@@ -1,22 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateCompanyProfile } from "@/actions/company/update-profile";
 import { toast } from "sonner";
 import { Loader2, Building2, Globe } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { UpdatePasswordModal } from "@/components/shared/update-password-form";
 import { LogoUpload } from "./logo-upload";
 
+interface CompanyProfile {
+    legalName: string;
+    industry: string;
+    website: string | null;
+    description: string | null;
+    logo: string | null;
+}
+
 interface CompanyProfileFormProps {
-    profile: any; // Tipado laxo por ahora, idealmente CompanyProfile type
+    profile: CompanyProfile | null;
 }
 
 export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
-    const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
 
     const handleSubmit = async (formData: FormData) => {
@@ -28,7 +34,7 @@ export function CompanyProfileForm({ profile }: CompanyProfileFormProps) {
             } else {
                 toast.success(res.message);
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Error inesperado al guardar.");
         } finally {
             setIsSaving(false);
