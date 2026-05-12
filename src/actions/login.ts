@@ -25,12 +25,14 @@ export async function loginUser(prevState: any, formData: FormData): Promise<Act
     try {
         let usuarioEncontrado;
 
-        // 🧠 Clasificación Inteligente del Identificador
-        if (identifier.includes("@")) {
-            usuarioEncontrado = await prisma.user.findUnique({
-                where: { email: identifier }
-            })
-        } else {
+        // 🧠 Identificación Secuencial (Email -> CUIT)
+        // Primero intentamos por email exacto (cubre admin y emails reales)
+        usuarioEncontrado = await prisma.user.findUnique({
+            where: { email: identifier }
+        });
+
+        // Si no se encuentra, intentamos extraer un CUIT del identificador
+        if (!usuarioEncontrado) {
             const cleanCuit = identifier.replace(/[^0-9]/g, "");
             if (cleanCuit.length === 11) {
                 const companyProfile = await prisma.companyProfile.findUnique({
