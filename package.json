@@ -73,5 +73,15 @@
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
+  },
+  "pnpm": {
+    "approvedBuilds": {
+      "@prisma/client": "5.22.0",
+      "@prisma/engines": "5.22.0",
+      "esbuild": "0.27.7",
+      "prisma": "5.22.0",
+      "sharp": "0.34.5",
+      "unrs-resolver": "1.11.1"
+    }
   }
 }

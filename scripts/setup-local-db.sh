@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# Exportar el PATH para que npx encuentre a node
-export PATH="/home/axel-lenovo/.nvm/versions/node/v24.12.0/bin:$PATH"
+# Usar el Node del sistema actual
 
 # 1. Iniciar el contenedor de Postgres
 echo "🚀 Iniciando Postgres local con Docker..."
