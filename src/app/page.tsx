@@ -66,7 +66,7 @@ export default async function Home(props: {
 
       <Hero user={session} />
 
-      <div className="max-w-7xl mx-auto px-6 -mt-10 flex flex-col gap-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 pt-10 flex flex-col gap-12 relative z-10">
         {/* 1. FEATURED CAROUSEL */}
         {featuredJobs.length > 0 && (
           <section className="z-30">
