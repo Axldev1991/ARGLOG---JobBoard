@@ -1,11 +1,8 @@
 import { prisma } from "@/lib/db";
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_cache } from "next/cache";
 
-export async function isMaintenanceMode(): Promise<boolean> {
-    // Prevent caching so the switch is instant
-    noStore();
-
-    try {
+const getCachedMaintenanceMode = unstable_cache(
+    async () => {
         // Guard: Check if the model exists (handles stale Prisma instances in dev)
         if (!prisma.systemSetting) {
             console.warn("⚠️ SystemSetting model missing. Please restart your dev server.");
@@ -17,6 +14,14 @@ export async function isMaintenanceMode(): Promise<boolean> {
         });
 
         return setting?.value === "true";
+    },
+    ["maintenance_mode"],
+    { revalidate: 30, tags: ["system_settings"] }
+);
+
+export async function isMaintenanceMode(): Promise<boolean> {
+    try {
+        return await getCachedMaintenanceMode();
     } catch (error) {
         console.error("Failed to check maintenance mode:", error);
         return false; // Fail open (site remains accessible if DB fails)
