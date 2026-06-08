@@ -116,8 +116,10 @@ export function HeroSlider() {
                             </p>
 
                             <div className="mt-10">
-                                <Button className="btn-shine h-14 px-8 font-black text-lg bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_4px_0_0_#047857,0_10px_20px_-5px_rgba(16,185,129,0.4)] active:shadow-[0_2px_0_0_#047857] active:translate-y-[2px] transition-all rounded-xl border-none">
-                                    <span className="relative z-10">Ver Próximos Cursos</span>
+                                <Button asChild className="btn-shine h-14 px-8 font-black text-lg bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_4px_0_0_#047857,0_10px_20px_-5px_rgba(16,185,129,0.4)] active:shadow-[0_2px_0_0_#047857] active:translate-y-[2px] transition-all rounded-xl border-none">
+                                    <a href="https://arlog.org/proximos-cursos-de-capacitacion/" target="_blank" rel="noopener noreferrer">
+                                        <span className="relative z-10">Ver Próximos Cursos</span>
+                                    </a>
                                 </Button>
                             </div>
                         </div>
