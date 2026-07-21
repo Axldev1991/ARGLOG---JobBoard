@@ -87,9 +87,10 @@ export default async function JobDetailPage(props: PageProps) {
                     {/* Description */}
                     <div className="bg-white p-6 rounded-xl border shadow-sm">
                         <h2 className="text-lg font-semibold mb-4 text-slate-800">Descripción del Puesto</h2>
-                        <div className="prose prose-slate max-w-none text-sm text-slate-600 whitespace-pre-line">
-                            {job.description}
-                        </div>
+                        <div
+                            className="prose prose-slate max-w-none text-sm text-slate-600 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: job.description }}
+                        />
 
                         <div className="mt-6 flex flex-wrap gap-2">
                             {job.tags.map(tag => (
